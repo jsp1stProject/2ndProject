@@ -17,10 +17,10 @@
                 default-target-url="/main.do"
                 authentication-failure-url="/login.do"
         />
-
         <security:logout invalidate-session="true" logout-url="/logout"
                          logout-success-url="/main.do"
         />
+        <security:csrf disabled="true" />
     </security:http>
 
     <security:authentication-manager>

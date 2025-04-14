@@ -12,7 +12,7 @@
 </head>
 <body>
 <form action="join_ok.do" method="post">
-    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+<%--    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />--%>
     <input type="email" name="user_mail" placeholder="mail">
     <input type="password" name="password" placeholder="password">
     <input type="text" name="user_name" placeholder="name">

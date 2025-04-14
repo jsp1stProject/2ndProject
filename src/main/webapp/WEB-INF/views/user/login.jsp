@@ -13,7 +13,7 @@
 </head>
 <body>
 <form action="login_ok.do" method="post" id="login">
-    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+<%--    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />--%>
     <input type="email" id="user_mail" name="user_mail" placeholder="mail">
     <input type="password" id="password" name="password" placeholder="password">
     <input type="submit" value="로그인">
