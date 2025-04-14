@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <security:global-method-security secured-annotations="enabled" />
+    <security:http auto-config="true">
+        <security:intercept-url pattern="/main.do" access="permitAll" />
+        <security:intercept-url pattern="/login" access="permitAll" />
+        <security:intercept-url pattern="/join/*" access="permitAll" />
+        <security:intercept-url pattern="/resources/**" access="permitAll" />
+        <security:intercept-url pattern="/admin" access="hasRole('ROLE_ADMIN')" />
+        <security:form-login
+                login-page="/login.do"
+                default-target-url="/main.do"
+                authentication-failure-url="/login.do"
+        />
+
+        <security:logout invalidate-session="true" logout-url="/logout"
+                         logout-success-url="/main.do"
+        />
+    </security:http>
+
+    <security:authentication-manager>
+        <security:authentication-provider user-service-ref="jdbcUserService">
+            <security:password-encoder ref="bCryptPasswordEncoder"/>
+        </security:authentication-provider>
+        <security:authentication-provider>
+            <security:user-service>
+                <security:user name="admin" password="123" authorities="ROLE_ADMIN" />
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <security:jdbc-user-service id="jdbcUserService"
+        data-source-ref="ds"
+        users-by-username-query="SELECT user_mail as userName, password, enabled from P_USERS where user_mail=?"
+        authorities-by-username-query="SELECT user_mail as username, 'role_user' as authority from P_AUTHORITIES"
+    />
+    <import resource="application-datasource.xml"/>
+    <bean id="bCryptPasswordEncoder"
+          class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+
+</beans>

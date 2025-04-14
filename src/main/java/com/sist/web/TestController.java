@@ -1,5 +1,6 @@
 package com.sist.web;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TestController {
 	private final TestService testService;
+	private final PasswordEncoder passwordEncoder;
 	
 	@GetMapping("main.do")
 	public String main(Model model) {
