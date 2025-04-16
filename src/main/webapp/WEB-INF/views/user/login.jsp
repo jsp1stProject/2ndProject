@@ -9,6 +9,7 @@
 <html>
 <head>
     <title>Title</title>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
@@ -39,9 +40,17 @@
                 },
                 data:formData
             });
-            console.log(response.data.state);
+            console.log(response.data);
+            const token=response.data.token;
+            if(token){
+                // localStorage.setItem('jwtToken', token);
+                document.cookie="login_token="+token;
+                window.location.href='web/main.do';
+            }else{
+                console.error("토큰이 없어요")
+            }
         }catch (e) {
-            console.error(e)
+            console.error('로그인 실패:', error.response ? error.response.data : error);
         }
     }
 </script>

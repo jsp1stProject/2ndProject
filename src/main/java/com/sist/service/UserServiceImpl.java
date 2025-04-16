@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
                 map.put("state", "no");
             }
         }
+        System.out.println("login api : "+map);
         return map;
     }
 

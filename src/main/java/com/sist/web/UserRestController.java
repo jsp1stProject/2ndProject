@@ -15,8 +15,5 @@ import java.util.Map;
 public class UserRestController {
     private final UserService userService;
 
-    @PostMapping("login_ok.do")
-    public Map<String, Object> login_ok(@ModelAttribute UserVO vo) {
-        return userService.loginUser(vo);
-    }
+
 }

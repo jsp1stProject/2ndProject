@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public CustomAuthenticationFilter customAuthenticationFilter() throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(jwtTokenProvider, objectMapper());
         customAuthenticationFilter.setAuthenticationManager(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/login.do");
+        customAuthenticationFilter.setFilterProcessesUrl("/login_ok.do");
         return customAuthenticationFilter;
     }
 
@@ -61,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/login.do","/join/**","/resources/**","/main.do","/login_ok.do").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/member/**").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterAt(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)

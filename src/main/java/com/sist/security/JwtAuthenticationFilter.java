@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.*;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -45,9 +46,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if(StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             Authentication authentication=jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.debug("토큰 유효: {}", authentication);
+            log.debug("Valid Token : {}", authentication);
         }else{
-            log.debug("토큰 없음");
+            log.debug("No Token Found or Invalid Token");
         }
         filterChain.doFilter(request, response);
     }
@@ -55,6 +56,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
+        }
+        System.out.println(request.getCookies().length);
+        if(request.getCookies() != null || request.getCookies().length > 0) {
+            for (Cookie cookie : request.getCookies()) {
+                System.out.println(cookie.getName());
+                System.out.println(cookie.getValue());
+                if("login_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
         }
         return null;
     }
