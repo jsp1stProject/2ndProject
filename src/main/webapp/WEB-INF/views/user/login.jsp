@@ -11,6 +11,11 @@
     <title>Title</title>
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"
+            integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nka" crossorigin="anonymous"></script>
+    <script>
+        Kakao.init('d24bc46e149baf82df42f1db148941b3'); // 사용하려는 앱의 JavaScript 키 입력
+    </script>
 </head>
 <body>
 <form action="login_ok.do" method="post" id="login">
@@ -18,6 +23,12 @@
     <input type="email" id="user_mail" name="user_mail" placeholder="mail">
     <input type="password" id="password" name="password" placeholder="password">
     <input type="submit" value="로그인">
+    <input type="button" value="가입하기">
+    <a id="kakao-login-btn" href="javascript:loginWithKakao()">
+        <img src="https://k.kakaocdn.net/14/dn/btroDszwNrM/I6efHub1SN5KCJqLm1Ovx1/o.jpg" width="222"
+             alt="카카오 로그인 버튼" />
+    </a>
+    <p id="token-result"></p>
 </form>
 <script>
     const form=document.getElementById("login");
@@ -52,6 +63,38 @@
         }catch (e) {
             console.error('로그인 실패:', error.response ? error.response.data : error);
         }
+    }
+</script>
+<script>
+    function loginWithKakao() {
+        Kakao.Auth.authorize({
+            redirectUri: 'http://localhost:8080/web/join/join.do',
+        });
+    }
+
+    // 아래는 데모를 위한 UI 코드입니다.
+    displayToken()
+    function displayToken() {
+        var token = getCookie('authorize-access-token');
+
+        if(token) {
+            Kakao.Auth.setAccessToken(token);
+            Kakao.Auth.getStatusInfo()
+                .then(function(res) {
+                    if (res.status === 'connected') {
+                        document.getElementById('token-result').innerText
+                            = 'login success, token: ' + Kakao.Auth.getAccessToken();
+                    }
+                })
+                .catch(function(err) {
+                    Kakao.Auth.setAccessToken(null);
+                });
+        }
+    }
+
+    function getCookie(name) {
+        var parts = document.cookie.split(name + '=');
+        if (parts.length === 2) { return parts[1].split(';')[0]; }
     }
 </script>
 </body>
