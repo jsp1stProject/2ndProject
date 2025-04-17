@@ -26,10 +26,12 @@
     <input type="text" name="user_name" placeholder="name">
     <input type="text" name="nickname" placeholder="nickname">
     <input type="submit" value="가입">
+    join.do말고 처리해줄 다른 주소로 매핑 -> 쿠키에 저장하고 join.do에 파라미터 제거해서 redirect
 </form>
 <script>
     //토큰 가져오기
-    login();
+
+    document.cookie="kakaoAccessToken=${response.access_token}";
     async function login(){
         let params = new URLSearchParams(document.location.search);
         let code = params.get("code");
@@ -62,9 +64,9 @@
         }
     }
 
-
+displayToken();
     function displayToken() {
-        var token = getCookie('kakao-access-token');
+        var token = getCookie('kakaoAccessToken');
 
         if(token) {
             Kakao.Auth.setAccessToken(token);
