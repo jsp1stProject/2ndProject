@@ -20,7 +20,7 @@
 <body>
 <form action="login_ok.do" method="post" id="login">
 <%--    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />--%>
-    <input type="email" id="user_mail" name="user_mail" placeholder="mail">
+    <input type="email" id="user_mail" name="username" placeholder="email">
     <input type="password" id="password" name="password" placeholder="password">
     <input type="submit" value="로그인">
     <input type="button" value="가입하기">
@@ -45,7 +45,7 @@
         try{
             let response=await axios({
                 method:'post',
-                url:'login_ok.do',
+                url:'auth/login',
                 headers:{
                     "Content-Type":"application/json"
                 },
@@ -56,7 +56,7 @@
             if(token){
                 // localStorage.setItem('jwtToken', token);
                 document.cookie="login_token="+token;
-                window.location.href='web/main.do';
+                window.location.href='/main';
             }else{
                 console.error("토큰이 없어요")
             }
@@ -67,34 +67,10 @@
 </script>
 <script>
     function loginWithKakao() {
+        //카카오톡 -> 없으면 카카오 계정으로 로그인
         Kakao.Auth.authorize({
-            redirectUri: 'http://localhost:8080/web/join/join.do',
+            redirectUri: 'http://localhost:8080/web/auth/join',
         });
-    }
-
-    // 아래는 데모를 위한 UI 코드입니다.
-    displayToken()
-    function displayToken() {
-        var token = getCookie('authorize-access-token');
-
-        if(token) {
-            Kakao.Auth.setAccessToken(token);
-            Kakao.Auth.getStatusInfo()
-                .then(function(res) {
-                    if (res.status === 'connected') {
-                        document.getElementById('token-result').innerText
-                            = 'login success, token: ' + Kakao.Auth.getAccessToken();
-                    }
-                })
-                .catch(function(err) {
-                    Kakao.Auth.setAccessToken(null);
-                });
-        }
-    }
-
-    function getCookie(name) {
-        var parts = document.cookie.split(name + '=');
-        if (parts.length === 2) { return parts[1].split(';')[0]; }
     }
 </script>
 </body>

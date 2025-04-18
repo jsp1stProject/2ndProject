@@ -2,7 +2,7 @@ package com.sist.web.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sist.web.security.CustomAuthenticationEntryPoint;
-import com.sist.web.security.CustomAuthenticationFilter;
+import com.sist.web.security.CustomUsernamePasswordAuthenticationFilter;
 import com.sist.web.security.JwtAuthenticationFilter;
 import com.sist.web.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @ComponentScan(basePackages = "com.sist.*")
@@ -23,28 +28,29 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    public static final String[] AUTH_WHITELIST = {"/assets/**","/login/**","/join/**","/main/**"};
 
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter jwtAuthenticationFilter=new JwtAuthenticationFilter(jwtTokenProvider,objectMapper());
-        return jwtAuthenticationFilter;
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
+
     @Bean
-    public CustomAuthenticationFilter customAuthenticationFilter() throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(jwtTokenProvider, objectMapper());
-        customAuthenticationFilter.setAuthenticationManager(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/login_ok.do");
-        return customAuthenticationFilter;
+    public CustomUsernamePasswordAuthenticationFilter customAuthenticationFilter() throws Exception {
+        CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter = new CustomUsernamePasswordAuthenticationFilter(jwtTokenProvider, objectMapper());
+        customUsernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManagerBean());
+        customUsernamePasswordAuthenticationFilter.setFilterProcessesUrl("/auth/login");
+        return customUsernamePasswordAuthenticationFilter;
     }
 
     @Bean
     public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() throws Exception {
-        CustomAuthenticationEntryPoint customAuthenticationEntryPoint =new CustomAuthenticationEntryPoint(objectMapper());
-        return customAuthenticationEntryPoint;
+        return new CustomAuthenticationEntryPoint(objectMapper());
     }
 
     @Primary
@@ -62,13 +68,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/login.do","/join/**","/resources/**","/main.do","/login_ok.do").permitAll()
+                .antMatchers(AUTH_WHITELIST).permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/member/**").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
+                //jwt확인
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                //로그인처리
                 .addFilterAt(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint());
     }
 }

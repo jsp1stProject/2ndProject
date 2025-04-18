@@ -3,9 +3,10 @@ package com.sist.web.user.mapper;
 import com.sist.web.user.vo.UserVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
-
+@Component
 public interface UserMapper {
     @Insert("insert into p_users(user_no,user_mail,password,user_name,nickname) " +
             "values(p_user_no_seq.nextval,#{user_mail},#{password},#{user_name},#{nickname})")

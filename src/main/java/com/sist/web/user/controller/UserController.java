@@ -23,12 +23,12 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    @GetMapping("login.do")
+    @GetMapping("login")
     public String login() {
         return "user/login";
     }
 
-    @GetMapping("join/join.do")
+    @GetMapping("join")
     public String join(@RequestParam(required = false, value="code") String code, Model model) {
         if(code != null && code.length() > 0) { //카카오 연동 가입이면
             RestTemplate restTemplate = new RestTemplate();
@@ -67,9 +67,4 @@ public class UserController {
         return "user/join_ok";
     }
 
-    @GetMapping("join/join_ok.do")
-    public String join_ok(Model model) {
-        model.addAttribute("user_name", "권한확인");
-        return "user/join_ok";
-    }
 }

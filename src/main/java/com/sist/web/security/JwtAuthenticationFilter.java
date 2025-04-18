@@ -1,6 +1,6 @@
 package com.sist.web.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sist.web.common.config.SecurityConfig;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
@@ -15,35 +15,32 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private final ObjectMapper objectMapper;
-    private final List<String> excludedPaths = Arrays.asList("/assets/**","/login/**","/join/**","/main/**");
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
-
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestPath = request.getServletPath();
 
         // 공개 경로에 해당하면 필터 로직을 건너뛰고 체인을 바로 진행
-        for (String pattern : excludedPaths) {
+        for (String pattern : SecurityConfig.AUTH_WHITELIST) {
             if (pathMatcher.match(pattern, requestPath)) {
-                log.debug("공개 URL [{}] 에 접근, JWT 검증 건너뜀", requestPath);
+                log.debug("공개 URL [{}]", requestPath);
                 filterChain.doFilter(request, response);
                 return;
             }
         }
 
+        //쿠키에서 jwt 추출
         String token=getJwtFromRequest(request);
+        //만료되지 않은 토큰이 있으면
         if(StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
+            //권한 추출
             Authentication authentication=jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             log.debug("Valid Token : {}", authentication);
@@ -52,11 +49,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
+
     private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
+        //쿠키에서 토큰 추출
         System.out.println(request.getCookies().length);
         if(request.getCookies() != null || request.getCookies().length > 0) {
             for (Cookie cookie : request.getCookies()) {
