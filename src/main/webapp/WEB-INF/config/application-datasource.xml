@@ -26,5 +26,5 @@
 	/>
 	
 	<!-- Mapper 구현 -->
-	<mybatis-spring:scan base-package="com.sist.mapper" factory-ref="ssf"></mybatis-spring:scan>
+	<mybatis-spring:scan base-package="com.sist.web.*.mapper" factory-ref="ssf"></mybatis-spring:scan>
 </beans>
