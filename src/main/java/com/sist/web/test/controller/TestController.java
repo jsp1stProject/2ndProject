@@ -1,12 +1,12 @@
-package com.sist.web;
+package com.sist.web.test.controller;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.sist.service.TestService;
-import com.sist.vo.TestVO;
+import com.sist.web.test.service.TestService;
+import com.sist.web.test.vo.TestVO;
 
 import lombok.RequiredArgsConstructor;
 

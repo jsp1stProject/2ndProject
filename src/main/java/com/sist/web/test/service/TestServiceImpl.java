@@ -1,9 +1,9 @@
-package com.sist.service;
+package com.sist.web.test.service;
 
 import org.springframework.stereotype.Service;
 
-import com.sist.mapper.TestMapper;
-import com.sist.vo.TestVO;
+import com.sist.web.test.mapper.TestMapper;
+import com.sist.web.test.vo.TestVO;
 
 import lombok.RequiredArgsConstructor;
 
