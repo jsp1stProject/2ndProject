@@ -1,10 +1,8 @@
-package com.sist.web;
+package com.sist.web.user.controller;
 
-import com.sist.service.UserService;
-import com.sist.vo.UserVO;
-import jakarta.json.JsonObject;
+import com.sist.web.user.service.UserService;
+import com.sist.web.user.vo.UserVO;
 import lombok.RequiredArgsConstructor;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,7 +15,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Controller

@@ -1,4 +1,4 @@
-package com.sist.security;
+package com.sist.web.security;
 
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
-package com.sist.mapper;
+package com.sist.web.user.mapper;
 
-import com.sist.vo.UserVO;
+import com.sist.web.user.vo.UserVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 

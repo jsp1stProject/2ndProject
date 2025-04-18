@@ -1,6 +1,6 @@
-package com.sist.service;
+package com.sist.web.user.service;
 
-import com.sist.vo.UserVO;
+import com.sist.web.user.vo.UserVO;
 
 import java.util.Map;
 

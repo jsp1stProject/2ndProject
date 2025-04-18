@@ -24,16 +24,16 @@
 <!--        <security:custom-filter ref="jwtAuthenticationFilter" position="FORM_LOGIN_FILTER" />-->
 <!--    </security:http>-->
 
-<!--    <bean id="jwtAuthenticationFilter" class="com.sist.security.JwtAuthenticationFilter"></bean>-->
+<!--    <bean id="jwtAuthenticationFilter" class="com.sist.web.security.JwtAuthenticationFilter"></bean>-->
 
-<!--    <beans:bean id="jwtAuthenticationFilter" class="com.sist.security.JwtAuthenticationFilter">-->
+<!--    <beans:bean id="jwtAuthenticationFilter" class="com.sist.web.security.JwtAuthenticationFilter">-->
 <!--        <beans:property name="authenticationManager" ref="authenticationManager" />-->
 <!--        <beans:property name="tokenProvider" ref="jwtTokenProvider" />-->
 <!--        <beans:property name="loginUrl" value="/login" />-->
 <!--    </beans:bean>-->
 
-    <bean id="jwtTokenProvider" class="com.sist.security.JwtTokenProvider"></bean>
-    <bean id="ObjectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"></bean>
+    <bean id="jwtTokenProvider" class="com.sist.web.security.JwtTokenProvider"/>
+    <bean id="ObjectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
 
     <security:authentication-manager>
         <security:authentication-provider user-service-ref="jdbcUserService">
@@ -53,7 +53,7 @@
     />
     <import resource="application-datasource.xml"/>
     <bean id="bCryptPasswordEncoder"
-          class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+          class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
 
 
 

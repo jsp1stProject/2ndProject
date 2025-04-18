@@ -1,6 +1,10 @@
-package com.sist.security;
+package com.sist.web.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sist.web.security.CustomAuthenticationEntryPoint;
+import com.sist.web.security.CustomAuthenticationFilter;
+import com.sist.web.security.JwtAuthenticationFilter;
+import com.sist.web.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -11,7 +15,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration

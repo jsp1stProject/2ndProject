@@ -1,4 +1,4 @@
-package com.sist.security;
+package com.sist.web.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.Authentication;
