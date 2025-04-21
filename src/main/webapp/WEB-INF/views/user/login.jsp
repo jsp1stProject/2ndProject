@@ -43,25 +43,19 @@
     async function login(){
         let formData=new FormData(form);
         try{
-            let response=await axios({
+            await axios({
                 method:'post',
                 url:'auth/login',
                 headers:{
                     "Content-Type":"application/json"
                 },
-                data:formData
+                data:formData,
+                withCredentials:true
             });
-            console.log(response.data);
-            const token=response.data.token;
-            if(token){
-                // localStorage.setItem('jwtToken', token);
-                document.cookie="login_token="+token;
-                window.location.href='/main';
-            }else{
-                console.error("토큰이 없어요")
-            }
+            location.href='/web/main'
         }catch (e) {
-            console.error('로그인 실패:', error.response ? error.response.data : error);
+            console.error(e)
+            console.error('로그인 실패:', e.response ? e.response.data : e);
         }
     }
 </script>

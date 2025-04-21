@@ -29,6 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 공개 경로에 해당하면 필터 로직을 건너뛰고 체인을 바로 진행
         for (String pattern : SecurityConfig.AUTH_WHITELIST) {
+            System.out.println(pattern);
             if (pathMatcher.match(pattern, requestPath)) {
                 log.debug("공개 URL [{}]", requestPath);
                 filterChain.doFilter(request, response);
@@ -37,27 +38,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         //쿠키에서 jwt 추출
-        String token=getJwtFromRequest(request);
-        //만료되지 않은 토큰이 있으면
-        if(StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
+        String accessToken=getJwtFromRequest(request,"accessToken");
+        String refreshToken=getJwtFromRequest(request,"refreshToken");
+        //만료되지 않은 액세스 토큰이 있으면
+        if(StringUtils.hasText(accessToken) && jwtTokenProvider.validateToken(accessToken)) {
             //권한 추출
-            Authentication authentication=jwtTokenProvider.getAuthentication(token);
+            Authentication authentication=jwtTokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             log.debug("Valid Token : {}", authentication);
-        }else{
-            log.debug("No Token Found or Invalid Token");
+        }else if(StringUtils.hasText(accessToken) && !jwtTokenProvider.validateToken(refreshToken)) {
+            //액세스 토큰이 있는데 만료됐다면
+            if(StringUtils.hasText(refreshToken)) {
+                //리프레쉬 토큰이 있는 경우
+                log.debug("Invalid Token, Refresh start");
+            }else{
+                //없는 경우
+                log.debug("Invalid Token, You can't access this resource");
+            }
+
         }
         filterChain.doFilter(request, response);
     }
 
-    private String getJwtFromRequest(HttpServletRequest request) {
+    private String getJwtFromRequest(HttpServletRequest request,String ckName) {
         //쿠키에서 토큰 추출
         System.out.println(request.getCookies().length);
         if(request.getCookies() != null || request.getCookies().length > 0) {
             for (Cookie cookie : request.getCookies()) {
                 System.out.println(cookie.getName());
                 System.out.println(cookie.getValue());
-                if("login_token".equals(cookie.getName())) {
+                if(ckName.equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }

@@ -1,6 +1,7 @@
 package com.sist.web.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sist.web.user.mapper.UserMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -14,12 +15,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Slf4j
@@ -27,6 +27,7 @@ import java.util.Map;
 public class CustomUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper om;
+    private final UserMapper userMapper;
 
     @Getter
     @Setter
@@ -48,15 +49,16 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
             if (loginRequest.getUsername() == null) {
                 loginRequest.setUsername("");
             }
-
             if (loginRequest.getPassword() == null) {
                 loginRequest.setPassword("");
             }
 
-            UsernamePasswordAuthenticationToken authRequest =
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername().trim(), loginRequest.getPassword());
+            //user_mail  -> 현재 유효한 회원의 user_no로 변경
+            String userNo = userMapper.getEnableUserNo(loginRequest.getUsername().trim());
 
-            // Allow subclasses to set the "details" property
+            UsernamePasswordAuthenticationToken authRequest =
+                    new UsernamePasswordAuthenticationToken(userNo, loginRequest.getPassword());
+
             setDetails(request, authRequest);
 
             return this.getAuthenticationManager().authenticate(authRequest);
@@ -67,20 +69,18 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                            FilterChain chain, Authentication authResult) throws IOException  {
+                                            FilterChain chain, Authentication authResult)  {
         SecurityContextHolder.getContext().setAuthentication(authResult);
 
         //로그인 완료, jwt 발급 시작
-        String username = authResult.getName();
+        String userNo = authResult.getName();
         Collection<? extends GrantedAuthority> auths= authResult.getAuthorities();
         logger.info(auths.toString());
-        String token = jwtTokenProvider.createToken(username, auths);
+        String accessToken = jwtTokenProvider.createToken(userNo, auths);
+        String refreshToken = jwtTokenProvider.createRefreshToken(userNo);
 
-        Map<String, String> tokenMap = new HashMap<>();
-        //refresh token 추가 예정
-        tokenMap.put("token", token);
-        response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write(om.writeValueAsString(tokenMap));
+        response.addCookie(addCk("accessToken", accessToken, 1*60*60));
+        response.addCookie(addCk("refreshToken", refreshToken, 1*60*60*24*7));
     }
 
     @Override
@@ -90,5 +90,13 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
         response.setContentType("application/json;charset=UTF-8");
         String jsonResponse = "{\"error\":\"password incorrect\"}";
         response.getWriter().write(jsonResponse);
+    }
+
+    Cookie addCk(String name, String token, int expire) {
+        Cookie cookie = new Cookie(name, token);
+        cookie.setMaxAge(expire);//1시간
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
     }
 }

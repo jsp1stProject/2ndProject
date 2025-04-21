@@ -18,6 +18,10 @@
 		p:password="#{db['password']}"
 	/>
 	<tx:annotation-driven/>
+	<bean id="transactionManager"
+		  class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		  p:dataSource-ref="ds"
+	/>
 	
 	<!-- 트랜잭션 설정 -->
 	<!-- sqlsessionfactory -->

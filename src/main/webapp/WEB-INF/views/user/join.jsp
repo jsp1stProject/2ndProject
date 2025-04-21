@@ -21,71 +21,49 @@
 <form action="join_ok.do" method="post">
     <p id="token-result"></p>
 <%--    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />--%>
-    <input type="email" name="user_mail" placeholder="mail">
+    <input type="email" name="user_mail" placeholder="mail" value="${response.kakao_account.email}">
     <input type="password" name="password" placeholder="password">
     <input type="text" name="user_name" placeholder="name">
-    <input type="text" name="nickname" placeholder="nickname">
+    <input type="text" name="nickname" placeholder="nickname" value="${response.properties.nickname}">
     <input type="submit" value="가입">
-    join.do말고 처리해줄 다른 주소로 매핑 -> 쿠키에 저장하고 join.do에 파라미터 제거해서 redirect
 </form>
 <script>
-    //토큰 가져오기
+    //카카오 가입
+    const url=window.location.search;
+    const code=new URLSearchParams(url).get('code');
+    if(code!==''){
 
-    document.cookie="kakaoAccessToken=${response.access_token}";
-    async function login(){
-        let params = new URLSearchParams(document.location.search);
-        let code = params.get("code");
-        console.log("code: "+code);
+    }
+
+    async function kakaoJoin(){
         try{
-            let response=await axios({
+            const res=await axios({
                 method:'post',
-                url:'https://kauth.kakao.com/oauth/token',
+                url:'/web/api/auth/kakao/join',
                 headers:{
-                    "Content-Type":"application/x-www-form-urlencoded;charset=utf-8"
+                    "Content-Type":"application/json"
                 },
                 data:{
-                    grant_type:'authorization_code',
-                    client_id:'${client_id}', //server로 숨기기
-                    redirect_uri:'http://localhost:8080/web/join/join.do',
-                    code:code
-                }
+                    "code": code
+                },
+                withCredentials:true
             });
-            console.log(response.data);
-            const token=response.data.access_token;
-            if(token){
-                // localStorage.setItem('jwtToken', token);
-                document.cookie="kakao-access-token="+token;
-                displayToken();
+            if(res.status === 409){
+                console.log("이미 가입된 이메일입니다.");
             }else{
-                console.error("토큰이 없어요")
+                console.log("가입완료");
             }
-        }catch (error) {
-            console.error('로그인 실패:', error.response ? error.response.data : error);
+            location.href='/web/main'
+        }catch (e) {
+            const status = e.response?.status;
+            if (status === 409) {
+                console.log("이미 가입된 이메일입니다.");
+                alert("이미 가입된 이메일입니다.");
+            } else {
+                console.error("가입 실패:", e.response?.data || e);
+                alert("예상치 못한 오류 발생");
+            }
         }
-    }
-
-displayToken();
-    function displayToken() {
-        var token = getCookie('kakaoAccessToken');
-
-        if(token) {
-            Kakao.Auth.setAccessToken(token);
-            Kakao.Auth.getStatusInfo()
-                .then(function(res) {
-                    if (res.status === 'connected') {
-                        document.getElementById('token-result').innerText
-                            = 'login success, token: ' + Kakao.Auth.getAccessToken();
-                    }
-                })
-                .catch(function(err) {
-                    Kakao.Auth.setAccessToken(null);
-                });
-        }
-    }
-
-    function getCookie(name) {
-        var parts = document.cookie.split(name + '=');
-        if (parts.length === 2) { return parts[1].split(';')[0]; }
     }
 </script>
 </body>

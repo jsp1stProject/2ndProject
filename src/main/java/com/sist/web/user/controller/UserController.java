@@ -7,6 +7,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +16,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Controller
@@ -23,37 +25,25 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
+    @GetMapping("admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String admin(Model model) {
+        return "main/home";
+    }
+    @GetMapping("users/test")
+    @PreAuthorize("hasRole('USER')")
+    public String test(Model model) {
+        return "main/home";
+    }
+
     @GetMapping("login")
     public String login() {
         return "user/login";
     }
 
-    @GetMapping("join")
+
+    @GetMapping("auth/join")
     public String join(@RequestParam(required = false, value="code") String code, Model model) {
-        if(code != null && code.length() > 0) { //카카오 연동 가입이면
-            RestTemplate restTemplate = new RestTemplate();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
-
-            MultiValueMap<String,String> requestBody = new LinkedMultiValueMap<>();
-            requestBody.add("grant_type","authorization_code");
-            requestBody.add("client_id","edc96d6c4e60c395ff9312d2ed6f71ba");
-            requestBody.add("redirect_uri","http://localhost:8080/web/join/join.do");
-            requestBody.add("code",code);
-
-            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
-
-            ResponseEntity<?> response=restTemplate.exchange(
-                    "https://kauth.kakao.com/oauth/token",
-                    HttpMethod.POST,
-                    requestEntity,
-                    Map.class
-            );
-            model.addAttribute("response", response.getBody());
-        }
-
-
         return "user/join";
     }
 

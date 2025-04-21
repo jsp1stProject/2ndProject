@@ -6,32 +6,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-<!--    <security:http>-->
-<!--        <security:intercept-url pattern="/main.do" access="permitAll" />-->
-<!--        <security:intercept-url pattern="/login" access="permitAll" />-->
-<!--        <security:intercept-url pattern="/join/*" access="permitAll" />-->
-<!--        <security:intercept-url pattern="/resources" access="permitAll" />-->
-<!--        <security:intercept-url pattern="/admin" access="hasRole('ROLE_ADMIN')" />-->
-<!--        <security:logout invalidate-session="true" logout-url="/logout"-->
-<!--                         logout-success-url="/main.do"-->
-<!--        />-->
-<!--        <security:csrf disabled="true" />-->
-<!--        <security:form-login-->
-<!--                login-page="/login.do"-->
-<!--                default-target-url="/main.do"-->
-<!--                authentication-failure-url="/login.do"-->
-<!--        />-->
-<!--        <security:custom-filter ref="jwtAuthenticationFilter" position="FORM_LOGIN_FILTER" />-->
-<!--    </security:http>-->
-
-<!--    <bean id="jwtAuthenticationFilter" class="com.sist.web.security.JwtAuthenticationFilter"></bean>-->
-
-<!--    <beans:bean id="jwtAuthenticationFilter" class="com.sist.web.security.JwtAuthenticationFilter">-->
-<!--        <beans:property name="authenticationManager" ref="authenticationManager" />-->
-<!--        <beans:property name="tokenProvider" ref="jwtTokenProvider" />-->
-<!--        <beans:property name="loginUrl" value="/login" />-->
-<!--    </beans:bean>-->
-
     <security:authentication-manager>
         <security:authentication-provider user-service-ref="jdbcUserService">
             <security:password-encoder ref="bCryptPasswordEncoder"/>
@@ -45,12 +19,13 @@
 
     <security:jdbc-user-service id="jdbcUserService"
         data-source-ref="ds"
-        users-by-username-query="SELECT user_mail as username, password, enabled from P_USERS where user_mail=?"
-        authorities-by-username-query="SELECT user_mail as username, AUTHORITY from P_AUTHORITIES where user_mail=?"
+        users-by-username-query="SELECT user_no as username, password, enabled from P_USERS where user_no=? and ENABLED=1"
+        authorities-by-username-query="SELECT user_no as username, AUTHORITY from P_AUTHORITIES where user_no=?"
     />
     <import resource="application-datasource.xml"/>
     <bean id="bCryptPasswordEncoder"
           class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
 
 
 

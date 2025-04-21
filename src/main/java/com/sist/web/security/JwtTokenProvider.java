@@ -21,10 +21,10 @@ public class JwtTokenProvider {
     private final long tokenValidMillisecond = 1000L * 60 * 60; //1시간
     private static final Logger logger= LoggerFactory.getLogger(JwtTokenProvider.class);
 
-    public String createToken(String username, Collection<? extends GrantedAuthority> authorities) {
+    public String createToken(String userNo, Collection<? extends GrantedAuthority> authorities) {
         //토큰 페이로드 설정
         //페이로드 subject=유저이메일
-        Claims claims = Jwts.claims().setSubject(username);
+        Claims claims = Jwts.claims().setSubject(userNo);
 
         //GrantedAutority 콜렉션 받아서 String 리스트로 변환, 페이로드에 삽입
         List<String> roles = authorities.stream()
@@ -43,6 +43,23 @@ public class JwtTokenProvider {
                 .compact();
 
         logger.info("create token:{}",token);
+        return token;
+    }
+
+    public String createRefreshToken(String userNo) {
+        Claims claims = Jwts.claims().setSubject(userNo);
+
+        Date now=new Date();
+        Date validity=new Date(now.getTime()+tokenValidMillisecond*24*7); //만료시간 7일
+
+        String token = Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+
+        logger.info("create refresh token:{}",token);
         return token;
     }
 

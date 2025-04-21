@@ -1,26 +1,49 @@
 package com.sist.web.user.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sist.web.user.mapper.UserMapper;
+import com.sist.web.user.vo.KakaoUserDTO;
 import com.sist.web.user.vo.UserVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ObjectMapper objectMapper;
 
+    @Transactional
     @Override
     public void insertDefaultUser(UserVO vo) {
         Map<String, Object> map = new HashMap<>();
         map.put("user_mail", vo.getUser_mail());
         map.put("authority", "ROLE_USER");
         userMapper.insertDefaultUser(vo);
+        userMapper.insertUserAuthority(map);
+    }
+
+    @Transactional
+    @Override
+    public void insertKakaoUser(UserVO vo) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("user_mail", vo.getUser_mail());
+        map.put("authority", "ROLE_USER");
+        userMapper.insertKakaoUser(vo);
         userMapper.insertUserAuthority(map);
     }
 
@@ -46,6 +69,84 @@ public class UserServiceImpl implements UserService {
         }
         System.out.println("login api : "+map);
         return map;
+    }
+
+    @Override
+    public String GetKakaoAccessToken(String code) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
+
+        MultiValueMap<String,String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("grant_type","authorization_code");
+        requestBody.add("client_id","edc96d6c4e60c395ff9312d2ed6f71ba");
+        requestBody.add("redirect_uri","http://localhost:8080/web/auth/join");
+        requestBody.add("code",code);
+
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        try{
+            ResponseEntity<?> response=restTemplate.exchange(
+                    "https://kauth.kakao.com/oauth/token",
+                    HttpMethod.POST,
+                    requestEntity,
+                    Map.class
+            );
+            Map map= (Map)response.getBody();
+            return (String)map.get("access_token");
+        }catch (HttpClientErrorException e){
+            System.out.println("[KAKAO ERROR BODY] " + e.getResponseBodyAsString());
+            throw e;
+        }
+    }
+
+    @Override
+    public ResponseEntity GetInsertKakaoUser(String kakaoAccessToken) {
+        //kakao 유저 정보 가져오기 api
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + kakaoAccessToken);
+        headers.set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                "https://kapi.kakao.com/v2/user/me",
+                HttpMethod.GET,
+                request,
+                String.class
+        );
+
+        KakaoUserDTO kakaoUserDTO=null;
+        try{
+            kakaoUserDTO = objectMapper.readValue(response.getBody(), KakaoUserDTO.class);
+            Long social_id= Objects.requireNonNull((kakaoUserDTO).getId());
+            String profile=kakaoUserDTO.getProperties().getThumbnail_image();
+            String nickname=kakaoUserDTO.getProperties().getNickname();
+            String email=kakaoUserDTO.getKakao_account().getEmail();
+
+            UserVO userVO=new UserVO();
+            userVO.setNickname(nickname);
+            userVO.setUser_name(nickname);
+            userVO.setUser_mail(email);
+            userVO.setSocial_id(social_id.toString());
+
+            //중복가입 여부 확인
+            int count = userMapper.getUserMailCount(email);
+            if(count == 0) {
+                insertKakaoUser(userVO);
+            } else {
+                //동일한 메일이 이미 가입되어 있으면
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("이미 가입된 이메일입니다.");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.ok().build();
     }
 
 }
