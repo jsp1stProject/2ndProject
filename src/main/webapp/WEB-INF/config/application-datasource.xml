@@ -17,14 +17,20 @@
 		p:username="#{db['username']}"
 		p:password="#{db['password']}"
 	/>
-	<tx:annotation-driven/>
+	<bean id="txManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+          p:dataSource-ref="ds" />
+          
+	<tx:annotation-driven transaction-manager="txManager"/>
 	
 	<!-- 트랜잭션 설정 -->
 	<!-- sqlsessionfactory -->
 	<bean id="ssf" class="org.mybatis.spring.SqlSessionFactoryBean"
 		p:dataSource-ref="ds"
+		p:configLocation="/WEB-INF/config/Config.xml"
 	/>
 	
 	<!-- Mapper 구현 -->
 	<mybatis-spring:scan base-package="com.sist.web.*.mapper" factory-ref="ssf"></mybatis-spring:scan>
+	<mybatis-spring:scan base-package="com.sist.web.chat.group.mapper" factory-ref="ssf"></mybatis-spring:scan>
 </beans>
