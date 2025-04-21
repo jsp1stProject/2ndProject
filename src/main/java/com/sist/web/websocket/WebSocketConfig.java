@@ -1,4 +1,4 @@
-package com.sist.web.common.config;
+package com.sist.web.websocket;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
