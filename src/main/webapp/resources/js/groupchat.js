@@ -21,12 +21,12 @@
         methods: {
             async initialize() {
                 try {
-                    const res = await axios.get(contextPath + '/api/token');
+                    const res = await axios.get(`${contextPath}/api/token`);
                     const accessToken = res.data.token;
                     this.sender_id = res.data.userId;
                     console.log(accessToken);
                     
-                    const socket = new SockJS(contextPath + '/ws');
+                    const socket = new SockJS(`${contextPath}/ws`);
                     this.stompClient = Stomp.over(socket);
                     
                     this.stompClient.connect(
@@ -45,7 +45,7 @@
             },
             async loadGroups() {
                 try {
-                    const res = await axios.get(contextPath + '/groups', {
+                    const res = await axios.get(`${contextPath}/groups`, {
                         params: {
                             userId: 'user'
                         }
@@ -87,7 +87,7 @@
                 this.messages = []; // /topic/chat/ => 서버 -> 클라이언트
                 this.lastMessageId = null;
                 this.loadMessages();
-                this.subscription = this.stompClient.subscribe('/sub/chats/groups/' + this.group_id, (msg) => {
+                this.subscription = this.stompClient.subscribe(`/sub/chats/groups/${this.group_id}`, (msg) => {
                     const body = JSON.parse(msg.body);
                     this.messages.push(body);
                 });
@@ -106,7 +106,7 @@
                 };
                 
                 if (this.stompClient && this.stompClient.connected) {
-                    this.stompClient.send("/pub/chats/groups/" + this.group_id, {}, JSON.stringify(chatMessage));
+                    this.stompClient.send(`/pub/chats/groups/${this.group_id}`, {}, JSON.stringify(chatMessage));
                     this.message = ''; // /app/chat => 클라이언트 -> 서버
                 }
             },
@@ -115,7 +115,7 @@
             },
             async createGroup() {
                 try {
-                    const res = await axios.post(contextPath + '/groups', {
+                    const res = await axios.post(`${contextPath/groups}`, {
                         created_by: 'user',
                         group_name: this.group_name,
                         description: this.group_description
