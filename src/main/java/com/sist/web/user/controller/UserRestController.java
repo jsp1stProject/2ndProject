@@ -40,9 +40,9 @@ public class UserRestController {
     }
 
     @PostMapping("/kakao/join")
-    public ResponseEntity kakaoJoin(@RequestBody Map<String, String> data, Model model) {
+    public ResponseEntity kakaoJoin(@RequestBody Map<String, String> data, HttpServletResponse res) {
         String kakaoAccessToken = userService.GetKakaoAccessToken(data.get("code"));
-        return userService.GetInsertKakaoUser(kakaoAccessToken);
+        return userService.InsertOrLoginKakaoUser(kakaoAccessToken, res);
     }
 
     @PostMapping("/join")

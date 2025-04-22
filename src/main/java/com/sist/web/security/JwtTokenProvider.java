@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
     private final String secretKey="secretKey";
     private final long tokenValidMillisecond = 1000L * 60 * 60; //1시간
+//    private final long tokenValidMillisecond = 1000L ; //재발급 테스트용 1초
     private static final Logger logger= LoggerFactory.getLogger(JwtTokenProvider.class);
 
     public String createToken(String userNo, Collection<? extends GrantedAuthority> authorities) {
@@ -50,7 +51,7 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(userNo);
 
         Date now=new Date();
-        Date validity=new Date(now.getTime()+tokenValidMillisecond*24*7); //만료시간 7일
+        Date validity=new Date(now.getTime()+1000L * 60 * 60 * 24 * 7); //만료시간 7일
 
         String token = Jwts.builder()
                 .setClaims(claims)
@@ -63,19 +64,10 @@ public class JwtTokenProvider {
         return token;
     }
 
-    public boolean validateToken(String token) {
-        try{
-            //파싱
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            return true;
-        } catch (ExpiredJwtException e){
-            logger.info("Expired JWT token: ", e.getMessage());
-        } catch (SignatureException | MalformedJwtException e){
-            logger.info("Invalid JWT token: ", e.getMessage());
-        } catch (Exception e){
-            logger.error("JWT validation error: ", e.getMessage());
-        }
-        return false;
+    public boolean validateToken(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException {
+        //파싱
+        Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+        return true;
     }
 
     public Authentication getAuthentication(String token) {
@@ -108,14 +100,23 @@ public class JwtTokenProvider {
         return roles;
     }
 
-    public Claims getClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
-    }
     public String getUserNoFromToken(String token) {
         return getClaims(token).getSubject();
     }
 
+    public Claims getClaims(String token) {
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+            // 여기서 claims 활용
+        } catch (ExpiredJwtException e) {
+            logger.info("provider_Expired JWT token: ", e.getMessage());
+            claims = e.getClaims();
+            // 만료된 토큰에서 데이터 활용 가능
+        }
+        return claims;
+    }
 }

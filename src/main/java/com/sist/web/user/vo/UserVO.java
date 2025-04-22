@@ -9,4 +9,5 @@ public class UserVO {
     private int enabled;
     private Long user_no;
     private Date birthday,regdate;
+    private String authority;//p_autority 테이블 join
 }

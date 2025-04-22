@@ -39,4 +39,12 @@ public interface UserMapper {
     @Select("Select USER_NO, USER_MAIL, NICKNAME FROM P_USERS where USER_NO=#{user_no}")
     public UserVO getUserMailFromUserNo(String user_no);
 
+//  카카오 로그인 시
+//  소셜연동된 계정인지 확인
+    @Select("select SOCIAL_ID from P_USERS where USER_MAIL=#{user_mail}")
+    public String getSocialId(String user_mail);
+
+//  소셜연동됐다면 로그인
+    @Select("select u.USER_NO, USER_MAIL, a.AUTHORITY, NICKNAME from P_USERS u join P_AUTHORITIES a on u.user_no=a.user_no where SOCIAL_ID=#{social_id}")
+    public UserVO getUserVOFromSocialId(String user_mail);
 }

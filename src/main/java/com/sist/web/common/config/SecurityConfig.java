@@ -1,10 +1,7 @@
 package com.sist.web.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sist.web.security.CustomAuthenticationEntryPoint;
-import com.sist.web.security.CustomUsernamePasswordAuthenticationFilter;
-import com.sist.web.security.JwtAuthenticationFilter;
-import com.sist.web.security.JwtTokenProvider;
+import com.sist.web.security.*;
 import com.sist.web.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +29,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserMapper userMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    public static final String[] AUTH_WHITELIST = {"/assets/**","/login/**","/**/join/**","/main/**","/main.do"};
+    private final JwtExceptionFilter jwtExceptionFilter;
+    public static final String[] AUTH_WHITELIST = {"/assets/**","/login/**","/**/join/**","/main/**","/main.do", "/api/auth/logout"};
 
     @Bean
     public RoleHierarchy roleHierarchy() {
@@ -87,8 +85,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/member/**").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
-                //jwt확인
+                //jwt 인증/인가
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                //jwt 예외처리
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
                 //로그인처리
                 .addFilterAt(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint());
