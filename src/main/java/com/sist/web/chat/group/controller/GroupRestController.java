@@ -3,6 +3,8 @@ package com.sist.web.chat.group.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,20 +32,21 @@ public class GroupRestController {
 		try {
 			chatService.createGroup(vo);
 		} catch (Exception ex) {
-			log.info("±◊∑Ï ª˝º∫ ø¿∑˘: {}", ex.getMessage());
+			log.info("Í∑∏Î£π ÏÉùÏÑ± ÏÑ±Í≥µ: {}", ex.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 		return ResponseEntity.ok(vo);
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<GroupVO>> getGroupAll(String userId) {
+	public ResponseEntity<List<GroupVO>> getGroupAll(HttpServletRequest request) {
+		Long userNo = (Long)request.getAttribute("userno");
 		List<GroupVO> list = new ArrayList<GroupVO>();
 		
 		try {
-			list = chatService.getGroupAll(userId);
+			list = chatService.getGroupAll(String.valueOf(userNo));
 		} catch (Exception ex) {
-			log.info("±◊∑Ï ¡∂»∏ ø¿∑˘: {}", ex.getMessage());
+			log.info("Í∑∏Î£π Ï°∞Ìöå ÏÑ±Í≥µ: {}", ex.getMessage());
 			ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 		

@@ -3,16 +3,17 @@
         data() {
             return {
                 stompClient: null,
-					messages: [],
-					message: '',
-					sender_id: '',
-					availableGroups: [],
-					group_id: '',
-					subscription: null,
-					createCheck: false,
-					group_name: '',
-					group_description: '',
-					lastMessageId: null,
+                messages: [],
+                message: '',
+                sender_no: '',
+                sender_nickname: '',
+                availableGroups: [],
+                group_no: '',
+                subscription: null,
+                createCheck: false,
+                group_name: '',
+                group_description: '',
+                lastMessageNo: null,
             };
         },
         mounted() {
@@ -20,10 +21,12 @@
         },
         methods: {
             async initialize() {
+                console.log('path: ' + contextPath);
                 try {
                     const res = await axios.get(`${contextPath}/api/token`);
                     const accessToken = res.data.token;
-                    this.sender_id = res.data.userId;
+                    this.sender_no = res.data.userNo;
+                    this.sender_nickname = res.data.nickname;
                     console.log(accessToken);
                     
                     const socket = new SockJS(`${contextPath}/ws`);
@@ -45,36 +48,38 @@
             },
             async loadGroups() {
                 try {
-                    const res = await axios.get(`${contextPath}/groups`, {
-                        params: {
-                            userId: 'user'
-                        }
-                    });
-                    console.log('res: ' + JSON.stringify(res.data));
+                    const res = await axios.get(`${contextPath}/groups`);
                     this.availableGroups = res.data;
-                    this.group_id = this.availableGroups[0].group_id; // default room
-                    this.subscribeGroup();
+                    if (this.availableGroups.length > 0) {
+                        this.group_no = this.availableGroups[0].group_no;
+                        this.subscribeGroup();
+                    }
                 } catch (err) {
                     console.error('group_id 불러오기 실패: ', err);
                 }						 
             },
             async loadMessages() {
-                let url = `${contextPath}/chats/groups/${this.group_id}/messages`;
-                if (this.lastMessageId) {
-                    url += `?lastMessageId=${this.lastMessageId}`;
+                if (this.group_no) {
+                    console.log('그룹 없음')
+                    return;
+                }
+                let url = `${contextPath}/chats/groups/${this.group_no}/messages`;
+
+                if (this.lastMessageNo) {
+                    url += `?lastMessageNo=${this.lastMessageNo}`;
                 }
                 try {
                     const res = await axios.get(url);
                     const newMessages = res.data;
 
-                    if (!this.lastMessageId) {
+                    if (!this.lastMessageNo) {
                         this.messages = newMessages;
                     } else {
                         this.messages.unshift(...newMessages);
                     }
 
                     if (newMessages.length > 0) {
-                        this.lastMessageId = newMessages[newMessages.length - 1].message_id;
+                        this.lastMessageNo = newMessages[newMessages.length - 1].message_no;
                     }
                 } catch (err) {
                     console.error('이전 메시지 불러오기 실패: ', err);
@@ -85,9 +90,9 @@
                     this.subscription.unsubscribe();
                 }
                 this.messages = []; // /topic/chat/ => 서버 -> 클라이언트
-                this.lastMessageId = null;
+                this.lastMessageNo = null;
                 this.loadMessages();
-                this.subscription = this.stompClient.subscribe(`/sub/chats/groups/${this.group_id}`, (msg) => {
+                this.subscription = this.stompClient.subscribe(`/sub/chats/groups/${this.group_no}`, (msg) => {
                     const body = JSON.parse(msg.body);
                     this.messages.push(body);
                 });
@@ -100,13 +105,14 @@
                     return;
                 }
                 const chatMessage = {
-                    sender_id: this.sender_id,
+                    sender_no: this.sender_no,
+                    sender_nickname: this.sender_nickname,
                     content: this.message,
-                    group_id: this.group_id,
+                    group_no: this.group_no,
                 };
                 
                 if (this.stompClient && this.stompClient.connected) {
-                    this.stompClient.send(`/pub/chats/groups/${this.group_id}`, {}, JSON.stringify(chatMessage));
+                    this.stompClient.send(`/pub/chats/groups/${this.group_no}`, {}, JSON.stringify(chatMessage));
                     this.message = ''; // /app/chat => 클라이언트 -> 서버
                 }
             },
@@ -115,12 +121,11 @@
             },
             async createGroup() {
                 try {
-                    const res = await axios.post(`${contextPath/groups}`, {
-                        created_by: 'user',
+                    const res = await axios.post(`${contextPath}/groups`, {
+                        owner: this.sender_no,
                         group_name: this.group_name,
                         description: this.group_description
                     });
-                    console.log('room_res: ' + res.data);
                     alert('그룹 이름: ' + res.data.group_name + '으로 생성되었습니다.');
                     this.createCheck = !this.createCheck;
                     this.loadGroups();

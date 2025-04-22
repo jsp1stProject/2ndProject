@@ -7,8 +7,8 @@ import lombok.Setter;
 
 @Getter @Setter
 public class GroupMemberVO {
-	private int group_id;
+	private int group_no, user_no;
 	private long last_read_message;
-	private String user_id, nickname, role, status;
+	private String nickname, role, status;
 	private LocalDateTime joined_at, left_at;
 }

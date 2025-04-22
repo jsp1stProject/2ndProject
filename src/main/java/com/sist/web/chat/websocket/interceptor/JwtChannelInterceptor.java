@@ -1,12 +1,19 @@
 package com.sist.web.chat.websocket.interceptor;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
-import com.sist.web.chat.websocket.config.*;
+import com.sist.web.security.JwtTokenProvider;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtChannelInterceptor implements ChannelInterceptor {
 
-    private final JwtProvider jwt;
+    private final JwtTokenProvider jwt;
 
 
     @Override
@@ -24,22 +31,29 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             String token = accessor.getFirstNativeHeader("Authorization");
-            log.info("WebSocket CONNECT ¿äÃ»: ÅäÅ« = {}", token);
-            if (token != null) {
-				if (token.startsWith("Bearer ")) {
-					token = token.substring(7);
-				}
-				if (jwt.validateToken(token)) {
-					String userId = jwt.getUserIdFromToken(token);
-					accessor.setUser(new StompPrincipal(userId)); // Principal ¿¡ userId ÀúÀå
-				} else {
-					log.warn("WebSocket ÀÎÁõ ½ÇÆĞ: À¯È¿ÇÏÁö ¾ÊÀº ÅäÅ«");
-					throw new IllegalArgumentException("ÅäÅ« À¯È¿¼º °Ë»ç ½ÇÆĞ");
-				}
-			} else {
-				log.warn("WebSocket ÀÎÁõ ½ÇÆĞ: ÅäÅ« ´©¶ô ¶Ç´Â Bearer ´©¶ô");
-				throw new IllegalArgumentException("Authoriaztion Çì´õ ´©¶ô");
+            if (token == null || !token.startsWith("Bearer ")) {
+				log.warn("WebSocket ì¸ì¦ ì‹¤íŒ¨: Authorization í—¤ë” ëˆ„ë½ ë˜ëŠ” í˜•ì‹ ì˜¤ë¥˜");
+				throw new IllegalArgumentException("Authorization í—¤ë”ê°€ ì—†ê±°ë‚˜ Bearer í˜•ì‹ì´ ì•„ë‹˜");
 			}
+            
+            token = token.substring(7);
+            
+            if (!jwt.validateToken(token)) {
+				log.warn("WebSocket ì¸ì¦ ì‹¤íŒ¨: ìœ íš¨í•˜ì§€ ì•Šì€ í† í°");
+				throw new IllegalArgumentException("ìœ íš¨í•˜ì§€ ì•Šì€ í† í°");
+			}
+            
+            String userNo = jwt.getUserNoFromToken(token);
+            List<String> roles = jwt.getRoles(token);
+            List<SimpleGrantedAuthority> authorities = roles.stream()
+            		.map(SimpleGrantedAuthority::new)
+            		.collect(Collectors.toList());
+            
+            User principal = new User(userNo, "", authorities);
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal, null, authorities);
+            accessor.setUser(authentication);
+            
+            log.info("WebSocket ì¸ì¦ ì„±ê³µ: ì‚¬ìš©ì ID = {}", userNo);
         }
 
         return message;

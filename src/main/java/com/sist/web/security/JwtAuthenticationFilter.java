@@ -48,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             request.setAttribute("userno", vo.getUser_no());
             request.setAttribute("usermail", vo.getUser_mail());
             request.setAttribute("nickname", vo.getNickname());
-            request.setAttribute("role", jwtTokenProvider.getRoles(accessToken).toString());
+            request.setAttribute("role", jwtTokenProvider.getRoles(accessToken));
 
         }else if(StringUtils.hasText(accessToken) && !jwtTokenProvider.validateToken(refreshToken)) {
             //액세스 토큰이 있는데 만료됐다면

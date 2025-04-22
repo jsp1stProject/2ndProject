@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sist.web.chat.group.controller.*;
 import com.sist.web.chat.group.dao.*;
 import com.sist.web.chat.group.vo.*;
+import com.sist.web.user.mapper.UserMapper;
+import com.sist.web.user.vo.UserVO;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,24 +21,23 @@ public class GroupChatServiceImpl implements GroupChatService {
 
 	private final GroupChatDAO cDao;
 	private final SimpMessagingTemplate messagingTemplate;
-	
+	private final UserMapper userMapper;
 	@Transactional
 	@Override
 	public void saveAndSendGroupChatMessage(GroupChatVO vo) {
-		if (vo.getSender_id() == null || vo.getSender_id().isBlank()) {
-			log.debug("Sender_id is null: {}", vo.getSender_id());
-			return;
-		} else {
-			cDao.insertGroupChatMessage(vo);
-			log.info("¸Þ½ÃÁö ÀúÀåµÊ: {}", vo.getContent());
-			
-			try {
-				messagingTemplate.convertAndSend("/sub/chats/groups/" + vo.getGroup_id(), vo);
-				log.info("STOMP ¸Þ½ÃÁö Àü¼ÛµÊ: {}", vo.getContent());
-			} catch (Exception ex) {
-				log.error("STOMP ¸Þ½ÃÁö Àü¼Û ½ÇÆÐ, ±×·ì ID: {}, ¿À·ù: {}", vo.getGroup_id(), ex.getMessage());
-				throw new RuntimeException("STOMP Àü¼Û ½ÇÆÐ", ex);
-			}
+		
+		UserVO sender = userMapper.getUserMailFromUserNo(String.valueOf(vo.getSender_no()));
+		vo.setSender_nickname(sender.getNickname());
+		
+		cDao.insertGroupChatMessage(vo);
+		log.info("ë©”ì„¸ì§€ ì „ì†¡ ì„±ê³µ: {}", vo.getContent());
+		
+		try {
+			messagingTemplate.convertAndSend("/sub/chats/groups/" + vo.getGroup_no(), vo);
+			log.info("STOMP ì—°ê²° ì„±ê³µ: {}", vo.getContent());
+		} catch (Exception ex) {
+			log.error("STOMP ì—°ê²° ì‹¤íŒ¨: {}}", vo.getGroup_no(), ex.getMessage());
+			throw new RuntimeException("STOMP ì „ì†¡ ì‹¤íŒ¨", ex);
 		}
 	}
 
@@ -52,10 +54,10 @@ public class GroupChatServiceImpl implements GroupChatService {
 		cDao.insertGroup(vo);
 		
 		GroupMemberVO member = new GroupMemberVO();
-		System.out.println("groupid: " + vo.getGroup_id());
-		member.setGroup_id(vo.getGroup_id());
-		member.setUser_id(vo.getCreated_by());
-		member.setNickname(vo.getCreated_by());
+		// Group_no, user_no, nickname
+		member.setGroup_no(vo.getGroup_no());
+		member.setUser_no(vo.getOwner());
+		member.setRole("OWNER");
 		
 		cDao.insertGroupMember(member);
 	}

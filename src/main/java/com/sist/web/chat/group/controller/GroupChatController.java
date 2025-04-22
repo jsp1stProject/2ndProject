@@ -1,5 +1,7 @@
 package com.sist.web.chat.group.controller;
 
+import java.security.Principal;
+
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
@@ -23,10 +25,11 @@ public class GroupChatController {
 		return "chat/group/chat";
 	}
 	
-	@MessageMapping("/chats/groups/{groupId}")
-	public void sendGroupChat(@DestinationVariable int groupId, GroupChatVO vo) {
-		String senderId = "user";
-		System.out.println("사용자: " + senderId + " / 메시지: " + vo.getContent());
+	@MessageMapping("/chats/groups/{groupNo}")
+	public void sendGroupChat(@DestinationVariable int groupNo, GroupChatVO vo, Principal principal) {
+		int senderNo = Integer.parseInt(principal.getName());
+		vo.setSender_no(senderNo);
+		vo.setGroup_no(groupNo);
 		
 		chatService.saveAndSendGroupChatMessage(vo);
 	}

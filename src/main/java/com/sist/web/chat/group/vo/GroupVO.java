@@ -7,8 +7,7 @@ import lombok.Setter;
 
 @Getter @Setter
 public class GroupVO {
-	private int group_id;
-	private int capacity;
-	private String group_name, profile_img, description, created_by;
+	private int group_no, capacity, owner;
+	private String group_name, profile_img, description;
 	private LocalDateTime create_at;
 }
