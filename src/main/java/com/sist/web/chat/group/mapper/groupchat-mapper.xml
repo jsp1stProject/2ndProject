@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sist.web.group.chat.mapper.GroupChatMapper">
+<mapper namespace="com.sist.web.chat.group.mapper.GroupChatMapper">
 	<select id="selectLatestMessageByGroupId" resultType="com.sist.web.chat.group.vo.GroupChatVO" parameterType="hashmap">
 		SELECT * FROM group_msg 
-		WHERE group_id = #{group_id} 
+		WHERE group_id = #{groupId} 
 		<if test="lastMessageId != null">
 			AND message_id &lt; #{lastMessageId}
 		</if>

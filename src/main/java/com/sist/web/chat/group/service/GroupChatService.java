@@ -6,7 +6,7 @@ import com.sist.web.chat.group.vo.*;
 
 public interface GroupChatService {
 	void saveAndSendGroupChatMessage(GroupChatVO vo);
-	List<GroupChatVO> getLatestMessageByGroupId(long groupId, long lastMessageId);
+	List<GroupChatVO> getLatestMessageByGroupId(int groupId, Long lastMessageId);
 	void createGroup(GroupVO vo);
 	void addGroupMember(GroupMemberVO vo);
 	List<GroupVO> getGroupAll(String userId);

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectKey;
 import com.sist.web.chat.group.vo.*;
@@ -13,15 +14,15 @@ public interface GroupChatMapper {
 		  + "VALUES (gm_mid_seq.nextval, #{group_id}, #{sender_id}, #{content})")
 	public void insertGroupChatMessage(GroupChatVO vo);
 	
-	public List<GroupChatVO> selectLatestMessageByGroupId(long groupId, long lastMessageId);
+	public List<GroupChatVO> selectLatestMessageByGroupId(@Param("groupId") int groupId, @Param("lastMessageId") Long lastMessageId);
 	
 	@Insert("INSERT INTO p_group (group_id, group_name, description, created_by) "
 		  + "VALUES(gr_gid_seq.nextval, #{group_name}, #{description}, #{created_by})")
+	@SelectKey(statement = "SELECT gr_gid_seq.currval FROM dual", keyProperty = "group_id", before = false, resultType = Integer.class)
 	public void insertGroup(GroupVO vo);
 	
 	@Insert("INSERT INTO group_member (group_id, user_id, nickname) "
-			+ "VALUES(#{group_id}, #{user_id}, #{nicekname})")
-	@SelectKey(statement = "SELECT gr_gid_seq.currval FROM dual", keyProperty = "group_id", before = false, resultType = Long.class)
+			+ "VALUES(#{group_id}, #{user_id}, #{nickname})")
 	public void insertGroupMember(GroupMemberVO vo);
 	
 	@Select("SELECT g.group_id, group_name FROM p_group g JOIN group_member m ON g.group_id = m.group_id WHERE m.user_id = #{user_id}")

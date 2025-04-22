@@ -7,7 +7,8 @@ import lombok.Setter;
 
 @Getter @Setter
 public class GroupChatVO {
-	private long message_id, group_id;
+	private long message_id;
+	private int group_id;
 	private String sender_id, content, message_type, is_deleted;
 	private LocalDateTime sent_at;
 }

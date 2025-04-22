@@ -20,7 +20,7 @@ public class GroupChatDAO {
 	}
 	
 	/** 최근 메세지 20개 조회 */
-	public List<GroupChatVO> selectLatestMessageByGroupId(long groupId, long lastMessageId) {
+	public List<GroupChatVO> selectLatestMessageByGroupId(int groupId, Long lastMessageId) {
 		return mapper.selectLatestMessageByGroupId(groupId, lastMessageId);
 	}
 	

@@ -40,12 +40,9 @@ public class GroupChatServiceImpl implements GroupChatService {
 	}
 
 	@Override
-	public List<GroupChatVO> getLatestMessageByGroupId(long groupId, long lastMessageId) {
-		List<GroupChatVO> list = cDao.selectLatestMessageByGroupId(groupId, lastMessageId);
-		if (list.isEmpty()) {
-			log.info("최근 메시지 없음: {}");
-			return null;
-		}
+	public List<GroupChatVO> getLatestMessageByGroupId(int groupId, Long lastMessageId) {
+		//List<GroupChatVO> list = cDao.selectLatestMessageByGroupId(groupId, lastMessageId);
+		
 		return cDao.selectLatestMessageByGroupId(groupId, lastMessageId);
 	}
 	
@@ -55,6 +52,7 @@ public class GroupChatServiceImpl implements GroupChatService {
 		cDao.insertGroup(vo);
 		
 		GroupMemberVO member = new GroupMemberVO();
+		System.out.println("groupid: " + vo.getGroup_id());
 		member.setGroup_id(vo.getGroup_id());
 		member.setUser_id(vo.getCreated_by());
 		member.setNickname(vo.getCreated_by());

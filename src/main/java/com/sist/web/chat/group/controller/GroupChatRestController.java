@@ -24,13 +24,13 @@ public class GroupChatRestController {
 	private final GroupChatService chatService;
 	
 	@GetMapping("/chats/groups/{groupId}/messages")
-	public ResponseEntity<List<GroupChatVO>> getLatestMessageByGroupId(@PathVariable Long groupId, @RequestParam Long lastMessageId) {
+	public ResponseEntity<List<GroupChatVO>> getLatestMessageByGroupId(@PathVariable int groupId, @RequestParam(required = false) Long lastMessageId) {
 		List<GroupChatVO> messages = new ArrayList<GroupChatVO>();
 		
 		try {
 			messages = chatService.getLatestMessageByGroupId(groupId, lastMessageId);
 		} catch (Exception ex) {
-			log.info("Latest Messages Error: {}", ex.getMessage());
+			log.error("Latest Messages Error", ex);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 		
