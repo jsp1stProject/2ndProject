@@ -17,5 +17,10 @@ public class TestServiceImpl implements TestService {
 		// TODO Auto-generated method stub
 		return testMapper.GetName();
 	}
-	
+
+	@Override
+	public void testInsert(String pwd) {
+		testMapper.testInsert(pwd);
+	}
+
 }
