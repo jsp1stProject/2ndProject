@@ -18,9 +18,8 @@
     </script>
 </head>
 <body>
-<form action="join_ok.do" method="post">
+<form action="${pageContext.request.contextPath}/api/auth/join" method="post">
     <p id="token-result"></p>
-<%--    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />--%>
     <input type="email" name="user_mail" placeholder="mail" value="${response.kakao_account.email}">
     <input type="password" name="password" placeholder="password">
     <input type="text" name="user_name" placeholder="name">
@@ -28,43 +27,44 @@
     <input type="submit" value="가입">
 </form>
 <script>
+    const kakaoJoin=async()=>{
+    try{
+        const res=await axios({
+            method:'post',
+            url:'${pageContext.request.contextPath}/api/auth/kakao/join',
+            headers:{
+                "Content-Type":"application/json"
+            },
+            data:{
+                "code": code
+            },
+            withCredentials:true
+        });
+        if(res.status === 409){
+            console.log("이미 가입된 이메일입니다.");
+        }else{
+            console.log("가입완료");
+        }
+        // location.href='/web/main'
+    }catch (e) {
+        const status = e.response?.status;
+        if (status === 409) {
+            console.log("이미 가입된 이메일입니다.");
+            alert("이미 가입된 이메일입니다.");
+        } else {
+            console.error("가입 실패:", e.response?.data || e);
+            alert("예상치 못한 오류 발생");
+        }
+    }
+}
     //카카오 가입
     const url=window.location.search;
     const code=new URLSearchParams(url).get('code');
-    if(code!==''){
-
+    if(code){
+        kakaoJoin();
     }
 
-    async function kakaoJoin(){
-        try{
-            const res=await axios({
-                method:'post',
-                url:'/web/api/auth/kakao/join',
-                headers:{
-                    "Content-Type":"application/json"
-                },
-                data:{
-                    "code": code
-                },
-                withCredentials:true
-            });
-            if(res.status === 409){
-                console.log("이미 가입된 이메일입니다.");
-            }else{
-                console.log("가입완료");
-            }
-            location.href='/web/main'
-        }catch (e) {
-            const status = e.response?.status;
-            if (status === 409) {
-                console.log("이미 가입된 이메일입니다.");
-                alert("이미 가입된 이메일입니다.");
-            } else {
-                console.error("가입 실패:", e.response?.data || e);
-                alert("예상치 못한 오류 발생");
-            }
-        }
-    }
+
 </script>
 </body>
 </html>

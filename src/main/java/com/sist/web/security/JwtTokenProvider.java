@@ -23,7 +23,7 @@ public class JwtTokenProvider {
 
     public String createToken(String userNo, Collection<? extends GrantedAuthority> authorities) {
         //토큰 페이로드 설정
-        //페이로드 subject=유저이메일
+        //페이로드 subject=유저일련번호 userNo
         Claims claims = Jwts.claims().setSubject(userNo);
 
         //GrantedAutority 콜렉션 받아서 String 리스트로 변환, 페이로드에 삽입
@@ -80,11 +80,20 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         //토큰 파싱, claim 내용 추출
-        Claims claims=Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
-        String username=claims.getSubject();
+        String userNo = getUserNoFromToken(token);
+        List<String> roles = getRoles(token);
+
+        List<GrantedAuthority> authorities = roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+        //user 객체 생성
+        User principal = new User(userNo, "", authorities);
+
+        return new UsernamePasswordAuthenticationToken(principal,"", authorities);
+    }
+
+    public List<String> getRoles(String token) {
+        Claims claims=getClaims(token);
         List<?> rawRoles = claims.get("roles", List.class);
         List<String> roles = rawRoles.stream().map(item -> {
             if (item instanceof String) {
@@ -96,16 +105,17 @@ public class JwtTokenProvider {
             return "";
         }).filter(s -> !s.isEmpty()).collect(Collectors.toList());
 
-        List<GrantedAuthority> authorities = roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-        logger.info(authorities.toString());
-        //user 객체 생성
-        User principal = new User(username, "", authorities);
-        logger.info(principal.toString());
-
-        return new UsernamePasswordAuthenticationToken(principal,"", authorities);
+        return roles;
     }
 
+    public Claims getClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+    public String getUserNoFromToken(String token) {
+        return getClaims(token).getSubject();
+    }
 
 }

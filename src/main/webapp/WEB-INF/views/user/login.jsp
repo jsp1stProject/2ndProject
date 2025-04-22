@@ -23,7 +23,7 @@
     <input type="email" id="user_mail" name="username" placeholder="email">
     <input type="password" id="password" name="password" placeholder="password">
     <input type="submit" value="로그인">
-    <input type="button" value="가입하기">
+    <input type="button" onclick="location.href='${pageContext.request.contextPath}/auth/join'" value="가입하기">
     <a id="kakao-login-btn" href="javascript:loginWithKakao()">
         <img src="https://k.kakaocdn.net/14/dn/btroDszwNrM/I6efHub1SN5KCJqLm1Ovx1/o.jpg" width="222"
              alt="카카오 로그인 버튼" />
@@ -52,7 +52,7 @@
                 data:formData,
                 withCredentials:true
             });
-            location.href='/web/main'
+            location.href='${pageContext.request.contextPath }/main'
         }catch (e) {
             console.error(e)
             console.error('로그인 실패:', e.response ? e.response.data : e);

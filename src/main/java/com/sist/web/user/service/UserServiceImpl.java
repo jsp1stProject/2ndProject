@@ -24,28 +24,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
+    private final UserTransactionalService userTransactionalService;
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
-
-    @Transactional
-    @Override
-    public void insertDefaultUser(UserVO vo) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("user_mail", vo.getUser_mail());
-        map.put("authority", "ROLE_USER");
-        userMapper.insertDefaultUser(vo);
-        userMapper.insertUserAuthority(map);
-    }
-
-    @Transactional
-    @Override
-    public void insertKakaoUser(UserVO vo) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("user_mail", vo.getUser_mail());
-        map.put("authority", "ROLE_USER");
-        userMapper.insertKakaoUser(vo);
-        userMapper.insertUserAuthority(map);
-    }
 
     @Override
     public Map<String, Object> loginUser(UserVO vo) {
@@ -88,10 +69,10 @@ public class UserServiceImpl implements UserService {
 
         try{
             ResponseEntity<?> response=restTemplate.exchange(
-                    "https://kauth.kakao.com/oauth/token",
-                    HttpMethod.POST,
-                    requestEntity,
-                    Map.class
+                "https://kauth.kakao.com/oauth/token",
+                HttpMethod.POST,
+                requestEntity,
+                Map.class
             );
             Map map= (Map)response.getBody();
             return (String)map.get("access_token");
@@ -136,7 +117,7 @@ public class UserServiceImpl implements UserService {
             //중복가입 여부 확인
             int count = userMapper.getUserMailCount(email);
             if(count == 0) {
-                insertKakaoUser(userVO);
+                userTransactionalService.insertKakaoUser(userVO);
             } else {
                 //동일한 메일이 이미 가입되어 있으면
                 return ResponseEntity.status(HttpStatus.CONFLICT)

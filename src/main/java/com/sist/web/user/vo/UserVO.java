@@ -6,6 +6,7 @@ import java.util.Date;
 @Data
 public class UserVO {
     private String user_mail,social_id,password,user_name,nickname,phone;
-    private int user_no,enabled;
+    private int enabled;
+    private Long user_no;
     private Date birthday,regdate;
 }

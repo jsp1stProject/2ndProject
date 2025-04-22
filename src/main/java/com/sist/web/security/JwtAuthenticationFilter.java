@@ -1,6 +1,8 @@
 package com.sist.web.security;
 
 import com.sist.web.common.config.SecurityConfig;
+import com.sist.web.user.mapper.UserMapper;
+import com.sist.web.user.vo.UserVO;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
@@ -21,21 +23,12 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserMapper userMapper;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestPath = request.getServletPath();
-
-        // 공개 경로에 해당하면 필터 로직을 건너뛰고 체인을 바로 진행
-        for (String pattern : SecurityConfig.AUTH_WHITELIST) {
-            System.out.println(pattern);
-            if (pathMatcher.match(pattern, requestPath)) {
-                log.debug("공개 URL [{}]", requestPath);
-                filterChain.doFilter(request, response);
-                return;
-            }
-        }
 
         //쿠키에서 jwt 추출
         String accessToken=getJwtFromRequest(request,"accessToken");
@@ -46,6 +39,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Authentication authentication=jwtTokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             log.debug("Valid Token : {}", authentication);
+
+            //유저일련번호, 유저메일, 유저닉네임, 권한을 string으로 attribute에 세팅
+            String userNo=jwtTokenProvider.getUserNoFromToken(accessToken);
+            UserVO vo=userMapper.getUserMailFromUserNo(userNo);
+            System.out.println(vo);
+            System.out.println( jwtTokenProvider.getRoles(accessToken).toString());
+            request.setAttribute("userno", vo.getUser_no());
+            request.setAttribute("usermail", vo.getUser_mail());
+            request.setAttribute("nickname", vo.getNickname());
+            request.setAttribute("role", jwtTokenProvider.getRoles(accessToken).toString());
+
         }else if(StringUtils.hasText(accessToken) && !jwtTokenProvider.validateToken(refreshToken)) {
             //액세스 토큰이 있는데 만료됐다면
             if(StringUtils.hasText(refreshToken)) {
@@ -57,16 +61,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         }
+        // 공개 경로에 해당하면 필터 로직을 건너뛰고 체인을 바로 진행
+        for (String pattern : SecurityConfig.AUTH_WHITELIST) {
+            if (pathMatcher.match(pattern, requestPath)) {
+                log.debug("공개 URL [{}]", requestPath);
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
         filterChain.doFilter(request, response);
     }
 
     private String getJwtFromRequest(HttpServletRequest request,String ckName) {
         //쿠키에서 토큰 추출
-        System.out.println(request.getCookies().length);
         if(request.getCookies() != null || request.getCookies().length > 0) {
             for (Cookie cookie : request.getCookies()) {
-                System.out.println(cookie.getName());
-                System.out.println(cookie.getValue());
                 if(ckName.equals(cookie.getName())) {
                     return cookie.getValue();
                 }
