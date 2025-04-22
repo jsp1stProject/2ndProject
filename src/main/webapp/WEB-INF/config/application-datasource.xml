@@ -17,12 +17,11 @@
 		p:username="#{db['username']}"
 		p:password="#{db['password']}"
 	/>
-	<bean id="txManager"
-          class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
-          p:dataSource-ref="ds" />
-          
-	<tx:annotation-driven transaction-manager="txManager"/>
-	
+	<tx:annotation-driven/>
+	<bean id="transactionManager"
+		  class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		  p:dataSource-ref="ds"
+	/>
 	<!-- 트랜잭션 설정 -->
 	<!-- sqlsessionfactory -->
 	<bean id="ssf" class="org.mybatis.spring.SqlSessionFactoryBean"
