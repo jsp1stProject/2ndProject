@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class AuthController {
-	private final JwtProvider jwt;
+	private final JwtProvider jwt; 
 	
 	@GetMapping("/token")
 	public Map<String, String> generateTokenn() {
