@@ -19,7 +19,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	
 	public WebSocketConfig(JwtChannelInterceptor interceptor) {
 		this.interceptor = interceptor;
-		log.info("Dispatcher ¿¡ ÀÇÇØ ½ºÄµ µÊ");
 	}
 
 	@Override

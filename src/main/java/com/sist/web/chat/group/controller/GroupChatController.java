@@ -18,7 +18,7 @@ public class GroupChatController {
 	
 	private final GroupChatService chatService;
 	
-	@GetMapping("/chat/group/chat.do")
+	@GetMapping("/chat/group/chat")
 	public String chat() {
 		return "chat/group/chat";
 	}

@@ -19,7 +19,6 @@ public class AuthController {
 	public Map<String, String> generateTokenn() {
 		String userId = "user"; // 실제론 세션 or 인증 컨텍스트에서 가져와야 함
 		String token = jwt.generateToken(userId);
-		System.out.println(token);
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("token", token);
 		result.put("userId", userId);
