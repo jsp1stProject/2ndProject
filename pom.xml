@@ -540,7 +540,9 @@
 			<version>4.7</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+		
+		
+		</dependencies>
 
 	<build>
 		<plugins>
