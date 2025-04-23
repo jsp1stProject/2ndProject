@@ -8,7 +8,6 @@ public enum CommonErrorCode implements ErrorInfo {
 
 	INVALID_INPUT("C001", "잘못된 입력입니다.", HttpStatus.BAD_REQUEST),
     INTERNAL_ERROR("C999", "서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    UNAUTHORIZED("C401", "인증이 필요합니다.", HttpStatus.UNAUTHORIZED),
     FORBIDDEN("C403", "권한이 없습니다.", HttpStatus.FORBIDDEN);
 
     private final String code;

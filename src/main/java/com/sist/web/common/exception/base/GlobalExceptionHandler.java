@@ -29,13 +29,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(info.getStatus()).body(response);
 	}
 	
-	@ExceptionHandler(SecurityException.class)
-	public ResponseEntity<ErrorResponse> handleUnauthorized(SecurityException ex) {
-		ErrorInfo info = CommonErrorCode.UNAUTHORIZED;
-		ErrorResponse response = new ErrorResponse(info.getCode(), info.getMessage(), new Timestamp(System.currentTimeMillis()));
-		return ResponseEntity.status(info.getStatus()).body(response);
-	}
-	
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
 		ErrorInfo info = CommonErrorCode.FORBIDDEN;
