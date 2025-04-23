@@ -1,7 +1,7 @@
 package com.sist.web.chat.group.vo;
 
-import java.time.LocalDateTime;
-
+import java.sql.Timestamp;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,5 +9,6 @@ import lombok.Setter;
 public class GroupVO {
 	private int group_no, capacity, owner;
 	private String group_name, profile_img, description;
-	private LocalDateTime create_at;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+	private Timestamp create_at;
 }

@@ -21,13 +21,11 @@
         },
         methods: {
             async initialize() {
-                console.log('path: ' + contextPath);
                 try {
                     const res = await axios.get(`${contextPath}/api/token`);
                     const accessToken = res.data.token;
                     this.sender_no = res.data.userNo;
                     this.sender_nickname = res.data.nickname;
-                    console.log(accessToken);
                     
                     const socket = new SockJS(`${contextPath}/ws`);
                     this.stompClient = Stomp.over(socket);
@@ -59,8 +57,9 @@
                 }						 
             },
             async loadMessages() {
-                if (this.group_no) {
-                    console.log('그룹 없음')
+                if (!this.group_no) {
+                    alert('그룹이 존재하지 않습니다.');
+                    console.log('그룹 없음: ' + this.group_no);
                     return;
                 }
                 let url = `${contextPath}/chats/groups/${this.group_no}/messages`;
@@ -71,7 +70,6 @@
                 try {
                     const res = await axios.get(url);
                     const newMessages = res.data;
-
                     if (!this.lastMessageNo) {
                         this.messages = newMessages;
                     } else {

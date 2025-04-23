@@ -54,8 +54,8 @@
 			<input type="button" value="그룹 생성" @click="groupOpen()">
 		</div>
 		<label>방 선택&nbsp;&nbsp;</label>
-		<select v-model="group_id" @change="changeGroup()">
-			<option v-for="group in availableGroups" :value="group.group_id">{{group.group_name}}</option>
+		<select v-model="group_no" @change="changeGroup()">
+			<option v-for="group in availableGroups" :value="group.group_no">{{group.group_name}}</option>
 		</select>
 		<div v-for="(msg, index) in messages" :key="index">{{msg.sender_nickname}}: {{msg.content}}</div>
 		<!-- <input v-model="inputSender" placeholder="닉네임 입력"> -->

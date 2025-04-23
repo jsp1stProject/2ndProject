@@ -32,7 +32,7 @@ public class GroupRestController {
 		try {
 			chatService.createGroup(vo);
 		} catch (Exception ex) {
-			log.info("그룹 생성 성공: {}", ex.getMessage());
+			log.info("그룹 생성 실패: {}", ex.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 		return ResponseEntity.ok(vo);
@@ -46,7 +46,7 @@ public class GroupRestController {
 		try {
 			list = chatService.getGroupAll(String.valueOf(userNo));
 		} catch (Exception ex) {
-			log.info("그룹 조회 성공: {}", ex.getMessage());
+			log.info("그룹 조회 실패: {}", ex.getMessage());
 			ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 		

@@ -2,13 +2,10 @@ package com.sist.web.chat.group.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.sist.web.chat.group.service.*;
@@ -26,11 +23,9 @@ public class GroupChatRestController {
 	@GetMapping("/chats/groups/{groupNo}/messages")
 	public ResponseEntity<List<GroupChatVO>> getLatestMessageByGroupId(@PathVariable int groupNo, @RequestParam(required = false) Long lastMessageNo) {
 		List<GroupChatVO> messages = new ArrayList<GroupChatVO>();
-		System.out.println("groupNo param = " + groupNo);
-		System.out.println("lastMessageNo param = " + lastMessageNo);
 
 		try {
-			messages = chatService.getLatestMessageByGroupId(groupNo, lastMessageNo);
+			messages = chatService.getLatestMessageByGroupNo(groupNo, lastMessageNo);
 		} catch (Exception ex) {
 			log.error("Latest Messages Error", ex);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
