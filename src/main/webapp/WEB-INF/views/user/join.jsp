@@ -43,9 +43,9 @@
         if(res.status === 409){
             console.log("이미 가입된 이메일입니다.");
         }else{
-            console.log("가입완료");
+            //가입 혹은 로그인
+            location.href='${pageContext.request.contextPath}/main'
         }
-        // location.href='/web/main'
     }catch (e) {
         const status = e.response?.status;
         if (status === 409) {

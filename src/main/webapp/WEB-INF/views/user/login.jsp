@@ -45,7 +45,7 @@
         try{
             await axios({
                 method:'post',
-                url:'auth/login',
+                url:'${pageContext.request.contextPath}/auth/login',
                 headers:{
                     "Content-Type":"application/json"
                 },
