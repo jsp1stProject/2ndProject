@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
     private final String secretKey="secretKey";
     private final long tokenValidMillisecond = 1000L * 60 * 60; //1시간
-//    private final long tokenValidMillisecond = 1000L ; //재발급 테스트용 1초
     private static final Logger logger= LoggerFactory.getLogger(JwtTokenProvider.class);
 
     public String createToken(String userNo, Collection<? extends GrantedAuthority> authorities) {
@@ -43,7 +42,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        logger.info("create token:{}",token);
+        logger.debug("create token:{}",token);
         return token;
     }
 
@@ -60,12 +59,13 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        logger.info("create refresh token:{}",token);
+        logger.debug("create refresh token:{}",token);
         return token;
     }
 
     public boolean validateToken(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException {
         //파싱
+        //JwtAuthenticationFilter에서 ExpiredJwtException 잡아야하므로 여기선 throw
         Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
         return true;
     }
@@ -111,9 +111,8 @@ public class JwtTokenProvider {
                     .setSigningKey(secretKey)
                     .parseClaimsJws(token)
                     .getBody();
-            // 여기서 claims 활용
         } catch (ExpiredJwtException e) {
-            logger.info("provider_Expired JWT token: ", e.getMessage());
+            logger.debug("Token provider is parsing data from Expired JWT");
             claims = e.getClaims();
             // 만료된 토큰에서 데이터 활용 가능
         }

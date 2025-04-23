@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -38,25 +39,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String refreshToken=getJwtFromRequest(request,"refreshToken");
 
         //액세스 쿠키 만료와 관계없이 권한, 유저정보 미리 추출
-        Authentication authentication = null;
-        String userNo = null;
-        UserVO vo = null;
-        String roles = null;
+        Authentication authentication;
+        String userNo;
+        UserVO vo;
+        List<String> roles;
         if(StringUtils.hasText(accessToken)){
             authentication=jwtTokenProvider.getAuthentication(accessToken);
             userNo=jwtTokenProvider.getUserNoFromToken(accessToken);
             vo=userMapper.getUserMailFromUserNo(userNo);
-            roles=jwtTokenProvider.getRoles(accessToken).toString();
+            roles=jwtTokenProvider.getRoles(accessToken);
 
             try{
-                //token 검증
+                //Access token 검증
                 jwtTokenProvider.validateToken(accessToken);
 
-                //security context에 권한 set
+                //유효한 토큰이면 security context에 권한 set
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug("Valid Token : {}", authentication);
 
-                //유저일련번호, 유저메일, 유저닉네임, 권한을 string으로 attribute에 세팅
+                //유저일련번호, 유저메일, 유저닉네임, 권한을 attribute에 세팅
                 request.setAttribute("userno", vo.getUser_no());
                 request.setAttribute("usermail", vo.getUser_mail());
                 request.setAttribute("nickname", vo.getNickname());
@@ -78,7 +79,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     response.addCookie(addCk("accessToken", accessToken, 1*60*60*24*7)); //쿠키 유효기간 7일
                     response.addCookie(addCk("refreshToken", refreshToken, 1*60*60*24*7));
 
-                    //유저일련번호, 유저메일, 유저닉네임, 권한을 string으로 attribute에 세팅
+                    //security context에 권한 set
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    //유저일련번호, 유저메일, 유저닉네임, 권한을 attribute에 세팅
                     request.setAttribute("userno", vo.getUser_no());
                     request.setAttribute("usermail", vo.getUser_mail());
                     request.setAttribute("nickname", vo.getNickname());
@@ -96,15 +100,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 removeAttr(request);
             }
         }
-
-        // 공개 경로에 해당하면 필터 로직을 건너뛰고 체인을 바로 진행
-//        for (String pattern : SecurityConfig.AUTH_WHITELIST) {
-//            if (pathMatcher.match(pattern, requestPath)) {
-//                log.debug("공개 URL [{}]", requestPath);
-//                filterChain.doFilter(request, response);
-//                return;
-//            }
-//        }
         filterChain.doFilter(request, response);
     }
 
