@@ -82,7 +82,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     request.setAttribute("userno", vo.getUser_no());
                     request.setAttribute("usermail", vo.getUser_mail());
                     request.setAttribute("nickname", vo.getNickname());
-                    request.setAttribute("role", jwtTokenProvider.getRoles(accessToken).toString());
+                    request.setAttribute("role", jwtTokenProvider.getRoles(accessToken));
 
                 } catch (Exception e2){
                     log.debug("Invalid refresh Token. Can't refresh");
