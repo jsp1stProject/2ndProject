@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService {
                 String.class
         );
 
-        KakaoUserDTO kakaoUserDTO=null;
+        KakaoUserDTO kakaoUserDTO;
         try{
             kakaoUserDTO = objectMapper.readValue(response.getBody(), KakaoUserDTO.class);
             Long social_id= Objects.requireNonNull((kakaoUserDTO).getId());
@@ -120,11 +120,12 @@ public class UserServiceImpl implements UserService {
             userVO.setUser_name(nickname);
             userVO.setUser_mail(email);
             userVO.setSocial_id(social_id.toString());
+            userVO.setProfile(profile);
 
             //중복가입 여부 확인
             int count = userMapper.getUserMailCount(email);
 
-            if(count == 0) {
+            if(count == 0) { //중복 없으면 가입
                 userTransactionalService.insertKakaoUser(userVO);
             } else {
                 //동일한 메일이 이미 가입되어 있으면 소셜 연동 여부 먼저 확인
@@ -145,13 +146,11 @@ public class UserServiceImpl implements UserService {
 
                     res.addCookie(addCk("accessToken", accessToken, 1*60*60*24*7)); //쿠키 유효기간 7일
                     res.addCookie(addCk("refreshToken", refreshToken, 1*60*60*24*7));
+                }else {
+                    //소셜 연동되지 않았다면
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body("이미 가입된 이메일입니다.");
                 }
-
-
-
-
-
-
             }
         }catch (Exception e){
             e.printStackTrace();
