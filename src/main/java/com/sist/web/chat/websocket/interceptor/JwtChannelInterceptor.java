@@ -28,7 +28,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-
+        
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             String token = accessor.getFirstNativeHeader("Authorization");
             if (token == null || !token.startsWith("Bearer ")) {
@@ -37,6 +37,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 			}
             
             token = token.substring(7);
+            System.out.println(token);
             
             if (!jwt.validateToken(token)) {
 				log.warn("WebSocket 인증 실패: 유효하지 않은 토큰");

@@ -52,6 +52,7 @@
 		</div>
 		<div class="rooms">
 			<input type="button" value="그룹 생성" @click="groupOpen()">
+			<input type="button" value="에러테스트" @click="errTest()">
 		</div>
 		<label>방 선택&nbsp;&nbsp;</label>
 		<select v-model="group_no" @change="changeGroup()">

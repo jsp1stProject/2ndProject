@@ -20,6 +20,16 @@
             this.initialize();
         },
         methods: {
+            async errTest() {
+                try {
+                    const res = await axios.get(`${contextPath}/chats/groups/9999/messages`);
+                    const data = res.data;
+                } catch (error) {
+                    const { code, message } = error.response.data;
+                    alert(`[${code}] ${message}`);
+                    console.error('err: ', error);
+                }
+            },
             async initialize() {
                 try {
                     const res = await axios.get(`${contextPath}/api/token`);

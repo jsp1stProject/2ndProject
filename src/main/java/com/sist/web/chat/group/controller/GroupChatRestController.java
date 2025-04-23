@@ -1,8 +1,6 @@
 package com.sist.web.chat.group.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.sist.web.chat.group.service.*;
 import com.sist.web.chat.group.vo.*;
+import com.sist.web.common.exception.base.BaseCustomException;
+import com.sist.web.common.exception.code.CommonErrorCode;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,15 +23,18 @@ public class GroupChatRestController {
 	
 	@GetMapping("/chats/groups/{groupNo}/messages")
 	public ResponseEntity<List<GroupChatVO>> getLatestMessageByGroupId(@PathVariable int groupNo, @RequestParam(required = false) Long lastMessageNo) {
-		List<GroupChatVO> messages = new ArrayList<GroupChatVO>();
-
-		try {
-			messages = chatService.getLatestMessageByGroupNo(groupNo, lastMessageNo);
-		} catch (Exception ex) {
-			log.error("Latest Messages Error", ex);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
-		
+		List<GroupChatVO> messages = chatService.getLatestMessageByGroupNo(groupNo, lastMessageNo);
 		return ResponseEntity.ok(messages);
+	}
+	
+	@GetMapping("/err/test")
+	public void trigger() {
+		throw new BaseCustomException(CommonErrorCode.INVALID_INPUT) {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+		};
 	}
 }

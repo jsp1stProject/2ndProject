@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.sist.web.chat.group.dao.*;
 import com.sist.web.chat.group.vo.*;
+import com.sist.web.common.exception.code.GroupErrorCode;
+import com.sist.web.common.exception.domain.GroupException;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserVO;
 
@@ -43,6 +45,9 @@ public class GroupChatServiceImpl implements GroupChatService {
 	@Override
 	public List<GroupChatVO> getLatestMessageByGroupNo(int groupNo, Long lastMessageNo) {
 		List<GroupChatVO> list = cDao.selectLatestMessageByGroupNo(groupNo, lastMessageNo);
+		if (list == null || list.isEmpty()) {
+			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
+		}
 		Collections.reverse(list);
 		return list;
 	}
