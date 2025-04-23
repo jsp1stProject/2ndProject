@@ -527,6 +527,11 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
+		<dependency>
+		    <groupId>ch.qos.logback</groupId>
+		    <artifactId>logback-classic</artifactId>
+		    <version>1.2.3</version> <!-- 또는 너 프로젝트에 맞는 버전 -->
+		</dependency>
 
 		<!-- Test -->
 		<dependency>
@@ -535,7 +540,9 @@
 			<version>4.7</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+		
+		
+		</dependencies>
 
 	<build>
 		<plugins>
