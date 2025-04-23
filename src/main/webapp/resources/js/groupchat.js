@@ -22,7 +22,7 @@
         methods: {
             async errTest() {
                 try {
-                    const res = await axios.get(`${contextPath}/chats/groups/9999/messages`);
+                    const res = await axios.get(`${contextPath}/err/test`);
                     const data = res.data;
                 } catch (error) {
                     const { code, message } = error.response.data;

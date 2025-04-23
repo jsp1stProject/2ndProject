@@ -10,6 +10,7 @@ import com.sist.web.chat.group.service.*;
 import com.sist.web.chat.group.vo.*;
 import com.sist.web.common.exception.base.BaseCustomException;
 import com.sist.web.common.exception.code.CommonErrorCode;
+import com.sist.web.common.exception.domain.CommonException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,12 +30,6 @@ public class GroupChatRestController {
 	
 	@GetMapping("/err/test")
 	public void trigger() {
-		throw new BaseCustomException(CommonErrorCode.INVALID_INPUT) {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-		};
+		throw new CommonException(CommonErrorCode.INVALID_INPUT);
 	}
 }
