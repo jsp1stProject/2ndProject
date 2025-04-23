@@ -79,7 +79,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
         String accessToken = jwtTokenProvider.createToken(userNo, auths);
         String refreshToken = jwtTokenProvider.createRefreshToken(userNo);
 
-        response.addCookie(addCk("accessToken", accessToken, 1*60*60));
+        response.addCookie(addCk("accessToken", accessToken, 1*60*60*24*7)); //쿠키 유효기간 7일
         response.addCookie(addCk("refreshToken", refreshToken, 1*60*60*24*7));
     }
 

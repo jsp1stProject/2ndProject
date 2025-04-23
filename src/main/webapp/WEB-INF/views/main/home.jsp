@@ -46,7 +46,11 @@
 <c:if test="${usermail ne null}">
 	<p>${nickname} 님, 환영합니다.</p>
 	<p>이메일: ${usermail}</p>
-	<p>권한: ${role}</p>
+	<p>권한:
+		<c:forEach var="r" items="${role}">
+			<span>${r} </span>
+		</c:forEach>
+	</p>
 </c:if>
 <script>
 
