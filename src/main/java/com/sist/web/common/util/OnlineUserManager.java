@@ -35,4 +35,8 @@ public class OnlineUserManager {
 	public static Set<String> getOnlineUsers() {
 		return userSessions.keySet();
 	}
+	
+	public static int getOnlineUserCount() {
+		return userSessions.size();
+	}
 }
