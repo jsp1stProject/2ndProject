@@ -25,7 +25,6 @@
 	<!-- sqlsessionfactory -->
 	<bean id="ssf" class="org.mybatis.spring.SqlSessionFactoryBean"
 		p:dataSource-ref="ds">
-		<property name="mapperLocations" value="classpath:"></property>
  	</bean>
 
 	<!-- Mapper 구현 -->
