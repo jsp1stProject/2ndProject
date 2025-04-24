@@ -39,6 +39,8 @@
                     
                     const socket = new SockJS(`${contextPath}/ws`);
                     this.stompClient = Stomp.over(socket);
+                    this.stompClient.heartbeat.outgoing = 10000; // client -> server
+                    this.stompClient.heartbeat.incoming = 10000; // server -> client
                     
                     this.stompClient.connect(
                         { Authorization: 'Bearer ' + accessToken },
