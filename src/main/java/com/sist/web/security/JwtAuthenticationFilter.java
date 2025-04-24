@@ -34,6 +34,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String requestPath = request.getServletPath();
+
+        // 공개 경로에 해당하면 필터 로직을 건너뛰고 체인을 바로 진행
+        for (String pattern : SecurityConfig.AUTH_WHITELIST) {
+            if (pathMatcher.match(pattern, requestPath)) {
+//                log.debug("WHITELIST [{}]", requestPath);
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
+
         //쿠키에서 jwt 추출
         String accessToken=getJwtFromRequest(request,"accessToken");
         String refreshToken=getJwtFromRequest(request,"refreshToken");
@@ -56,6 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 //유효한 토큰이면 security context에 권한 set
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug("Valid Token : {}", authentication);
+                log.debug("Request URI: {}", request.getRequestURI());
 
                 //유저일련번호, 유저메일, 유저닉네임, 권한을 attribute에 세팅
                 request.setAttribute("userno", vo.getUser_no());
