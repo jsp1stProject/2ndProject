@@ -10,11 +10,24 @@
             <param-value>/WEB-INF/config/application-*.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
+        <init-param>
+		    <param-name>throwExceptionIfNoHandlerFound</param-name>
+		    <param-value>true</param-value>
+		</init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+    <error-page>
+	    <error-code>404</error-code>
+	    <location>/WEB-INF/views/main/error.jsp</location><!-- 404 Not Found 페이지 -->
+	</error-page>
+	
+	<error-page>
+	    <error-code>500</error-code>
+	    <location>/WEB-INF/views/main/error.jsp</location><!-- 500 Internal Server Error 페이지 -->
+	</error-page>
     <!-- 한글 변환 -->
     <filter>
         <filter-name>encodingFilter</filter-name>

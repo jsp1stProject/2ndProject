@@ -11,6 +11,7 @@
     <title>에러</title>
 </head>
 <body>
+  <p>${status}</p>
   <p>${error}</p>
   <p>${message}</p>
   <p>에러페이지 커스텀 예정. (error, message에 setattribute 하면 출력 가능)</p>

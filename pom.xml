@@ -530,7 +530,7 @@
 		<dependency>
 		    <groupId>ch.qos.logback</groupId>
 		    <artifactId>logback-classic</artifactId>
-		    <version>1.2.3</version> <!-- 또는 너 프로젝트에 맞는 버전 -->
+		    <version>1.2.3</version>
 		</dependency>
 
 		<!-- Test -->
