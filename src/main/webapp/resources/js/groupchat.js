@@ -22,7 +22,7 @@
         methods: {
             async errTest() {
                 try {
-                    const res = await axios.get(`${contextPath}/err/test`);
+                    const res = await axios.get(`${contextPath}/api/err/test`);
                     const data = res.data;
                 } catch (error) {
                     const { code, message } = error.response.data;
@@ -39,9 +39,10 @@
                     
                     const socket = new SockJS(`${contextPath}/ws`);
                     this.stompClient = Stomp.over(socket);
+
                     this.stompClient.heartbeat.outgoing = 10000; // client -> server
                     this.stompClient.heartbeat.incoming = 10000; // server -> client
-                    
+
                     this.stompClient.connect(
                         { Authorization: 'Bearer ' + accessToken },
                         () => {
@@ -58,7 +59,7 @@
             },
             async loadGroups() {
                 try {
-                    const res = await axios.get(`${contextPath}/groups`);
+                    const res = await axios.get(`${contextPath}/api/groups`);
                     this.availableGroups = res.data;
                     if (this.availableGroups.length > 0) {
                         this.group_no = this.availableGroups[0].group_no;
@@ -74,14 +75,16 @@
                     console.log('그룹 없음: ' + this.group_no);
                     return;
                 }
-                let url = `${contextPath}/chats/groups/${this.group_no}/messages`;
+                let url = `${contextPath}/api/chats/groups/${this.group_no}/messages`;
 
                 if (this.lastMessageNo) {
                     url += `?lastMessageNo=${this.lastMessageNo}`;
                 }
                 try {
                     const res = await axios.get(url);
-                    const newMessages = res.data;
+
+                    const newMessages = res.data.data;
+                    console.log('res: ', res.data);
                     if (!this.lastMessageNo) {
                         this.messages = newMessages;
                     } else {
@@ -131,7 +134,7 @@
             },
             async createGroup() {
                 try {
-                    const res = await axios.post(`${contextPath}/groups`, {
+                    const res = await axios.post(`${contextPath}/api/groups`, {
                         owner: this.sender_no,
                         group_name: this.group_name,
                         description: this.group_description
