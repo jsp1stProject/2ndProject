@@ -15,26 +15,30 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     @GetMapping("/main")
-    public String main_home(){
-        return "main/home";
+    public String main_home(Model model){
+        model.addAttribute("main_jsp", "home.jsp");
+        return "main/main";
     }
 
     //권한 테스트용 페이지
     @GetMapping("admin")
     @PreAuthorize("hasRole('ADMIN')")
     public String admin(Model model) {
-        return "main/home";
+        model.addAttribute("main_jsp", "home.jsp");
+        return "main/main";
     }
 
     //권한 테스트용 페이지
     @GetMapping("users/test")
     @PreAuthorize("hasRole('USER')")
     public String test(Model model) {
-        return "main/home";
+
+        return "main/main";
     }
 
     @GetMapping("login")
     public String login() {
+
         return "user/login";
     }
 
