@@ -99,7 +99,7 @@
                     alert('그룹이 존재하지 않습니다.');
                     console.log('그룹 없음: ' + this.group_no);
                     return;
-                }
+                }  
                 let url = `${contextPath}/api/chats/groups/${this.group_no}/messages`;
 
                 if (this.lastMessageNo) {
