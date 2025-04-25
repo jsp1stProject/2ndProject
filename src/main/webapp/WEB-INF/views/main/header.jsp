@@ -2,10 +2,18 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<<<<<<< HEAD
 <style>
 	[v-cloak] { display: none; }
 </style>
 <header class="app-header" id="app" v-cloak="true">
+=======
+<!DOCTYPE html>
+<html>
+<body>
+
+<header class="app-header">
+>>>>>>> 767bda9 (김나린 - UI 헤더, 메인 수정중)
 	<nav class="navbar navbar-light">
 		<ul class="navbar-nav">
 			<a href="${pageContext.request.contextPath}/main">
@@ -15,11 +23,16 @@
 		<div class="navbar justify-content-center">
 			<ul class="navbar-nav align-items-center flex-row d-none d-md-flex">
 				<li class="nav-item">
+<<<<<<< HEAD
 					<a class="nav-link fs-4" href="#">
+=======
+					<a class="nav-link">
+>>>>>>> 767bda9 (김나린 - UI 헤더, 메인 수정중)
 						그룹
 					</a>
 				</li>
 				<li class="nav-item">
+<<<<<<< HEAD
 					<a class="nav-link fs-4" href="#">
 						돌봄 신청
 					</a>
@@ -27,6 +40,15 @@
 				<li class="nav-item">
 					<a class="nav-link fs-4" href="#">
 						게시판
+=======
+					<a class="nav-link">
+						그룹
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link">
+						그룹
+>>>>>>> 767bda9 (김나린 - UI 헤더, 메인 수정중)
 					</a>
 				</li>
 			</ul>
