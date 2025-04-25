@@ -45,7 +45,7 @@
         try{
             await axios({
                 method:'post',
-                url:'${pageContext.request.contextPath}/auth/login',
+                url:'${pageContext.request.contextPath}/api/auth/login',
                 headers:{
                     "Content-Type":"application/json"
                 },
@@ -55,7 +55,9 @@
             location.href='${pageContext.request.contextPath }/main'
         }catch (e) {
             console.error(e)
-            console.error('로그인 실패:', e.response ? e.response.data : e);
+            // console.error('status:', e.data.status);
+            console.error('status:', e.status);
+            console.error('status:', e.message);
         }
     }
 </script>
