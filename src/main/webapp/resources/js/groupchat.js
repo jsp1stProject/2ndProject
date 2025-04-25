@@ -18,6 +18,26 @@
         },
         mounted() {
             this.initialize();
+
+            this._handleVisibilityChange = () => {
+                if(document.visibilityState === 'visible') {
+                    if(!this.stompClient?.connected) {
+                        console.warn('STOMP 연결 없음');
+                        this.initialize();
+                    }
+                }
+            };
+            document.addEventListener('visibilitychange', this._handleVisibilityChange);
+        },
+        beforeUnmount() {
+            if (this._handleVisibilityChange) {
+                document.removeEventListener('visibilitychange', this._handleVisibilityChange);
+            }
+            if(this.stompClient?.connected) {
+                this.stompClient.disconnect(() => {
+                    console.log('STOMP 연결 종료');
+                })
+            }
         },
         methods: {
             async errTest() {
@@ -36,7 +56,6 @@
                     const accessToken = res.data.token;
                     this.sender_no = res.data.userNo;
                     this.sender_nickname = res.data.nickname;
-                    
                     const socket = new SockJS(`${contextPath}/ws`);
                     this.stompClient = Stomp.over(socket);
 
@@ -44,10 +63,15 @@
                     this.stompClient.heartbeat.incoming = 10000; // server -> client
 
                     this.stompClient.connect(
-                        { Authorization: 'Bearer ' + accessToken },
+                        { Authorization: 'Bearer ' + accessToken,},
                         () => {
                             console.log('STOMP 연결 성공');
-                            this.loadGroups();
+                            try {
+                                this.loadGroups();
+                            } catch (error) {
+                                console.log('에러발생');
+                                setTimeout(connect, 3000);
+                            }
                         },
                         (error) => {
                             console.error('STOMP 연결 실패', error);
@@ -59,8 +83,9 @@
             },
             async loadGroups() {
                 try {
+                    console.log('groupNo: ' + this.group_no);
                     const res = await axios.get(`${contextPath}/api/groups`);
-                    this.availableGroups = res.data;
+                    this.availableGroups = res.data.data;
                     if (this.availableGroups.length > 0) {
                         this.group_no = this.availableGroups[0].group_no;
                         this.subscribeGroup();
@@ -108,6 +133,8 @@
                 this.subscription = this.stompClient.subscribe(`/sub/chats/groups/${this.group_no}`, (msg) => {
                     const body = JSON.parse(msg.body);
                     this.messages.push(body);
+                },{
+                    nickname: this.sender_nickname
                 });
             },
             changeGroup() {
