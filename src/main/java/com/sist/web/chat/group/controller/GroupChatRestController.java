@@ -26,7 +26,7 @@ public class GroupChatRestController {
 	private final GroupChatService chatService;
 	
 	@GetMapping("/chats/groups/{groupNo}/messages")
-	public ResponseEntity<ApiResponse<List<GroupChatVO>>> getLatestMessageByGroupId(@PathVariable int groupNo, @RequestParam(required = false) Long lastMessageNo) {
+	public ResponseEntity<ApiResponse<List<GroupChatVO>>> getLatestMessageByGroupNo(@PathVariable int groupNo, @RequestParam(required = false) Long lastMessageNo) {
 		List<GroupChatVO> messages = chatService.getLatestMessageByGroupNo(groupNo, lastMessageNo);
 		return ResponseEntity.ok(ApiResponse.success(messages));
 	}
