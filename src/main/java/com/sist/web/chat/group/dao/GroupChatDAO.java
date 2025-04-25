@@ -19,8 +19,8 @@ public class GroupChatDAO {
 		mapper.insertGroupChatMessage(vo);
 	}
 	/** 그룹 번호 기준으로 해당 그룹의 최근 메시지 20개 조회 */
-	public List<GroupChatVO> selectLatestMessageByGroupNo(int groupNo, Long lastMessageId) {
-		return mapper.selectLatestMessageByGroupNo(groupNo, lastMessageId);
+	public List<GroupChatVO> selectLatestMessageByGroupNo(int groupNo, Long lastMessageNo) {
+		return mapper.selectLatestMessageByGroupNo(groupNo, lastMessageNo);
 	}
 	/** 그룹 생성 (필요 데이터: group_name, description, owner - user_no) */
 	public void insertGroup(GroupVO vo) {
