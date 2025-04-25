@@ -7,8 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,8 +19,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.sql.DataSource;
 
 
 @Configuration
@@ -25,49 +31,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@ImportResource("/WEB-INF/config/application-datasource.xml")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserMapper userMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
     public static final String[] AUTH_WHITELIST = {"/assets/**","/login/**","/**/join/**","/main/**","/main.do", "/api/auth/logout", "/index.jsp"};
-
-    @Bean
-    public RoleHierarchy roleHierarchy() {
-        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        String hierarchy="ROLE_ADMIN > ROLE_SITTER\nROLE_SITTER > ROLE_USER";
-        roleHierarchy.setHierarchy(hierarchy);
-        return roleHierarchy;
-    }
-
-    @Bean
-    public DefaultWebSecurityExpressionHandler webSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
-        DefaultWebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
-        handler.setRoleHierarchy(roleHierarchy);
-        return handler;
-    }
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public CustomUsernamePasswordAuthenticationFilter customAuthenticationFilter() throws Exception {
-        CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter = new CustomUsernamePasswordAuthenticationFilter(jwtTokenProvider, objectMapper(),userMapper);
-        customUsernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
-        customUsernamePasswordAuthenticationFilter.setFilterProcessesUrl("/api/auth/login");
-        return customUsernamePasswordAuthenticationFilter;
-    }
-
-    @Bean
-    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() throws Exception {
-        return new CustomAuthenticationEntryPoint(objectMapper());
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -93,4 +63,55 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterAt(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint());
     }
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        String hierarchy="ROLE_ADMIN > ROLE_SITTER\nROLE_SITTER > ROLE_USER";
+        roleHierarchy.setHierarchy(hierarchy);
+        return roleHierarchy;
+    }
+
+    @Bean
+    public DefaultWebSecurityExpressionHandler webSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+        DefaultWebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
+        handler.setRoleHierarchy(roleHierarchy);
+        return handler;
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CustomUsernamePasswordAuthenticationFilter customAuthenticationFilter() throws Exception {
+        CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter = new CustomUsernamePasswordAuthenticationFilter(jwtTokenProvider, objectMapper(),userMapper);
+        customUsernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
+        customUsernamePasswordAuthenticationFilter.setFilterProcessesUrl("/api/auth/login");
+        return customUsernamePasswordAuthenticationFilter;
+    }
+
+    @Bean
+    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() throws Exception {
+        return new CustomAuthenticationEntryPoint(objectMapper());
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+    @Bean
+    public JdbcUserDetailsManager userDetailsManager(DataSource ds, AuthenticationManager authManager) {
+        JdbcUserDetailsManager manager = new JdbcUserDetailsManager();
+        manager.setDataSource(ds);
+        manager.setAuthenticationManager(authManager);
+        return manager;
+    }
+
 }

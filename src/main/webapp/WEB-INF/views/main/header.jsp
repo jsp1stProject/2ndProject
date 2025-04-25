@@ -7,15 +7,34 @@
 <body>
 
 <header class="app-header">
-	<nav class="navbar navbar-expand-lg navbar-light">
+	<nav class="navbar navbar-light">
 		<ul class="navbar-nav">
 			<a href="${pageContext.request.contextPath}/main">
 				<img src="${pageContext.request.contextPath}/assets/images/logos/favicon.png" alt="" width="45" height="45" class="rounded-circle">
 			</a>
 		</ul>
-		<div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+		<div class="navbar justify-content-center">
+			<ul class="navbar-nav align-items-center flex-row d-none d-md-flex">
+				<li class="nav-item">
+					<a class="nav-link">
+						그룹
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link">
+						그룹
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link">
+						그룹
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div class="justify-content-end px-0" id="navbarNav">
 			<ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-				<li class="nav-item d-block d-xl-none">
+				<li class="nav-item d-block d-md-none">
 					<a class="nav-link sidebartoggler " id="headerCollapse" href="javascript:void(0)">
 						<i class="ti ti-menu-2"></i>
 					</a>

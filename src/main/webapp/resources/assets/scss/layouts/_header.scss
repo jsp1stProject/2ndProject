@@ -9,13 +9,14 @@
 }
 
 .app-header {
-  position: relative;
+  position: fixed;
   z-index: 50;
   width: 100%;
-  background: $body-bg;
+  background: rgba(255,255,255,0.6);
   padding: 0 10px;
   top: 0;
-  box-shadow: 7px 7px 14px rgb(0 0 0 / 4%);
+  box-shadow: 7px 7px 14px rgba(0,0,0,0.04);
+  backdrop-filter: blur(16px);
 
   @include media-breakpoint-down(lg){
     top: 0;
@@ -62,7 +63,7 @@
 .notification {
   content: "";
   position: absolute;
-  top: 22px;
+  top: 16px;
   right: 9px;
   width: 8px;
   height: 8px;
