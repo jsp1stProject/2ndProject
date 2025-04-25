@@ -30,7 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
-    public static final String[] AUTH_WHITELIST = {"/assets/**","/login/**","/**/join/**","/main/**","/main.do", "/api/auth/logout"};
+    public static final String[] AUTH_WHITELIST = {"/assets/**","/login/**","/**/join/**","/main/**","/main.do", "/api/auth/logout", "/index.jsp"};
 
     @Bean
     public RoleHierarchy roleHierarchy() {
@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public CustomUsernamePasswordAuthenticationFilter customAuthenticationFilter() throws Exception {
         CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter = new CustomUsernamePasswordAuthenticationFilter(jwtTokenProvider, objectMapper(),userMapper);
         customUsernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
-        customUsernamePasswordAuthenticationFilter.setFilterProcessesUrl("/auth/login");
+        customUsernamePasswordAuthenticationFilter.setFilterProcessesUrl("/api/auth/login");
         return customUsernamePasswordAuthenticationFilter;
     }
 

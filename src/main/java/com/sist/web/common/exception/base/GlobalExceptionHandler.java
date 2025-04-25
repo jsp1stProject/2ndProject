@@ -1,46 +1,42 @@
 package com.sist.web.common.exception.base;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import com.sist.web.common.exception.code.CommonErrorCode;
-
+import com.sist.web.common.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice(annotations = RestController.class)
 @Slf4j
 public class GlobalExceptionHandler {
 	@ExceptionHandler(BaseCustomException.class)
-	public ResponseEntity<ErrorResponse> handleCustomException(BaseCustomException ex) {
+	public ResponseEntity<ApiResponse<Object>> handleCustomException(BaseCustomException ex) {
 		ErrorInfo info = ex.getErrorType();
-		ErrorResponse response = new ErrorResponse(info.getCode(), info.getMessage(), new Timestamp(System.currentTimeMillis()));
-		return ResponseEntity.status(info.getStatus()).body(response);
+		
+		return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
 	}
 	
 	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
+	public ResponseEntity<ApiResponse<Object>> handleIllegalArgument(IllegalArgumentException ex) {
 		ErrorInfo info = CommonErrorCode.INVALID_INPUT;
-		ErrorResponse response = new ErrorResponse(info.getCode(), info.getMessage(), new Timestamp(System.currentTimeMillis()));
-		return ResponseEntity.status(info.getStatus()).body(response);
+		
+		return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
 	}
 	
 	@ExceptionHandler(AccessDeniedException.class)
-	public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+	public ResponseEntity<ApiResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
 		ErrorInfo info = CommonErrorCode.FORBIDDEN;
-		ErrorResponse response = new ErrorResponse(info.getCode(), info.getMessage(), new Timestamp(System.currentTimeMillis()));
-		return ResponseEntity.status(info.getStatus()).body(response);
+		
+		return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
 	}
 	
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+	public ResponseEntity<ApiResponse<Object>> handleException(Exception ex) {
 		ErrorInfo info = CommonErrorCode.INTERNAL_ERROR;
-		ErrorResponse response = new ErrorResponse(info.getCode(), info.getMessage(), new Timestamp(System.currentTimeMillis()));
-		return ResponseEntity.status(info.getStatus()).body(response);	
+		
+		return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));	
 	}
 }
