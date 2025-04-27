@@ -6,4 +6,8 @@ import com.sist.web.feed.vo.*;
 public interface GroupService {
 	
 	public List<GroupVO> groupListData();	
+	public GroupVO groupDetailData(int group_no);
+	public List<FeedVO> feedListData(int group_no);
+	public List<FeedFileInfoVO> fileListData(int feed_no);
+	public Map groupFeedData(int group_no);
 }

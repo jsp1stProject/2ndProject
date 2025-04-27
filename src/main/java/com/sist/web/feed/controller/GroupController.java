@@ -17,4 +17,10 @@ public class GroupController {
 		return "group/list";
 	}
 	
+	@GetMapping("/group/detail")
+	public String group_detail()
+	{
+		return "group/detail";
+	}
+	
 }

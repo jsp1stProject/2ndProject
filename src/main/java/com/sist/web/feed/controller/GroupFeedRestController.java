@@ -16,8 +16,8 @@ public class GroupFeedRestController {
 	@Autowired
 	private GroupService service;
 	
-	@GetMapping("board/groups")
-	public ResponseEntity<Map> group_list_vue()
+	@GetMapping("group/groups")
+	public ResponseEntity<Map> group_groups()
 	{
 		Map map = new HashMap<>();
 		try {
@@ -33,4 +33,23 @@ public class GroupFeedRestController {
 		System.out.println("group_vue 완료");
 		return new ResponseEntity<>(map,HttpStatus.OK);
 	}
+	
+	@GetMapping("group/feeds")
+	public ResponseEntity<Map> group_feeds(int group_no)
+	{
+		Map map = new HashMap<>();
+		try {
+			
+			map = service.groupFeedData(group_no);
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			System.out.println("======== error ========");
+			return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		System.out.println("feed_vue 완료");
+		return new ResponseEntity<>(map,HttpStatus.OK);
+	}
+	
 }

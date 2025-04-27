@@ -11,5 +11,22 @@ public interface GroupMapper {
 			+ "FROM p_group ORDER BY group_no DESC))")
 	public List<GroupVO> groupListData();
 	
+	@Select("SELECT * FROM p_group WHERE group_no=#{group_no}")
+	public GroupVO groupDetailData(int group_no);
+	
+	// 피드는 페이징 안할거야 -> 무한스크롤로 수정할예쩡
+	@Select("SELECT feed_no,group_no,user_no,title,filecount,regdate "
+			+ "FROM p_feed "
+			+ "WHERE group_no=#{group_no} "
+			+ "ORDER BY feed_no DESC")
+	public List<FeedVO> feedListData(int group_no);
+	
+	@Select("SELECT * FROM p_feed_fileInfo WHERE feed_no=#{feed_no}")
+	public List<FeedFileInfoVO> fileListData(int feed_no);
+	
+	
+	
+	
+	
 }
 

@@ -10,5 +10,5 @@ public class GroupVO {
 	private int group_no, capacity, owner;
 	private String group_name, profile_img, description;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-	private Timestamp create_at;
+	private Timestamp created_at;
 }

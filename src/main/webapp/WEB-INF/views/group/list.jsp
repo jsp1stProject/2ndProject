@@ -160,18 +160,32 @@
       <!-- 게시글 반복 렌더링 -->
     <div class="post" v-for="(vo, index) in list" :key="vo.group_id"> 
         <div class="panel panel-default" style="margin-bottom: 20px;">
-        <div class="panel-body" @click="detail(vo.group_id)">
+        <div class="panel-body">  <!-- @click="detail(vo.group_id)" -->
           <div class="row">
             <!-- 그룹 이미지 -->
+            <!-- 이미지가 널인 경우 처리 추가예정 -->
             <div class="col-sm-2">
               <img :src="vo.profile_img" class="img-responsive img-circle" style="width: 100px; height: 100px; object-fit: cover;">
             </div>
             <!-- 그룹 설명 -->
             <div class="col-sm-10">
               <h3>{{vo.group_name}}</h3>
-              <p class="text-muted">{{vo.description}}</p>
-              <span class="label label-default">{{vo.is_public}}</span>  <!-- v-if="group.is_public === 'N'" -->
-              <p>최대 인원: {{vo.capacitya}}명</p>
+				<p class="text-muted">{{ vo.description }}</p>
+				
+				<!-- 태그 표시 -->
+				<p>태그 : {{ vo.tag }}</p>
+				
+				<!-- 인원 표시 -->
+				<p>인원 : {{ vo.currentMemberCount }} / {{ vo.capacity }}명</p>
+				
+				<!-- 중개자 표시 -->
+				<p>중개 : {{ vo.owner }}</p>
+				
+				<!-- 생성일 표시 -->
+				<p>개설일 : {{ vo.created_at }}</p>
+				
+				<!-- 입장하기 버튼 -->
+				<button class="btn btn-primary btn-sm" @click="detail(vo.group_no)">입장하기</button>
             </div>
           </div>
         </div>
@@ -201,8 +215,8 @@
 		this.dataRecv()
 	},
     methods:{
-		detail(group_id) {
-			location.href='../board/reddit.do?group_id='+group_id
+		detail(group_no) {
+			location.href='../group/detail?group_no='+group_no
 		},
 		addPost() {
 			const res = axios.post('../board/feed_insert.do',{
@@ -218,7 +232,7 @@
 		},
 		async dataRecv(){
 			console.log("dataRecv 실행")
-			const res = await axios.get('../board/groups',{
+			const res = await axios.get('../group/groups',{
 			})
             this.list=res.data.list 
 			console.log(res)
