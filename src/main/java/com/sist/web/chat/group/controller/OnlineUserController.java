@@ -1,5 +1,7 @@
 package com.sist.web.chat.group.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +22,9 @@ public class OnlineUserController {
 	private final OnlineUserService onlineUserService;
 	
 	@GetMapping("/online")
-	public ResponseEntity<ApiResponse<Set<Long>>> getOnlineUsers() {
-		
-		return ResponseEntity.ok(ApiResponse.success(onlineUserService.getOnlineUsers()));
+	public ResponseEntity<ApiResponse<List<Long>>> getOnlineUsers() {
+		Set<Long> onlineUsers = onlineUserService.getOnlineUsers();
+		return ResponseEntity.ok(ApiResponse.success(new ArrayList<>(onlineUsers)));
 	}
 	
 }

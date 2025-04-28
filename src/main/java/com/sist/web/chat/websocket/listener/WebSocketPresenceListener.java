@@ -1,6 +1,8 @@
 package com.sist.web.chat.websocket.listener;
 
 import java.security.Principal;
+import java.util.ArrayList;
+
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -29,7 +31,9 @@ public class WebSocketPresenceListener {
 			onlineUserService.markOnline(userNo);
 			log.info("접속: userNo = {}", userNo);
 			
-			messagingTemplate.convertAndSend("/pub/groups/online", onlineUserService.getOnlineUsers());
+			messagingTemplate.convertAndSend("/topic/groups/online", new ArrayList<>(onlineUserService.getOnlineUsers()));
+			System.out.println("현재 접속중인 유저: " + onlineUserService.getOnlineUsers());
+
 		}
 	}
 	
@@ -43,7 +47,7 @@ public class WebSocketPresenceListener {
 			onlineUserService.markOffline(userNo);
 			log.info("해제: userNo = {}", userNo);
 			
-			messagingTemplate.convertAndSend("/topic/groups/online", onlineUserService.getOnlineUsers());
+			messagingTemplate.convertAndSend("/topic/groups/online", new ArrayList<>(onlineUserService.getOnlineUsers()));
 		}
 	}
 }
