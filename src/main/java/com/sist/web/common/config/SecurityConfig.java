@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
-    public static final String[] AUTH_WHITELIST = {"/assets/**","/login/**","/**/join/**","/main/**","/main.do", "/api/auth/logout", "/index.jsp"};
+    public static final String[] AUTH_WHITELIST = {"/assets/**","/login/**","/**/join/**","/main/**","/main.do", "/index.jsp"};
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -111,6 +111,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         JdbcUserDetailsManager manager = new JdbcUserDetailsManager();
         manager.setDataSource(ds);
         manager.setAuthenticationManager(authManager);
+        manager.setUsersByUsernameQuery("SELECT user_no as username, password, enabled FROM P_USERS WHERE user_no=? AND ENABLED=1");
+        manager.setAuthoritiesByUsernameQuery("SELECT user_no as username, AUTHORITY FROM P_AUTHORITIES WHERE user_no=?");
+
         return manager;
     }
 
