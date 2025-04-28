@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -58,8 +59,9 @@
 		<select v-model="group_no" @change="changeGroup()">
 			<option v-for="group in availableGroups" :value="group.group_no">{{group.group_name}}</option>
 		</select>
-		<div v-for="msg in messages" :key="msg.message_no">{{msg.sender_nickname}}: {{msg.content}}</div>
-		<!-- <input v-model="inputSender" placeholder="닉네임 입력"> -->
+		<div class="chat-container" ref="scrollContainer" style="height: 400px; overflow-y: auto;">
+			<div v-for="msg in messages" :key="msg.message_no">{{msg.sender_nickname}}: {{msg.content}}</div>
+		</div>
 		<input v-model="message" @keyup.enter="sendMessage()">
 	</div>
 </body>
