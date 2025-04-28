@@ -29,4 +29,7 @@ public interface GroupChatMapper {
 	
 	@Select("SELECT g.group_no, group_name FROM p_group g JOIN p_group_member m ON g.group_no = m.group_no WHERE m.user_no = #{user_no}")
 	public List<GroupVO> selectGroup(String userNo);
+	
+	@Select("SELECT group_no, user_no, nickname FROM p_group_member WHERE group_no = #{group_no}")
+	public List<GroupMemberVO> selectGroupMemberAllByGroupNo(@Param("group_no") int groupNo);
 }

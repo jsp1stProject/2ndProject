@@ -63,6 +63,11 @@
 			<div v-for="msg in messages" :key="msg.message_no">{{msg.sender_nickname}}: {{msg.content}}</div>
 		</div>
 		<input v-model="message" @keyup.enter="sendMessage()">
+		<div v-for="member in members" :key="member.user_no">
+			<span>{{ member.nickname || member.user_no }}</span>
+			<span v-if="member.isOnline">🟢</span>
+			<span v-else>⚪</span>
+		</div>
 	</div>
 </body>
 <script type="module">

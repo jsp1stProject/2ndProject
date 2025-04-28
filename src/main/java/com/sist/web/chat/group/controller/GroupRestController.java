@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.web.chat.group.service.GroupChatService;
+import com.sist.web.chat.group.vo.GroupMemberVO;
 import com.sist.web.chat.group.vo.GroupVO;
 import com.sist.web.common.exception.code.CommonErrorCode;
 import com.sist.web.common.exception.domain.CommonException;
@@ -53,6 +54,12 @@ public class GroupRestController {
 			throw new CommonException(CommonErrorCode.INTERNAL_ERROR);
 		}
 		
+		return ResponseEntity.ok(ApiResponse.success(list));
+	}
+	
+	@GetMapping("/members")
+	public ResponseEntity<ApiResponse<List<GroupMemberVO>>> getGroupMember(int groupNo) {
+		List<GroupMemberVO> list = chatService.getGroupMemberAllByGroupNo(groupNo);
 		return ResponseEntity.ok(ApiResponse.success(list));
 	}
 }
