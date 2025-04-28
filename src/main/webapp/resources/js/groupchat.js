@@ -80,7 +80,8 @@
 
                     this.stompClient.connect(
                         { Authorization: 'Bearer ' + accessToken },
-                        () => {
+                        async () => {
+                            await this.loadInitialOnlineUsers();
                             this.subscribeOnlineStatus();
                             this.loadGroups();
                         },
@@ -104,17 +105,37 @@
             },
             subscribeOnlineStatus() {
                 this.stompClient.subscribe('/topic/groups/online', (message) => {
-                    const onlineUserNos = JSON.parse(message.body);
+                    let onlineUserNos = JSON.parse(message.body);
+                    onlineUserNos = onlineUserNos.map(no => Number(no));
                     this.onlineUserNos = onlineUserNos;
+                    
                     this.updateMemberOnlineStatus();
                 });
             },
             updateMemberOnlineStatus() {
+                if (!this.members) {
+                    return;
+                }
                 const onlineSet = new Set(this.onlineUserNos);
                 this.members = this.members.map(member => ({
                     ...member,
                     isOnline: onlineSet.has(member.user_no)
                 }));
+                console.log('OUNos: ', this.onlineUserNos);
+                console.log('mebers: ', this.members);
+            },
+            async loadInitialOnlineUsers() {
+                try {
+                    const res = await axios.get(`${contextPath}/api/groups/online`);
+                    this.onlineUserNos = res.data.data.map(no => Number(no));
+                    console.log('init ou: ', this.onlineUserNos);
+
+                    if(this.members) {
+                        this.updateMemberOnlineStatus();
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
             },
             async loadMessages() {
                 if (!this.group_no || this.noMoreMessages) {
@@ -198,10 +219,10 @@
 
                 const res = await axios.get(`${contextPath}/api/groups/members`, {
                     params: {
-                        groupNo: this.groupno
+                        groupNo: this.group_no
                     }
                 });
-                this.member = res.data.data;
+                this.members = res.data.data || [];
                 this.updateMemberOnlineStatus();
             },
             changeGroup() {
