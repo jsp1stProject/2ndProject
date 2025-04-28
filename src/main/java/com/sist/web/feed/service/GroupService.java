@@ -10,4 +10,7 @@ public interface GroupService {
 	public List<FeedVO> feedListData(int group_no);
 	public List<FeedFileInfoVO> fileListData(int feed_no);
 	public Map groupFeedData(int group_no);
+	public int feedInsertData(FeedVO vo);
+	public void feedFileInsert(FeedFileInfoVO vo);
+	
 }

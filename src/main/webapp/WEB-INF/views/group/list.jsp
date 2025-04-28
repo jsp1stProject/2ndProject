@@ -140,8 +140,13 @@
           </div>
           
           <div class="form-group">
-            <label for="content">최대인원</label>
-            <textarea id="content" class="form-control" rows="4" v-model="newPost.capacity" required></textarea><!--  -->
+            <label for="capacity">최대인원</label>
+            <textarea id="capacity" class="form-control" rows="4" v-model="newPost.capacity" required></textarea><!--  -->
+          </div>
+          
+          <div class="form-group">
+            <label for="is_public">공개여부</label>
+            <textarea id="is_public" class="form-control" rows="4" v-model="newPost.capacity" required></textarea><!--  -->
           </div>
 
           <div class="form-group">
@@ -178,8 +183,8 @@
 				<!-- 인원 표시 -->
 				<p>인원 : {{ vo.currentMemberCount }} / {{ vo.capacity }}명</p>
 				
-				<!-- 중개자 표시 -->
-				<p>중개 : {{ vo.owner }}</p>
+				<!-- 방장 표시 -->
+				<p>방장 : {{ vo.owner }}</p>
 				
 				<!-- 생성일 표시 -->
 				<p>개설일 : {{ vo.created_at }}</p>

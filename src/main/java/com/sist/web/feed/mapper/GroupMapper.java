@@ -2,6 +2,8 @@ package com.sist.web.feed.mapper;
 import java.util.*;
 
 import com.sist.web.feed.vo.*;
+
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
 public interface GroupMapper {
@@ -24,6 +26,14 @@ public interface GroupMapper {
 	@Select("SELECT * FROM p_feed_fileInfo WHERE feed_no=#{feed_no}")
 	public List<FeedFileInfoVO> fileListData(int feed_no);
 	
+	@Insert("INSERT INTO p_feed VALUES(p_feed_seq.nextval,#{group_no},#{user_no},#{title},#{content},#{filecount},SYSDATE,SYSDATE)")
+	public void feedInsertData(FeedVO vo);
+	
+	@Select("SELECT p_feed_seq.currval FROM DUAL")
+	public int feedCurentNodata();
+	
+	@Insert("INSERT INTO p_feed_fileInfo VALUES(p_feed_fileinfo_seq.nextval,#{feed_no},#{filename},#{filesize})")
+	public void feedFileInsert(FeedFileInfoVO vo);
 	
 	
 	

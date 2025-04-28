@@ -74,4 +74,18 @@ public class GroupServiceImpl implements GroupService{
 		
 	}
 
+	@Override
+	public int feedInsertData(FeedVO vo) {
+		// TODO Auto-generated method stub
+		return dao.feedInsertData(vo);
+		
+	}
+
+
+	@Override
+	public void feedFileInsert(FeedFileInfoVO vo) {
+		// TODO Auto-generated method stub
+		dao.feedFileInsert(vo);
+	}
+
 }
