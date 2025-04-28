@@ -1,13 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+         pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <script src="${pageContext.request.contextPath}/assets/libs/swiper/swiper-bundle.min.js"></script>
 <link rel="stylesheet" href="${pageContext.request.contextPath }/assets/libs/swiper/swiper-bundle.css" />
-<<<<<<< HEAD
 <div class="pt-header pb-4 wow fadeIn" data-wow-delay="0.1s">
-=======
-<div class="container-fluid p-0 pb-4 wow fadeIn" data-wow-delay="0.1s">
->>>>>>> 767bda9 (김나린 - UI 헤더, 메인 수정중)
     <div class="swiper-wrapper">
         <div class="swiper-slide py-5"  style="background-image:url('${pageContext.request.contextPath }/assets/images/main/main_vis1.jpg')">
             <div class="container py-5">
@@ -33,7 +29,6 @@
         </div>
     </div>
 </div>
-<<<<<<< HEAD
 <div class="container">
     <div class="row">
         <div class="col-12">
@@ -68,8 +63,6 @@
         </div>
     </div>
 </div>
-=======
->>>>>>> 767bda9 (김나린 - UI 헤더, 메인 수정중)
 <script>
     //custom-list
     const swiper = new Swiper('.container-fluid', {

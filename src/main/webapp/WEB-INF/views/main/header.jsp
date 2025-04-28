@@ -1,19 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+		 pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<<<<<<< HEAD
 <style>
 	[v-cloak] { display: none; }
 </style>
 <header class="app-header" id="app" v-cloak="true">
-=======
-<!DOCTYPE html>
-<html>
-<body>
-
-<header class="app-header">
->>>>>>> 767bda9 (김나린 - UI 헤더, 메인 수정중)
 	<nav class="navbar navbar-light">
 		<ul class="navbar-nav">
 			<a href="${pageContext.request.contextPath}/main">
@@ -23,16 +15,11 @@
 		<div class="navbar justify-content-center">
 			<ul class="navbar-nav align-items-center flex-row d-none d-md-flex">
 				<li class="nav-item">
-<<<<<<< HEAD
 					<a class="nav-link fs-4" href="#">
-=======
-					<a class="nav-link">
->>>>>>> 767bda9 (김나린 - UI 헤더, 메인 수정중)
 						그룹
 					</a>
 				</li>
 				<li class="nav-item">
-<<<<<<< HEAD
 					<a class="nav-link fs-4" href="#">
 						돌봄 신청
 					</a>
@@ -40,15 +27,6 @@
 				<li class="nav-item">
 					<a class="nav-link fs-4" href="#">
 						게시판
-=======
-					<a class="nav-link">
-						그룹
-					</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link">
-						그룹
->>>>>>> 767bda9 (김나린 - UI 헤더, 메인 수정중)
 					</a>
 				</li>
 			</ul>
@@ -56,7 +34,7 @@
 		<div class="justify-content-end px-0" id="navbarNav">
 			<ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
 				<li class="nav-item d-block d-md-none">
-					<a class="nav-link sidebartoggler " id="headerCollapse" href="javascript:void(0)">
+					<a class="nav-link sidebartoggler " id="headerCollapse" href="#navCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="navCollapse">
 						<i class="ti ti-menu-2"></i>
 					</a>
 				</li>
@@ -101,6 +79,10 @@
 								<iconify-icon icon="solar:user-id-broken" class="fs-7"></iconify-icon>
 								<p class="mb-0 fs-3">펫시터 프로필</p>
 							</a>
+							<a v-if="isAdmin" href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+								<iconify-icon icon="solar:shield-user-bold" class="fs-7"></iconify-icon>
+								<p class="mb-0 fs-3">관리자 페이지</p>
+							</a>
 							<form action="${pageContext.request.contextPath }/logout" method="post" class="px-3 pt-2">
 								<input type="submit" class="btn btn-outline-primary w-100" value="로그아웃">
 							</form>
@@ -110,21 +92,27 @@
 			</ul>
 		</div>
 	</nav>
+	<ul class="navbar-nav collapse d-md-none text-center pb-2" id="navCollapse">
+		<li class="nav-item">
+			<a class="nav-link" href="#">그룹</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" href="#">돌봄 신청</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" href="#">게시판</a>
+		</li>
+	</ul>
 </header>
-<%--	<div class="scrollTopBtn">--%>
-<%--		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2 160 448c0 17.7 14.3 32 32 32s32-14.3 32-32l0-306.7L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"></path></svg>--%>
-<%--	</div>--%>
 <script type="module">
-	import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+	import { createApp, ref, computed } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
 	createApp({
 		setup() {
-			const message = ref(
-					<c:out value="${not empty usermail}" default="false" />
-			);
 			const isLogin=ref(${not empty usermail});
+			const isAdmin=computed(()=>ref('${role}').value.includes('ROLE_ADMIN'))
 			return {
-				message,isLogin
+				isLogin, isAdmin
 			}
 		}
 	}).mount('#app')
