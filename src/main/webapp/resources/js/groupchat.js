@@ -16,6 +16,8 @@
                 lastMessageNo: null,
                 isLoading: false,
                 noMoreMessages: false,
+                onlineUserNos: [],
+                members: [],
             };
         },
         mounted() {
@@ -78,7 +80,10 @@
 
                     this.stompClient.connect(
                         { Authorization: 'Bearer ' + accessToken },
-                        () => this.loadGroups(),
+                        () => {
+                            this.subscribeOnlineStatus();
+                            this.loadGroups();
+                        },
                         (error) => console.error('STOMP 연결 실패', error)
                     );
                 } catch (err) {
@@ -96,6 +101,20 @@
                 } catch (err) {
                     console.error('group_id 불러오기 실패: ', err);
                 }						 
+            },
+            subscribeOnlineStatus() {
+                this.stompClient.subscribe('/topic/groups/online', (message) => {
+                    const onlineUserNos = JSON.parse(message.body);
+                    this.onlineUserNos = onlineUserNos;
+                    this.updateMemberOnlineStatus();
+                });
+            },
+            updateMemberOnlineStatus() {
+                const onlineSet = new Set(this.onlineUserNos);
+                this.members = this.members.map(member => ({
+                    ...member,
+                    isOnline: onlineSet.has(member.user_no)
+                }));
             },
             async loadMessages() {
                 if (!this.group_no || this.noMoreMessages) {
@@ -156,7 +175,7 @@
                     }
                 }
             },
-            subscribeGroup() {
+            async subscribeGroup() {
                 if (this.subscription) {
                     this.subscription.unsubscribe();
                 }
@@ -176,6 +195,14 @@
                 },{
                     nickname: this.sender_nickname
                 });
+
+                const res = await axios.get(`${contextPath}/api/groups/members`, {
+                    params: {
+                        groupNo: this.groupno
+                    }
+                });
+                this.member = res.data.data;
+                this.updateMemberOnlineStatus();
             },
             changeGroup() {
                 this.subscribeGroup();

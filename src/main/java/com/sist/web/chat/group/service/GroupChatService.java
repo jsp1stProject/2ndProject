@@ -10,4 +10,5 @@ public interface GroupChatService {
 	void createGroup(GroupVO vo);
 	void addGroupMember(GroupMemberVO vo);
 	List<GroupVO> getGroupAll(String userId);
+	List<GroupMemberVO> getGroupMemberAllByGroupNo(int groupNo);
 }
