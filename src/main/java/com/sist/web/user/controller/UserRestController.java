@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
@@ -22,26 +23,13 @@ public class UserRestController {
     private final UserTransactionalService userTransactionalService;
     private final PasswordEncoder passwordEncoder;
 
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("accessToken", null);
-        cookie.setMaxAge(0);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-
-        Cookie cookie2 = new Cookie("refreshToken", null);
-        cookie2.setMaxAge(0);
-        cookie2.setHttpOnly(true);
-        cookie2.setPath("/");
-        response.addCookie(cookie2);
-
-        return ResponseEntity.ok("logout successful");
-    }
-
     @PostMapping("/kakao/join")
-    public ResponseEntity kakaoJoin(@RequestBody Map<String, String> data, HttpServletResponse res) {
-        String kakaoAccessToken = userService.GetKakaoAccessToken(data.get("code"));
+    public ResponseEntity kakaoJoin(@RequestBody Map<String, String> data, HttpServletResponse res, HttpServletRequest request) {
+        StringBuffer fullUrl = request.getRequestURL();
+        String uri      = request.getRequestURI();
+        String baseUrl  = fullUrl.substring(0, fullUrl.length() - uri.length());
+
+        String kakaoAccessToken = userService.GetKakaoAccessToken(data.get("code"),baseUrl);
         return userService.InsertOrLoginKakaoUser(kakaoAccessToken, res);
     }
 

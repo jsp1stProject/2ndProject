@@ -1,0 +1,77 @@
+/*login*/
+.login_wrap {
+  z-index: 10000;
+  min-height: 100vh;
+
+  .login_inner {
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+    background-color: #ffffff;
+    padding:24px;
+  }
+
+  .logo{
+    width:100%;
+    height: 70px;
+    background: url('../../images/logos/favicon.png') no-repeat top center / 80%;
+    text-indent: 120%;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  input{
+    width:100%;
+    padding: 12px;
+    border:none;
+  }
+
+  button{
+    line-height:27px;
+    width: 100%;
+
+    &#kakao-login-btn{
+      background-color:$kakao;
+      padding:0;
+    }
+  }
+
+  .input_wrap{
+    border:1px solid #dddddd;
+    overflow:hidden;
+    border-radius:14px 14px 0 0;
+    @include transition($btn-transition);
+    & + .input_wrap {
+      border-top: none;
+      border-radius: 0 0 14px 14px;
+      margin-bottom: 6px;
+    }
+  }
+
+  &:focus-within .input_wrap{
+    border-color: $primary;
+  }
+
+  .find_wrap{
+    display:flex;
+    justify-content: space-between;
+
+    a{
+      font-size:14px;
+      padding: 4px 4px;
+      text-decoration:underline;
+
+      &:hover{
+        color:var(--primary);
+      }
+    }
+  }
+
+  .btn{
+    border-radius:14px;
+    margin-bottom:6px;
+
+  }
+
+
+}

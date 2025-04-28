@@ -6,6 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
     <title>Title</title>
@@ -18,18 +19,28 @@
     </script>
 </head>
 <body>
-<form action="login_ok.do" method="post" id="login">
-<%--    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />--%>
-    <input type="email" id="user_mail" name="username" placeholder="email">
-    <input type="password" id="password" name="password" placeholder="password">
-    <input type="submit" value="로그인">
-    <input type="button" onclick="location.href='${pageContext.request.contextPath}/auth/join'" value="가입하기">
-    <a id="kakao-login-btn" href="javascript:loginWithKakao()">
-        <img src="https://k.kakaocdn.net/14/dn/btroDszwNrM/I6efHub1SN5KCJqLm1Ovx1/o.jpg" width="222"
-             alt="카카오 로그인 버튼" />
-    </a>
-    <p id="token-result"></p>
-</form>
+<div class="container position-relative login_wrap">
+    <div class="login_inner position-absolute top-50 start-50 translate-middle">
+        <form action="" method="post" name="loginform" id="login">
+            <div class="input_wrap">
+                <input type="email" id="user_mail" name="username" placeholder="이메일">
+            </div>
+            <div class="input_wrap">
+                <input type="password" id="password" name="password" placeholder="비밀번호">
+            </div>
+            <button class="btn btn-primary" type="submit" id="logBtn">로그인</button>
+            <button class="btn" type="button" id="kakao-login-btn" onclick="loginWithKakao()">
+                <img src="https://k.kakaocdn.net/14/dn/btroDszwNrM/I6efHub1SN5KCJqLm1Ovx1/o.jpg"
+                     alt="카카오 로그인 버튼" />
+            </button>
+            <div class="find_wrap">
+                <a href="${pageContext.request.contextPath}/auth/join">가입하기</a>
+                <a href="#">아이디, 비밀번호 찾기</a>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     const form=document.getElementById("login");
     $(form).on("submit",function(e){
@@ -55,17 +66,15 @@
             location.href='${pageContext.request.contextPath }/main'
         }catch (e) {
             console.error(e)
-            // console.error('status:', e.data.status);
             console.error('status:', e.status);
             console.error('status:', e.message);
         }
     }
-</script>
-<script>
+
     function loginWithKakao() {
         //카카오톡 -> 없으면 카카오 계정으로 로그인
         Kakao.Auth.authorize({
-            redirectUri: 'http://localhost:8080/web/auth/join',
+            redirectUri: '${fn:substringBefore(pageContext.request.requestURL,pageContext.request.requestURI)}/auth/join',
         });
     }
 </script>

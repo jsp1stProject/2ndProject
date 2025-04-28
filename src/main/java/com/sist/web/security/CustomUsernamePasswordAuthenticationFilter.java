@@ -52,7 +52,8 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
             if (loginRequest.getPassword() == null) {
                 loginRequest.setPassword("");
             }
-
+            logger.debug(loginRequest.getUsername());
+            logger.debug(loginRequest.getPassword());
             //user_mail  -> 현재 유효한 회원의 user_no로 변경
             String userNo = userMapper.getEnableUserNo(loginRequest.getUsername().trim());
 

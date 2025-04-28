@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String GetKakaoAccessToken(String code) {
+    public String GetKakaoAccessToken(String code,String url) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -70,7 +70,8 @@ public class UserServiceImpl implements UserService {
         MultiValueMap<String,String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("grant_type","authorization_code");
         requestBody.add("client_id","edc96d6c4e60c395ff9312d2ed6f71ba");
-        requestBody.add("redirect_uri","http://localhost:8080/web/auth/join");
+
+        requestBody.add("redirect_uri",url+"/auth/join");
         requestBody.add("code",code);
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
@@ -85,7 +86,7 @@ public class UserServiceImpl implements UserService {
             Map map= (Map)response.getBody();
             return (String)map.get("access_token");
         }catch (HttpClientErrorException e){
-            System.out.println("[KAKAO ERROR BODY] " + e.getResponseBodyAsString());
+            log.error("[KAKAO ERROR BODY] " + e.getResponseBodyAsString());
             throw e;
         }
     }
