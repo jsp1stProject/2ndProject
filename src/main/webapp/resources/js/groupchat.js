@@ -22,37 +22,22 @@
         },
         mounted() {
             this.initialize();
-
-            this.$refs.scrollContainer.addEventListener('scroll', this.onScroll);
-
-            this._handleVisibilityChange = () => {
-                if(document.visibilityState === 'visible') {
-                    if(!this.stompClient?.connected) {
-                        console.warn('STOMP 연결 없음');
-                        this.initialize();
-                    }
-                }
-            };
-            document.addEventListener('visibilitychange', this._handleVisibilityChange);
+            this.addEventListeners();
         },
         beforeUnmount() {
-            if (this._handleVisibilityChange) {
-                document.removeEventListener('visibilitychange', this._handleVisibilityChange);
-            }
-            if(this.stompClient?.connected) {
+            this.removeEventListeners();
+            if (this.stompClient?.connected) {
                 this.stompClient.disconnect(() => {
                     console.log('STOMP 연결 종료');
-                })
+                });
             }
         },
         methods: {
             scrollToBottom() {
-                Vue.nextTick(() => {
-                    const container = this.$refs.scrollContainer;
-                    if (container) {
-                        container.scrollTop = container.scrollHeight;
-                    }
-                });
+                const container = this.$refs.scrollContainer;
+                if (container) {
+                    container.scrollTop = container.scrollHeight;
+                }
             },
             async errTest() {
                 try {
@@ -121,8 +106,6 @@
                     ...member,
                     isOnline: onlineSet.has(member.user_no)
                 }));
-                console.log('OUNos: ', this.onlineUserNos);
-                console.log('mebers: ', this.members);
             },
             async loadInitialOnlineUsers() {
                 try {
@@ -200,36 +183,32 @@
                 if (this.subscription) {
                     this.subscription.unsubscribe();
                 }
-                this.messages = []; // /topic/chat/ => 서버 -> 클라이언트
+                this.messages = [];
                 this.lastMessageNo = null;
-                this.loadMessages();
-
+                await this.loadMessages();
+            
+                const container = this.$refs.scrollContainer;
+                if (!container) return;
+            
                 this.subscription = this.stompClient.subscribe(`/sub/chats/groups/${this.group_no}`, async (msg) => {
                     const body = JSON.parse(msg.body);
-
-                    const container = this.$refs.scrollContainer;
-                    if (!container) {
-                        return;
-                    }
-
+            
                     const threshold = 300;
-                    const isAtBottomBefore =container.scrollHeight - (container.scrollTop + container.clientHeight) < threshold;
-
+                    const isAtBottomBefore = container.scrollHeight - (container.scrollTop + container.clientHeight) < threshold;
+            
                     this.messages.push(body);
-
+            
                     await Vue.nextTick();
-
+            
                     if (body.sender_no === this.sender_no || isAtBottomBefore) {
                         this.scrollToBottom();
                     }
-                },{
+                }, {
                     nickname: this.sender_nickname
                 });
-
+            
                 const res = await axios.get(`${contextPath}/api/groups/members`, {
-                    params: {
-                        groupNo: this.group_no
-                    }
+                    params: { groupNo: this.group_no }
                 });
                 this.members = res.data.data || [];
                 this.updateMemberOnlineStatus();
@@ -271,7 +250,29 @@
                 } catch (err) {
                     console.error('요청 실패: ', err);
                 }	
-            }
+            },
+            handleVisibilityChange() {
+                if (document.visibilityState === 'visible') {
+                    if (!this.stompClient?.connected) {
+                        console.warn('STOMP 연결 없음');
+                        this.initialize();
+                    }
+                }
+            },
+            addEventListeners() {
+                const container = this.$refs.scrollContainer;
+                if (container) {
+                    container.addEventListener('scroll', this.onScroll);
+                }
+                document.addEventListener('visibilitychange', this.handleVisibilityChange);
+            },
+            removeEventListeners() {
+                const container = this.$refs.scrollContainer;
+                if (container) {
+                    container.removeEventListener('scroll', this.onScroll);
+                }
+                document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+            },
         },
         watch: {
             messages() {
