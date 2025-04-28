@@ -204,14 +204,23 @@
                 this.lastMessageNo = null;
                 this.loadMessages();
 
-                this.subscription = this.stompClient.subscribe(`/sub/chats/groups/${this.group_no}`, (msg) => {
+                this.subscription = this.stompClient.subscribe(`/sub/chats/groups/${this.group_no}`, async (msg) => {
                     const body = JSON.parse(msg.body);
+
+                    const container = this.$refs.scrollContainer;
+                    if (!container) {
+                        return;
+                    }
+
+                    const threshold = 300;
+                    const isAtBottomBefore =container.scrollHeight - (container.scrollTop + container.clientHeight) < threshold;
+
                     this.messages.push(body);
 
-                    if (body.sender_no === this.sender_no) {
-                        Vue.nextTick(() => {
-                            this.scrollToBottom();
-                        });
+                    await Vue.nextTick();
+
+                    if (body.sender_no === this.sender_no || isAtBottomBefore) {
+                        this.scrollToBottom();
                     }
                 },{
                     nickname: this.sender_nickname
