@@ -44,4 +44,9 @@ public class GroupDAO {
 	{
 		mapper.feedFileInsert(vo);;
 	}
+	
+	public FeedVO feedDetailData(int feed_no)
+	{
+		return mapper.feedDetailData(feed_no);
+	}
 }

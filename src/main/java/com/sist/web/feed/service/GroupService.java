@@ -12,5 +12,7 @@ public interface GroupService {
 	public Map groupFeedData(int group_no);
 	public int feedInsertData(FeedVO vo);
 	public void feedFileInsert(FeedFileInfoVO vo);
+	public FeedVO feedDetailData(int feed_no);
+	public Map feedData(int feed_no);
 	
 }

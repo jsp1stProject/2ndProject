@@ -5,7 +5,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>Reddit 스타일 게시글 + 큰 이미지 슬라이드</title>
+<title>그룹상세페이지 피드출력</title>
 <!-- <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
 <link
@@ -144,11 +144,11 @@ body {
 					<!-- 게시글 반복 렌더링 -->
 					<div v-for="(vo, index) in list" :key="vo.feed_no"
 						class="card mb-4">
-						<div class="card-body">
+						<div class="card-body" @click="feed_detail(vo.feed_no)">
 							<!-- 제목 -->
 							<h5 class="card-title">{{ vo.title }}</h5>
 							<!-- 작성일 -->
-							<h6 class="card-subtitle mb-2 text-muted">{{ vo.regdate }}</h6>
+							<h6 class="card-subtitle mb-2 text-muted">{{ vo.dbday }}</h6>
 
 							<!-- 이미지 슬라이드 -->
 							<div v-if="vo.images && vo.images.length"
@@ -157,7 +157,7 @@ body {
 								<div class="carousel-inner">
 									<div class="carousel-item" v-for="(img, imgIndex) in vo.images"
 										:class="{ active: imgIndex === 0 }" :key="imgIndex">
-										<img :src="'/images/' + img" class="d-block w-100 rounded"
+										<img :src="'/web/images/' + img" class="d-block w-100 rounded"
 											style="height: 400px; object-fit: cover;">
 									</div>
 								</div>
@@ -223,6 +223,10 @@ body {
 		this.dataRecv()
 	},
     methods:{
+		feed_detail(feed_no)
+		{
+			location.href='../group/feed?feed_no='+feed_no
+		},
 		handleFileChange(event) {
   		  const files = Array.from(event.target.files);
   		  this.selectedFiles = files;
@@ -304,105 +308,4 @@ body {
 </script>
 
 </body>
-
-<!-- <script type="text/javascript">
-		let curImageCount = 0; //현재 들어온 이미지 수
-		/*
-			"file" multiple은 여러개 파일을 받을 순 있는데 
-			한 번에 여러개를 선택해야 여러개가 들어오고 하나씩 선택하면 누적되지 않아
-			
-			file 내부적으로 FileList라는 걸 가지고 있는데 이 리스트에 0,1,2,번에 저장되는 방식이야
-			예를들어 사진1,사진2,사진3을 한 번에 선택하면{0:사진1, 1:사진2, 2:사진3} 이런식으로 저장된다
-					사진1,2,3을 따로 올리면 {0:사진1},  {0:사진2} 이런식으로 초기화되서 다시 들어와
-				
-			그래서 이미지 정보를 담고 있는 누적 이미지수와 배열을 따로 선언하는 것 
-			*/
-		let imgSubmitOn = false; // submit버튼 제어를 위한 이미지 등록 여부 체크 변수
-		let fileArray = []; //등록된 이미지 저장 배열
-
-		$(function() {
-			const upload = document.getElementById("upload");
-			//이미지
-			const imagePreviews = document.getElementById("imagePreviews");
-			const uploadUL = document.getElementById("forUpload-ul");
-			let fileArrayIndex = 0; //등록된 사진을 한 장씩 삭제하기 위해서 개별 파일에 인덱스 부여하기 위해 선언
-			let maxImageCount = 4; //최대 등록 파일 개수설정
-
-			upload.addEventListener("change", function() {
-				console.log("사진업로드버튼 클릭?")
-				let files = this.files; 
-
-				curImageCount += files.length;
-
-				if (curImageCount > maxImageCount) {
-					curImageCount = uploadUL.childElementCount;
-					alert(maxImageCount + '개까지만 등록 가능합니다.');
-					return;
-				}
-				if (uploadUL.childElementCount > maxImageCount - 1) {
-					alert(maxImageCount + '개까지만 등록 가능합니다.');
-					return;
-				}
-				for (let i = 0; i < files.length; i++) {
-					let file = files[i];
-					let reader = new FileReader();
-					reader.readAsDataURL(file);
-
-					reader.onload = function() {
-						uploadUL.style.display = "";
-						let imageSrc = reader.result;
-
-						let imgLi = document.createElement("li");
-						uploadUL.appendChild(imgLi);
-
-						let selectedImg = document.createElement("img");
-						selectedImg.src = imageSrc;
-						selectedImg.className = "preview-img";
-						imgLi.appendChild(selectedImg);
-
-						let delBtn = document.createElement("input");
-						delBtn.type = "button";
-						delBtn.className = "preview-del-btn";
-						delBtn.value = "X";
-						delBtn.dataset.fileIndex = fileArrayIndex;
-						fileArrayIndex++;
-						imgLi.appendChild(delBtn);
-
-						fileArray.push(file);
-					}
-				}
-				checkImg();
-			});
-			
-			
-				imagePreviews.addEventListener("click", function(event) {
-					if (event.target.classList.contains("preview-del-btn")) {
-						var fileIndex = event.target.dataset.fileIndex;
-						var imagePreview = event.target
-								.closest("#forUpload-ul > li");
-						imagePreview.remove();
-						fileArray.splice(fileIndex, 1);
-						fileArrayIndex--;
-						curImageCount--;
-						checkImg();
-					}
-				});
-			
-			function checkImg() {
-				if (curImageCount > 0) {
-					imgSubmitOn = true;
-				} else {
-					imgSubmitOn = false;
-				}
-				if (imgSubmitOn) {  /* titleSubmitOn &&  */
-					$('#gallery_submit').css('background-color', 'coral');
-					$('#gallery_submit').attr("disabled", false);
-				} else {
-					$('#gallery_submit').css('background-color', '#ccc');
-					$('#gallery_submit').attr("disabled", true);
-				}
-			}
-		});
-	</script> -->
-
 </html>

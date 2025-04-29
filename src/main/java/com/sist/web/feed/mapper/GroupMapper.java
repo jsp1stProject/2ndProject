@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
 public interface GroupMapper {
+	//그룹
 	@Select("SELECT group_no, group_name, profile_img, description, capacity, is_public, owner,created_at, num "
 			+ "FROM (SELECT group_no, group_name, profile_img, description, capacity, is_public, owner,created_at, rownum as num "
 			+ "FROM (SELECT group_no, group_name, profile_img, description, capacity, is_public, owner,created_at "
@@ -16,8 +17,10 @@ public interface GroupMapper {
 	@Select("SELECT * FROM p_group WHERE group_no=#{group_no}")
 	public GroupVO groupDetailData(int group_no);
 	
+	
+	//피드
 	// 피드는 페이징 안할거야 -> 무한스크롤로 수정할예쩡
-	@Select("SELECT feed_no,group_no,user_no,title,filecount,regdate "
+	@Select("SELECT feed_no,group_no,user_no,title,filecount,TO_CHAR(regdate,'YYYY-mm-DD') as dbday "
 			+ "FROM p_feed "
 			+ "WHERE group_no=#{group_no} "
 			+ "ORDER BY feed_no DESC")
@@ -33,10 +36,10 @@ public interface GroupMapper {
 	public int feedCurentNodata();
 	
 	@Insert("INSERT INTO p_feed_fileInfo VALUES(p_feed_fileinfo_seq.nextval,#{feed_no},#{filename},#{filesize})")
-	public void feedFileInsert(FeedFileInfoVO vo);
+	public void feedFileInsert(FeedFileInfoVO vo);	
 	
-	
-	
+	@Select("SELECT * FROM p_feed WHERE feed_no=#{feed_no}")
+	public FeedVO feedDetailData(int feed_no);
 	
 }
 

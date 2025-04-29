@@ -114,6 +114,21 @@ public class GroupFeedRestController {
 		}
 		return new ResponseEntity<>(result,HttpStatus.OK);
 	}
-
+	
+	@GetMapping("feed/detail")
+	public ResponseEntity<Map> feed_detail(int feed_no)
+	{
+		Map map = new HashMap();
+		try {
+			map = service.feedData(feed_no);
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<>(map,HttpStatus.OK);
+	}
+	
 	
 }
