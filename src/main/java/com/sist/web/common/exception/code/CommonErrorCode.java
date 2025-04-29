@@ -7,9 +7,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CommonErrorCode implements ErrorInfo {
 
-	INVALID_INPUT("C001", "잘못된 입력입니다.", HttpStatus.BAD_REQUEST),
-	FORBIDDEN("C403", "권한이 없습니다.", HttpStatus.FORBIDDEN),
-    INTERNAL_ERROR("C999", "서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+	INVALID_INPUT("C400", "잘못된 입력입니다.", HttpStatus.BAD_REQUEST),
+	INVALID_PARAMETER("C400", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
+    MISSING_PARAMETER("C400", "필수 요청 파라미터가 누락되었습니다.", HttpStatus.BAD_REQUEST),
+    FORBIDDEN("C403", "접근 권한이 없습니다.", HttpStatus.FORBIDDEN),
+    NOT_FOUND("C404", "요청한 리소스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    METHOD_NOT_ALLOWED("C405", "허용되지 않은 HTTP 메서드입니다.", HttpStatus.METHOD_NOT_ALLOWED),
+    UNSUPPORTED_MEDIA_TYPE("C415", "지원하지 않는 미디어 타입입니다.", HttpStatus.UNSUPPORTED_MEDIA_TYPE),
+    INTERNAL_SERVER_ERROR("C500", "서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final String code;
     private final String message;
