@@ -14,7 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.web.chat.group.service.GroupChatService;
+import com.sist.web.chat.group.vo.GroupMemberVO;
 import com.sist.web.chat.group.vo.GroupVO;
+import com.sist.web.common.exception.code.CommonErrorCode;
+import com.sist.web.common.exception.domain.CommonException;
+import com.sist.web.common.response.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,24 +26,24 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/groups")
+@RequestMapping("/api/groups")
 public class GroupRestController {
 	
 	private final GroupChatService chatService;
 	
 	@PostMapping
-	public ResponseEntity<GroupVO> createGroup(@RequestBody GroupVO vo) {
+	public ResponseEntity<ApiResponse<GroupVO>> createGroup(@RequestBody GroupVO vo) {
 		try {
 			chatService.createGroup(vo);
 		} catch (Exception ex) {
 			log.info("그룹 생성 실패: {}", ex.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			throw new CommonException(CommonErrorCode.INTERNAL_ERROR);
 		}
-		return ResponseEntity.ok(vo);
+		return ResponseEntity.ok(ApiResponse.success(vo));
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<GroupVO>> getGroupAll(HttpServletRequest request) {
+	public ResponseEntity<ApiResponse<List<GroupVO>>> getGroupAll(HttpServletRequest request) {
 		Long userNo = (Long)request.getAttribute("userno");
 		List<GroupVO> list = new ArrayList<GroupVO>();
 		
@@ -47,9 +51,15 @@ public class GroupRestController {
 			list = chatService.getGroupAll(String.valueOf(userNo));
 		} catch (Exception ex) {
 			log.info("그룹 조회 실패: {}", ex.getMessage());
-			ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			throw new CommonException(CommonErrorCode.INTERNAL_ERROR);
 		}
 		
-		return ResponseEntity.ok(list);
+		return ResponseEntity.ok(ApiResponse.success(list));
+	}
+	
+	@GetMapping("/members")
+	public ResponseEntity<ApiResponse<List<GroupMemberVO>>> getGroupMember(int groupNo) {
+		List<GroupMemberVO> list = chatService.getGroupMemberAllByGroupNo(groupNo);
+		return ResponseEntity.ok(ApiResponse.success(list));
 	}
 }

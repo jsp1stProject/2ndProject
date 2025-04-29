@@ -1,5 +1,6 @@
 package com.sist.web.chat.group.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -74,6 +75,17 @@ public class GroupChatServiceImpl implements GroupChatService {
 	@Override
 	public List<GroupVO> getGroupAll(String userNo) {
 		List<GroupVO> list = cDao.selectGroup(userNo);
+		return list;
+	}
+
+	@Override
+	public List<GroupMemberVO> getGroupMemberAllByGroupNo(int groupNo) {
+		List<GroupMemberVO> list = new ArrayList<GroupMemberVO>();
+		try {
+			list = cDao.selectGroupMemberAllByGroupNo(groupNo);
+		} catch (Exception ex) {
+			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
+		}
 		return list;
 	}
 

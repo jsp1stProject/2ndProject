@@ -30,8 +30,7 @@ public class AuthController {
 		@SuppressWarnings("unchecked")
 		List<String> roles = (List<String>)request.getAttribute("role");
 		
-		String token = 
-				jwt.createToken(String.valueOf(userNo), 
+		String token = jwt.createToken(String.valueOf(userNo), 
 						 roles.stream()
 						.map(SimpleGrantedAuthority::new)
 						.collect(Collectors.toList()));
