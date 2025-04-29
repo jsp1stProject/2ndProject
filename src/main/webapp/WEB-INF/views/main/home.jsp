@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <script src="${pageContext.request.contextPath}/assets/libs/swiper/swiper-bundle.min.js"></script>
 <link rel="stylesheet" href="${pageContext.request.contextPath }/assets/libs/swiper/swiper-bundle.css" />
-<div class="container-fluid p-0 pb-4 wow fadeIn" data-wow-delay="0.1s">
+<div class="pt-header pb-4 wow fadeIn" data-wow-delay="0.1s">
     <div class="swiper-wrapper">
         <div class="swiper-slide py-5"  style="background-image:url('${pageContext.request.contextPath }/assets/images/main/main_vis1.jpg')">
             <div class="container py-5">

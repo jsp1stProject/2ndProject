@@ -1,6 +1,5 @@
 /*login*/
 .login_wrap {
-  z-index: 10000;
   min-height: 100vh;
 
   .login_inner {
@@ -39,16 +38,35 @@
   .input_wrap{
     border:1px solid #dddddd;
     overflow:hidden;
-    border-radius:14px 14px 0 0;
     @include transition($btn-transition);
+
+    &:first-child {
+      border-top-left-radius: 14px;
+      border-top-right-radius: 14px;
+    }
+
     & + .input_wrap {
       border-top: none;
-      border-radius: 0 0 14px 14px;
+    }
+
+    &:last-child {
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
       margin-bottom: 6px;
     }
+
+    label {
+      font-size: 0.9em;
+      padding: 8px 12px 0;
+    }
+
+    label + input {
+      padding-top: 4px;
+    }
+
   }
 
-  &:focus-within .input_wrap{
+  .input_group:focus-within .input_wrap{
     border-color: $primary;
   }
 
@@ -69,7 +87,7 @@
 
   .btn{
     border-radius:14px;
-    margin-bottom:6px;
+    margin-bottom:4px;
 
   }
 

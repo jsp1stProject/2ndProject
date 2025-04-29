@@ -7,26 +7,22 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<html>
-<head>
-    <title>Title</title>
-    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"
-            integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nka" crossorigin="anonymous"></script>
-    <script>
-        Kakao.init('d24bc46e149baf82df42f1db148941b3'); // 사용하려는 앱의 JavaScript 키 입력
-    </script>
-</head>
-<body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"
+        integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nka" crossorigin="anonymous"></script>
+<script>
+    Kakao.init('d24bc46e149baf82df42f1db148941b3'); // 사용하려는 앱의 JavaScript 키 입력
+</script>
 <div class="container position-relative login_wrap">
     <div class="login_inner position-absolute top-50 start-50 translate-middle">
         <form action="" method="post" name="loginform" id="login">
-            <div class="input_wrap">
-                <input type="email" id="user_mail" name="username" placeholder="이메일">
-            </div>
-            <div class="input_wrap">
-                <input type="password" id="password" name="password" placeholder="비밀번호">
+            <div class="input_group">
+                <div class="input_wrap">
+                    <input type="email" id="user_mail" name="username" placeholder="이메일">
+                </div>
+                <div class="input_wrap">
+                    <input type="password" id="password" name="password" placeholder="비밀번호">
+                </div>
             </div>
             <button class="btn btn-primary" type="submit" id="logBtn">로그인</button>
             <button class="btn" type="button" id="kakao-login-btn" onclick="loginWithKakao()">
@@ -78,5 +74,3 @@
         });
     }
 </script>
-</body>
-</html>

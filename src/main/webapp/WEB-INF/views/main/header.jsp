@@ -15,18 +15,18 @@
 		<div class="navbar justify-content-center">
 			<ul class="navbar-nav align-items-center flex-row d-none d-md-flex">
 				<li class="nav-item">
-					<a class="nav-link">
+					<a class="nav-link fs-4" href="#">
 						그룹
 					</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link">
-						그룹
+					<a class="nav-link fs-4" href="#">
+						돌봄 신청
 					</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link">
-						그룹
+					<a class="nav-link fs-4" href="#">
+						게시판
 					</a>
 				</li>
 			</ul>
@@ -38,43 +38,45 @@
 						<i class="ti ti-menu-2"></i>
 					</a>
 				</li>
-				<li v-if="!isLogin" class="nav-item">
+				<li v-if="!isLogin" class="nav-item"> <%--로그인 버튼--%>
 					<a class="nav-link" href="${pageContext.request.contextPath}/login">
-						<iconify-icon icon="solar:login-2-linear" class="fs-6"></iconify-icon>
+						<iconify-icon icon="solar:user-circle-broken" class="fs-8"></iconify-icon>
 					</a>
 				</li>
-				<li v-if="isLogin" class="nav-item dropdown">
+				<li v-if="isLogin" class="nav-item dropdown"> <%--알림--%>
 					<a class="nav-link " href="javascript:void(0)" id="drop1" data-bs-toggle="dropdown" aria-expanded="false">
-						<iconify-icon icon="solar:bell-linear" class="fs-6"></iconify-icon>
+						<iconify-icon icon="solar:bell-linear" class="fs-7"></iconify-icon>
 						<div class="notification bg-primary rounded-circle"></div>
 					</a>
 					<div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop1">
 						<div class="message-body">
-							<a href="javascript:void(0)" class="dropdown-item">
-								댓글 알림
+							<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+								<iconify-icon icon="solar:mention-square-broken" class="fs-6"></iconify-icon>
+								<p class="mb-0 fs-3">[댓글 알림]에 댓글이 달렸습니다.</p>
 							</a>
-							<a href="javascript:void(0)" class="dropdown-item">
-								펫시터 알림
+							<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+								<iconify-icon icon="solar:cat-broken" class="fs-6"></iconify-icon>
+								<p class="mb-0 fs-3">돌봄 예약 신청이 도착했습니다.</p>
 							</a>
 						</div>
 					</div>
 				</li>
-				<li v-if="isLogin" class="nav-item dropdown">
+				<li v-if="isLogin" class="nav-item dropdown"> <%--마이페이지 메뉴--%>
 					<a class="nav-link " href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
 						<img src="${pageContext.request.contextPath}/assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
 					</a>
 					<div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
 						<div class="message-body">
 							<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-								<i class="ti ti-user fs-6"></i>
+								<iconify-icon icon="solar:user-broken" class="fs-7"></iconify-icon>
 								<p class="mb-0 fs-3">내 프로필</p>
 							</a>
 							<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-								<i class="ti ti-mail fs-6"></i>
+								<iconify-icon icon="solar:paw-linear" class="fs-7"></iconify-icon>
 								<p class="mb-0 fs-3">내 반려동물</p>
 							</a>
 							<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-								<i class="ti ti-list-check fs-6"></i>
+								<iconify-icon icon="solar:user-id-broken" class="fs-7"></iconify-icon>
 								<p class="mb-0 fs-3">펫시터 프로필</p>
 							</a>
 							<form action="${pageContext.request.contextPath }/logout" method="post" class="px-3 pt-2">

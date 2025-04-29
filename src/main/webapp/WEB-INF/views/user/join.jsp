@@ -1,31 +1,46 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: sist-105
-  Date: 25. 4. 14.
-  Time: 오후 1:25
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
-<html>
-<head>
-    <title>Title</title>
-    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"
-            integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nka" crossorigin="anonymous"></script>
-    <script>
-        Kakao.init('d24bc46e149baf82df42f1db148941b3'); // 사용하려는 앱의 JavaScript 키 입력
-    </script>
-</head>
-<body>
-<form action="${pageContext.request.contextPath}/api/auth/join" method="post">
-    <p id="token-result"></p>
-    <input type="email" name="user_mail" placeholder="mail" value="${response.kakao_account.email}">
-    <input type="password" name="password" placeholder="password">
-    <input type="text" name="user_name" placeholder="name">
-    <input type="text" name="nickname" placeholder="nickname" value="${response.properties.nickname}">
-    <input type="submit" value="가입">
-</form>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"
+        integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nka" crossorigin="anonymous"></script>
+<script>
+    Kakao.init('d24bc46e149baf82df42f1db148941b3'); // 사용하려는 앱의 JavaScript 키 입력
+</script>
+<div class="container pt-header login_wrap d-flex justify-content-center">
+    <div class="login_inner">
+        <form action="${pageContext.request.contextPath}/api/auth/join" method="post">
+            <div class="input_group">
+                <div class="input_wrap">
+                    <label>이메일</label>
+                    <input type="email" name="user_mail" placeholder="로그인 시 사용할 이메일을 적어주세요." value="${response.kakao_account.email}">
+                </div>
+            </div>
+            <div class="input_group">
+                <div class="input_wrap">
+                    <label>비밀번호</label>
+                    <input type="password" name="password">
+                </div>
+                <div class="input_wrap">
+                    <label>비밀번호 확인</label>
+                    <input type="password" name="password2">
+                </div>
+            </div>
+            <div class="input_group">
+                <div class="input_wrap">
+                    <label>이름</label>
+                    <input type="text" name="user_name" placeholder="실명을 적어주세요.">
+                </div>
+                <div class="input_wrap">
+                    <label>닉네임</label>
+                    <input type="text" name="nickname" placeholder="펫포유에서 공개될 닉네임을 적어주세요." value="${response.properties.nickname}">
+                </div>
+            </div>
+
+            <button class="btn btn-primary" type="submit" id="logBtn">가입하기</button>
+        </form>
+    </div>
+
+</div>
+
 <script>
     const kakaoJoin=async()=>{
     try{
@@ -66,5 +81,3 @@
 
 
 </script>
-</body>
-</html>

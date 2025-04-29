@@ -6,21 +6,14 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Festeller</title>
+	<title>펫포유</title>
 	<meta content="width=device-width, initial-scale=1.0" name="viewport">
 	<meta content="" name="keywords">
 	<meta content="" name="description">
 
 	<link rel="shortcut icon" type="image/png" href="${pageContext.request.contextPath }/assets/images/logos/favicon.png" />
 	<link rel="stylesheet" href="${pageContext.request.contextPath }/assets/css/styles.css" />
-	
-	<!-- Libraries Stylesheet -->
-<%--	<link href="${pageContext.request.contextPath }/assets/plugin/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">--%>
-<%--	<link href="${pageContext.request.contextPath }/assets/plugin/swiper/swiper-bundle.css" rel="stylesheet">--%>
 
-<%--	<script src="${pageContext.request.contextPath }/assets/plugin/swiper/swiper-bundle.min.js"></script>--%>
-
-<%--	<script src="${pageContext.request.contextPath }/assets/plugin/wow/wow.min.js"></script>--%>
 	<script src="${pageContext.request.contextPath }/assets/libs/jquery/dist/jquery.min.js"></script>
 	<script src="${pageContext.request.contextPath }/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="${pageContext.request.contextPath }/assets/js/sidebarmenu.js"></script>

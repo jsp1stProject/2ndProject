@@ -51,7 +51,7 @@ public class UserController {
         return "main/main";
     }
 
-    @PostMapping("/logout")
+    @PostMapping("logout")
     public String logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("accessToken", null);
         cookie.setMaxAge(0);
