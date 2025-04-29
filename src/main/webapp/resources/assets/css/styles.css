@@ -12901,19 +12901,11 @@ textarea.form-control-lg {
       align-items: center;
       position: relative;
       font-size: 20px;
-      z-index: 2;
-      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
-      @media (prefers-reduced-motion: reduce) {
-        .app-header .navbar .navbar-nav .nav-item .nav-link {
-          transition: none; } }
-
-.navbar-nav .nav-item .nav-link {
-  --bs-nav-link-hover-color: var(--bs-primary); }
+      z-index: 2; }
 
 .navbar-nav .dropdown-menu {
   position: absolute;
-  min-width: 200px;
-  top: 106%; }
+  min-width: 200px; }
   .navbar-nav .dropdown-menu .dropdown-item {
     border-radius: 8px; }
 
@@ -13146,10 +13138,8 @@ ul {
   width: 100%;
   line-height: 20px; }
 
-.swiper-wrapper {
-  overflow: hidden; }
-  .swiper-wrapper .swiper-slide {
-    background: url(../../images/main/main_vis1.jpg) no-repeat center/cover;
-    min-height: 60vh; }
+.swiper-wrapper .swiper-slide {
+  background: url(../../images/main/main_vis1.jpg) no-repeat center/cover;
+  min-height: 60vh; }
 
 /*# sourceMappingURL=styles.css.map */
