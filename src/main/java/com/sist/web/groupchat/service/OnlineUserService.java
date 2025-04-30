@@ -1,4 +1,4 @@
-package com.sist.web.chat.group.service;
+package com.sist.web.groupchat.service;
 
 import java.util.Set;
 

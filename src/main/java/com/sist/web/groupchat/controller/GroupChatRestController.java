@@ -1,4 +1,4 @@
-package com.sist.web.chat.group.controller;
+package com.sist.web.groupchat.controller;
 
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.sist.web.chat.group.service.*;
-import com.sist.web.chat.group.vo.*;
+import com.sist.web.groupchat.service.GroupChatService;
+import com.sist.web.groupchat.vo.GroupChatVO;
 import com.sist.web.common.exception.base.BaseCustomException;
 import com.sist.web.common.exception.code.CommonErrorCode;
 import com.sist.web.common.exception.domain.CommonException;
@@ -26,7 +26,11 @@ public class GroupChatRestController {
 	private final GroupChatService chatService;
 	
 	@GetMapping("/chats/groups/{groupNo}/messages")
-	public ResponseEntity<ApiResponse<List<GroupChatVO>>> getLatestMessageByGroupNo(@PathVariable int groupNo, @RequestParam(required = false) Long lastMessageNo) {
+	public ResponseEntity<ApiResponse<List<GroupChatVO>>> getLatestMessageByGroupNo(@PathVariable Integer groupNo, @RequestParam(required = false) Long lastMessageNo) {
+		if (groupNo == null) {
+			log.warn("groupNo 누락: {}", groupNo);
+			throw new CommonException(CommonErrorCode.MISSING_PARAMETER);
+		}
 		List<GroupChatVO> messages = chatService.getLatestMessageByGroupNo(groupNo, lastMessageNo);
 		return ResponseEntity.ok(ApiResponse.success(messages));
 	}

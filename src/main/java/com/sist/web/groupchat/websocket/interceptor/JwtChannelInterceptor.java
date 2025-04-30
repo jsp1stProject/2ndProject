@@ -1,4 +1,4 @@
-package com.sist.web.chat.websocket.interceptor;
+package com.sist.web.groupchat.websocket.interceptor;
 
 import java.util.List;
 import java.util.stream.Collectors;

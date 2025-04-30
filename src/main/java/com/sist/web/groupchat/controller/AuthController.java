@@ -1,4 +1,4 @@
-package com.sist.web.chat.group.controller;
+package com.sist.web.groupchat.controller;
 
 import java.util.HashMap;
 import java.util.List;

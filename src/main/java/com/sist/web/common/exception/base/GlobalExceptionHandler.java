@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
     /** 요청 파라미터 누락 */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ApiResponse<Object>> handleMissingParameter(MissingServletRequestParameterException ex) {
-        ErrorInfo info = CommonErrorCode.INVALID_PARAMETER;
+        ErrorInfo info = CommonErrorCode.MISSING_PARAMETER;
         return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
     }
 

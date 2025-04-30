@@ -1,15 +1,14 @@
-package com.sist.web.chat.group.controller;
+package com.sist.web.groupchat.controller;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.sist.web.chat.group.service.OnlineUserService;
 import com.sist.web.common.response.ApiResponse;
+import com.sist.web.groupchat.service.OnlineUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

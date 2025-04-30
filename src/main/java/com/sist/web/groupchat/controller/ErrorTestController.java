@@ -1,4 +1,4 @@
-package com.sist.web.chat.group.controller;
+package com.sist.web.groupchat.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
