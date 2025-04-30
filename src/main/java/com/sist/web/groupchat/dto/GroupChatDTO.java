@@ -1,4 +1,4 @@
-package com.sist.web.groupchat.vo;
+package com.sist.web.groupchat.dto;
 
 import java.sql.Timestamp;
 
@@ -10,7 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter @Setter @ToString
-public class GroupChatVO {
+public class GroupChatDTO {
 	private Long message_no;
 	@NotNull(message = "그룹 번호는 필수입니다")
 	private Integer group_no;
