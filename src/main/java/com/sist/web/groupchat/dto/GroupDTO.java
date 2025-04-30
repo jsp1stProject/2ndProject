@@ -1,4 +1,4 @@
-package com.sist.web.groupchat.vo;
+package com.sist.web.groupchat.dto;
 
 import java.sql.Timestamp;
 
@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class GroupVO {
+public class GroupDTO {
 	private Integer group_no;
 	private Integer capacity;
 	@NotNull(message = "생성자는 필수값입니다")

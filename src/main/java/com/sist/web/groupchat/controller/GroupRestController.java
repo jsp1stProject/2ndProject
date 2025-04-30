@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.sist.web.groupchat.dto.GroupDTO;
+import com.sist.web.groupchat.dto.GroupMemberDTO;
 import com.sist.web.groupchat.service.GroupChatService;
-import com.sist.web.groupchat.vo.GroupMemberVO;
-import com.sist.web.groupchat.vo.GroupVO;
 import com.sist.web.common.exception.code.CommonErrorCode;
 import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.common.response.ApiResponse;
@@ -29,7 +29,7 @@ public class GroupRestController {
 	private final GroupChatService chatService;
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<GroupVO>> createGroup(@Valid @RequestBody GroupVO vo) {
+	public ResponseEntity<ApiResponse<GroupDTO>> createGroup(@Valid @RequestBody GroupDTO vo) {
 		try {
 			chatService.createGroup(vo);
 		} catch (Exception ex) {
@@ -40,9 +40,9 @@ public class GroupRestController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<GroupVO>>> getGroupAll(HttpServletRequest request) {
+	public ResponseEntity<ApiResponse<List<GroupDTO>>> getGroupAll(HttpServletRequest request) {
 		Long userNo = (Long)request.getAttribute("userno");
-		List<GroupVO> list = new ArrayList<GroupVO>();
+		List<GroupDTO> list = new ArrayList<GroupDTO>();
 		
 		try {
 			list = chatService.getGroupAll(String.valueOf(userNo));
@@ -55,8 +55,8 @@ public class GroupRestController {
 	}
 	
 	@GetMapping("/members")
-	public ResponseEntity<ApiResponse<List<GroupMemberVO>>> getGroupMember(int groupNo) {
-		List<GroupMemberVO> list = chatService.getGroupMemberAllByGroupNo(groupNo);
+	public ResponseEntity<ApiResponse<List<GroupMemberDTO>>> getGroupMember(Integer groupNo) {
+		List<GroupMemberDTO> list = chatService.getGroupMemberAllByGroupNo(groupNo);
 		return ResponseEntity.ok(ApiResponse.success(list));
 	}
 }
