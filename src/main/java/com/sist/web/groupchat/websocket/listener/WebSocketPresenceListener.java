@@ -1,4 +1,4 @@
-package com.sist.web.chat.websocket.listener;
+package com.sist.web.groupchat.websocket.listener;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-import com.sist.web.chat.group.service.OnlineUserService;
+import com.sist.web.groupchat.service.OnlineUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

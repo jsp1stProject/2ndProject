@@ -1,21 +1,18 @@
-package com.sist.web.chat.group.controller;
+package com.sist.web.groupchat.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.http.HttpStatus;
+import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.sist.web.chat.group.service.GroupChatService;
-import com.sist.web.chat.group.vo.GroupMemberVO;
-import com.sist.web.chat.group.vo.GroupVO;
+import com.sist.web.groupchat.service.GroupChatService;
+import com.sist.web.groupchat.vo.GroupMemberVO;
+import com.sist.web.groupchat.vo.GroupVO;
 import com.sist.web.common.exception.code.CommonErrorCode;
 import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.common.response.ApiResponse;
@@ -32,12 +29,12 @@ public class GroupRestController {
 	private final GroupChatService chatService;
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<GroupVO>> createGroup(@RequestBody GroupVO vo) {
+	public ResponseEntity<ApiResponse<GroupVO>> createGroup(@Valid @RequestBody GroupVO vo) {
 		try {
 			chatService.createGroup(vo);
 		} catch (Exception ex) {
 			log.info("그룹 생성 실패: {}", ex.getMessage());
-			throw new CommonException(CommonErrorCode.INTERNAL_ERROR);
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
 		}
 		return ResponseEntity.ok(ApiResponse.success(vo));
 	}
@@ -51,7 +48,7 @@ public class GroupRestController {
 			list = chatService.getGroupAll(String.valueOf(userNo));
 		} catch (Exception ex) {
 			log.info("그룹 조회 실패: {}", ex.getMessage());
-			throw new CommonException(CommonErrorCode.INTERNAL_ERROR);
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
 		}
 		
 		return ResponseEntity.ok(ApiResponse.success(list));

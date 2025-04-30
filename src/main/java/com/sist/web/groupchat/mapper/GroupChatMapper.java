@@ -1,4 +1,4 @@
-package com.sist.web.chat.group.mapper;
+package com.sist.web.groupchat.mapper;
 
 import java.util.List;
 import java.util.Map;
@@ -7,7 +7,9 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectKey;
-import com.sist.web.chat.group.vo.*;
+import com.sist.web.groupchat.vo.GroupChatVO;
+import com.sist.web.groupchat.vo.GroupMemberVO;
+import com.sist.web.groupchat.vo.GroupVO;
 
 public interface GroupChatMapper {
 	@Insert("INSERT INTO p_group_msg (message_no, group_no, sender_no, content, sender_nickname) "

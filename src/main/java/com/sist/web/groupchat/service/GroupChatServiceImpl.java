@@ -1,4 +1,4 @@
-package com.sist.web.chat.group.service;
+package com.sist.web.groupchat.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,13 +6,16 @@ import java.util.List;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.sist.web.chat.group.dao.*;
-import com.sist.web.chat.group.vo.*;
+import com.sist.web.common.exception.code.CommonErrorCode;
 import com.sist.web.common.exception.code.GroupErrorCode;
+import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.common.exception.domain.GroupException;
+import com.sist.web.groupchat.dao.GroupChatDAO;
+import com.sist.web.groupchat.vo.GroupChatVO;
+import com.sist.web.groupchat.vo.GroupMemberVO;
+import com.sist.web.groupchat.vo.GroupVO;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserVO;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,8 +77,10 @@ public class GroupChatServiceImpl implements GroupChatService {
 
 	@Override
 	public List<GroupVO> getGroupAll(String userNo) {
-		List<GroupVO> list = cDao.selectGroup(userNo);
-		return list;
+		if (userNo == null) {
+	        throw new CommonException(CommonErrorCode.MISSING_PARAMETER);
+	    }
+	    return cDao.selectGroup(userNo);
 	}
 
 	@Override

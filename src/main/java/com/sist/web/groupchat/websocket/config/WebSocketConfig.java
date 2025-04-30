@@ -1,4 +1,4 @@
-package com.sist.web.chat.websocket.config;
+package com.sist.web.groupchat.websocket.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import com.sist.web.chat.websocket.interceptor.JwtChannelInterceptor;
+
+import com.sist.web.groupchat.websocket.interceptor.JwtChannelInterceptor;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

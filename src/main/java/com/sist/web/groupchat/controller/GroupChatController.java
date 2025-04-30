@@ -1,4 +1,4 @@
-package com.sist.web.chat.group.controller;
+package com.sist.web.groupchat.controller;
 
 import java.security.Principal;
 
@@ -6,10 +6,8 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import com.sist.web.chat.group.service.*;
-import com.sist.web.chat.group.vo.*;
+import com.sist.web.groupchat.service.GroupChatService;
+import com.sist.web.groupchat.vo.GroupChatVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
