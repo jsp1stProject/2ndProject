@@ -23,4 +23,10 @@ public class GroupController {
 		return "group/detail";
 	}
 	
+	@GetMapping("/group/feed")
+	public String group_feed()
+	{
+		return "group/feed";
+	}
+	
 }

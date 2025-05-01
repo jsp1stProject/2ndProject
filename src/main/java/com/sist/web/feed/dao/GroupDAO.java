@@ -1,5 +1,6 @@
 package com.sist.web.feed.dao;
 
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -33,4 +34,24 @@ public class GroupDAO {
 		return mapper.fileListData(feed_no);
 	}
 	
+	public int feedInsertData(FeedVO vo)
+	{
+		mapper.feedInsertData(vo);
+		return mapper.feedCurentNodata();
+	}
+	
+	public void feedFileInsert(FeedFileInfoVO vo)
+	{
+		mapper.feedFileInsert(vo);;
+	}
+	
+	public FeedVO feedDetailData(int feed_no)
+	{
+		return mapper.feedDetailData(feed_no);
+	}
+	public int groupInsertData(GroupVO vo)
+	{
+		mapper.groupInsertData(vo);
+		return mapper.groupCurentNodata();
+	}
 }
