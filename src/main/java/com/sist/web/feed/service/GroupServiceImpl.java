@@ -114,6 +114,12 @@ public class GroupServiceImpl implements GroupService{
 		map.put("vo", vo);
 		return map;	
 	}
+
+	@Override
+	public int groupInsertData(GroupVO vo) {
+		// TODO Auto-generated method stub
+		return dao.groupInsertData(vo);
+	}
 	
 
 }

@@ -41,5 +41,10 @@ public interface GroupMapper {
 	@Select("SELECT * FROM p_feed WHERE feed_no=#{feed_no}")
 	public FeedVO feedDetailData(int feed_no);
 	
+	@Insert("INSERT INTO p_group VALUES(p_group_no_seq.nextval,#{group_name},#{profile_img},#{description},#{capacity},#{is_public},#{owner},current_timestamp)")
+	public void groupInsertData(GroupVO vo);
+	
+	@Select("SELECT p_group_no_seq.currval FROM DUAL")
+	public int groupCurentNodata();
 }
 
