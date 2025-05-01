@@ -23,9 +23,11 @@ public class GroupChatDAO {
 		return mapper.selectLatestMessageByGroupNo(groupNo, lastMessageNo);
 	}
 	/** 그룹 생성 (필요 데이터: group_name, description, owner - user_no) */
+	
 	public void insertGroup(GroupDTO vo) {
 		mapper.insertGroup(vo);
 	}
+	
 	/** 그룹원 추가 (필요 데이터: group_no, user_no) */
 	public void insertGroupMember(GroupMemberDTO vo) {
 		mapper.insertGroupMember(vo);

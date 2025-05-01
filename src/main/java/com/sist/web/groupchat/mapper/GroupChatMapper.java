@@ -20,10 +20,6 @@ public interface GroupChatMapper {
 	@Select("SELECT * FROM p_group_msg WHERE message_no = #{message_no}")
 	public GroupChatDTO selectGroupChatByMessageNo(@Param("message_no") long messageNo);
 	
-	@Insert("INSERT INTO p_group (group_no, group_name, description, owner) "
-		  + "VALUES(p_group_no_seq.nextval, #{group_name}, #{description}, #{owner})")
-	@SelectKey(statement = "SELECT p_group_no_seq.currval FROM dual", keyProperty = "group_no", before = false, resultType = Integer.class)
-	public void insertGroup(GroupDTO vo);
 	
 	public void insertGroupMember(GroupMemberDTO vo);
 	
@@ -32,4 +28,10 @@ public interface GroupChatMapper {
 	
 	@Select("SELECT group_no, user_no, nickname FROM p_group_member WHERE group_no = #{group_no}")
 	public List<GroupMemberDTO> selectGroupMemberAllByGroupNo(@Param("group_no") int groupNo);
+	
+	@Insert("INSERT INTO p_group (group_no, group_name, description, owner) "
+			+ "VALUES(p_group_no_seq.nextval, #{group_name}, #{description}, #{owner})")
+	@SelectKey(statement = "SELECT p_group_no_seq.currval FROM dual", keyProperty = "group_no", before = false, resultType = Integer.class)
+	public void insertGroup(GroupDTO vo);
+	
 }
