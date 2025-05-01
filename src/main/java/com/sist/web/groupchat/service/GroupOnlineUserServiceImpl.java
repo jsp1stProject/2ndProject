@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GroupOnlineUserServiceImpl implements OnlineUserService {
+public class GroupOnlineUserServiceImpl implements GroupOnlineUserService {
 
 	private final Set<Long> onlineUserNos = ConcurrentHashMap.newKeySet();
 

@@ -9,7 +9,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-import com.sist.web.groupchat.service.OnlineUserService;
+import com.sist.web.groupchat.service.GroupOnlineUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class WebSocketPresenceListener {
 	
-	private final OnlineUserService onlineUserService;
+	private final GroupOnlineUserService onlineUserService;
 	private final SimpMessagingTemplate messagingTemplate;
 	
 	@EventListener
