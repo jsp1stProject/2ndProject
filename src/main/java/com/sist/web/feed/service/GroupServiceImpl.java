@@ -40,6 +40,8 @@ public class GroupServiceImpl implements GroupService{
 	@Override
 	public List<FeedFileInfoVO> fileListData(int no) {
 		// TODO Auto-generated method stub
+		
+		
 		return dao.fileListData(no);
 	}
 
@@ -73,5 +75,51 @@ public class GroupServiceImpl implements GroupService{
 		return map;
 		
 	}
+
+	@Override
+	public int feedInsertData(FeedVO vo) {
+		// TODO Auto-generated method stub
+		return dao.feedInsertData(vo);
+		
+	}
+
+
+	@Override
+	public void feedFileInsert(FeedFileInfoVO vo) {
+		// TODO Auto-generated method stub
+		dao.feedFileInsert(vo);
+	}
+
+	@Override
+	public FeedVO feedDetailData(int feed_no) {
+		// TODO Auto-generated method stub
+		
+		
+		return dao.feedDetailData(feed_no);
+	}
+	
+	@Override
+	public Map feedData(int feed_no)
+	{
+		Map map = new HashMap();
+		FeedVO vo = dao.feedDetailData(feed_no);
+		List<FeedFileInfoVO> flist = dao.fileListData(vo.getFeed_no());
+		List<String> filenames = new ArrayList<String>();
+		for(FeedFileInfoVO ffvo : flist)
+		{
+			filenames.add(ffvo.getFilename());
+		}
+		vo.setImages(filenames);
+		
+		map.put("vo", vo);
+		return map;	
+	}
+
+	@Override
+	public int groupInsertData(GroupVO vo) {
+		// TODO Auto-generated method stub
+		return dao.groupInsertData(vo);
+	}
+	
 
 }
