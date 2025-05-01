@@ -17,5 +17,5 @@ public class GroupDTO {
 	private String description;
 	private String profile_img;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-	private Timestamp create_at;
+	private Timestamp created_at;
 }

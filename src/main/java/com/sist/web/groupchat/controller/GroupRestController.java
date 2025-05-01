@@ -42,7 +42,7 @@ public class GroupRestController {
 	// /api/groups/users 사용자 가입 그룹
 	// /api/groups 전체 그룹
 	// /api/groups/feeds
-	@GetMapping()
+	@GetMapping() // 계층 이동함 수정 예정
 	public ResponseEntity<ApiResponse<List<GroupDTO>>> getGroupAll(HttpServletRequest request) {
 		Long userNo = (Long)request.getAttribute("userno");
 		List<GroupDTO> list = new ArrayList<GroupDTO>();
