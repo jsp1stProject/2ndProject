@@ -38,8 +38,11 @@ public class GroupRestController {
 		}
 		return ResponseEntity.ok(ApiResponse.success(vo));
 	}
-	
-	@GetMapping
+	// /api/groups 그룹 생성
+	// /api/groups/users 사용자 가입 그룹
+	// /api/groups 전체 그룹
+	// /api/groups/feeds
+	@GetMapping()
 	public ResponseEntity<ApiResponse<List<GroupDTO>>> getGroupAll(HttpServletRequest request) {
 		Long userNo = (Long)request.getAttribute("userno");
 		List<GroupDTO> list = new ArrayList<GroupDTO>();
