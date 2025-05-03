@@ -56,42 +56,12 @@ public class GroupChatServiceImpl implements GroupChatService {
 		return list;
 	}
 	
-	@Transactional
-	@Override
-	public void createGroup(GroupDTO vo) {
-		cDao.insertGroup(vo);
-		
-		GroupMemberDTO member = new GroupMemberDTO();
-		// group_no, user_no, nickname
-		member.setGroup_no(vo.getGroup_no());
-		member.setUser_no(vo.getOwner());
-		member.setRole("OWNER");
-		
-		cDao.insertGroupMember(member);
-	}
+	
 
-	@Override
-	public void addGroupMember(GroupMemberDTO vo) {
-		cDao.insertGroupMember(vo);
-	}
+	
 
-	@Override
-	public List<GroupDTO> getGroupAll(String userNo) {
-		if (userNo == null) {
-	        throw new CommonException(CommonErrorCode.MISSING_PARAMETER);
-	    }
-	    return cDao.selectGroup(userNo);
-	}
+	
 
-	@Override
-	public List<GroupMemberDTO> getGroupMemberAllByGroupNo(int groupNo) {
-		List<GroupMemberDTO> list = new ArrayList<GroupMemberDTO>();
-		try {
-			list = cDao.selectGroupMemberAllByGroupNo(groupNo);
-		} catch (Exception ex) {
-			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
-		}
-		return list;
-	}
+	
 
 }
