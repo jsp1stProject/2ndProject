@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -27,6 +28,54 @@ body {
 .comment-input.expand {
   min-height: 100px;
 }
+
+.comment-menu {
+  position: absolute;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 6px;
+  z-index: 10;
+}
+
+.comment-box {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.comment-author {
+  font-weight: 600;
+}
+
+.comment-date {
+  font-size: 0.85rem;
+  color: #999;
+  margin-bottom: 5px;
+}
+
+.comment-actions button {
+  margin-right: 6px;
+}
+
+.reply-box {
+  margin-top: 10px;
+  padding-left: 20px;
+  border-left: 2px solid #e0e0e0;
+}
+
+textarea.form-control {
+  resize: none;
+}
+
+.reply-form {
+  margin-top: 10px;
+}
+
 @media (max-width: 768px) {
   .custom-container { width: 95%; }
 }
@@ -37,22 +86,25 @@ body {
   <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
       <div>
-        <strong>아이디</strong>
-        <small class="text-muted ms-2">{{vo.dbday}}</small>
+        <strong>${user_no }</strong>
+        <small class="text-muted ms-2">${vo.dbday}</small>
       </div>
       <button class="btn btn-sm btn-light">...</button>
     </div>
 
     <div class="card-body">
-      <strong>{{vo.title}}</strong>
-      <p class="card-text">{{vo.content}}</p>
+      <strong>${vo.title}</strong>
+      <p class="card-text">${vo.content}</p>
 
       <!-- 이미지 슬라이드 -->
-      <div v-if="feedData.images && feedData.images.length" id="feedCarousel" class="carousel slide my-3" data-bs-ride="carousel">
+      <c:if test="${not empty vo.images}"> <!-- vo.images != null 이거보다 더 안전하고 간결한 표현 -->
+      <div id="feedCarousel" class="carousel slide my-3" data-bs-ride="carousel">
         <div class="carousel-inner">
-          <div v-for="(img, index) in vo.images" :class="['carousel-item', { active: index === 0 }]">
-            <img :src="'/web/images/' + img" class="d-block w-100 rounded" style="height: 400px; object-fit: cover;">
+          <c:forEach var="img" items="${vo.images}"  varStatus="status">
+          <div class="carousel-item ${status.index == 0 ? 'active' : ''}">
+            <img src="/web/images/${img}" class="d-block w-100 rounded" style="height: 400px; object-fit: cover;">
           </div>
+          </c:forEach>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#feedCarousel" data-bs-slide="prev">
           <span class="carousel-control-prev-icon"></span>
@@ -61,24 +113,46 @@ body {
           <span class="carousel-control-next-icon"></span>
         </button>
       </div>
+      </c:if>
 
-      <!-- 댓글쓰기 버튼 -->
-      <div class="my-3">
-        <textarea v-model="newComment" @focus="expandInput" :class="['form-control', { expand: isExpanded }]" placeholder="댓글을 입력하세요..."></textarea>
-        <div v-if="isExpanded" class="mt-2 d-flex justify-content-end gap-2">
-          <button class="btn btn-secondary btn-sm" @click="cancelComment">취소</button>
-          <button class="btn btn-primary btn-sm" @click="submitComment">댓글쓰기</button>
-        </div>
-      </div>
-
-      <!-- 댓글 목록 -->
-      <div class="mt-4">
-        <h6>댓글 {{ comments.length }}개</h6>
-        <div v-for="comment in comments" class="border-bottom py-2">
-          <strong>{{ comment.userName }}</strong>
-          <p class="mb-0">{{ comment.content }}</p>
-        </div>
-      </div>
+      <!-- 댓글 작성 영역 -->
+	  <div class="mb-4">
+		  <textarea v-model="newComment" @focus="isExpanded = true"
+		            :class="['form-control', { expand: isExpanded }]"
+		            placeholder="댓글을 입력하세요..."></textarea>
+		  <div class="mt-2 text-end">
+		    <button class="btn btn-sm btn-secondary me-2" v-if="isExpanded" @click="cancelComment">취소</button>
+		    <button class="btn btn-sm btn-primary" @click="submitComment">댓글쓰기</button>
+		  </div>
+		</div>
+		
+		<!-- 댓글 목록 -->
+		<div v-for="vo in list" :key="vo.no" class="mb-3">
+		  <!-- 댓글 -->
+		  <div class="p-3 bg-white rounded shadow-sm">
+		    <div class="d-flex justify-content-between">
+		      <div>
+		        <strong>{{ vo.user_no }}</strong>
+		        <small class="text-muted ms-2">{{ vo.dbday }}</small>
+		      </div>
+		      <div>
+		        <button class="btn btn-sm btn-outline-primary me-1" @click="replyUpdateForm(vo.no)">수정</button>
+		        <button class="btn btn-sm btn-outline-danger me-1" @click="replyDeleteForm(vo.no)">삭제</button>
+		        <button class="btn btn-sm btn-outline-success" @click="replyReplyInsertForm(vo.no)">답글</button>
+		      </div>
+		    </div>
+		    <div v-if="editingReply !== vo.no" class="mt-2">{{ vo.msg }}</div>
+		    <textarea v-else v-model="vo.editMsg" class="form-control mt-2"></textarea>
+		
+		    
+		  </div>
+		
+		  <!-- 대댓글 -->
+		  
+		</div>
+	
+	  
+	</div>
     </div>
   </div>
 </div>
@@ -89,38 +163,36 @@ body {
   createApp({
     data() {
       return {
-        feedData: {
-          vo:[],
-		  userName: '사용자 이름',
-          regdate: '2025-04-28',
-          content: '여기에 피드 내용이 들어갑니다.',
-          images: ['woman.png', 'man.png']
-        },
-        newComment: '',
-        isExpanded: false,
-        comments: []
+		list:[],
+        comment_list:[],
+		feed_no:${vo.feed_no},
+		user_no:${user_no},
+		msg:'',
+		page:1,
+		newComment: '',
+		editingComment:null,
+        isExpanded: false
       }
     },
 	mounted(){
-		const params = new URLSearchParams(window.location.search);
-  		const feedNoParam = params.get('feed_no');
-
-  		if (feedNoParam) {
-    		this.feed_no = parseInt(feedNoParam);
-  		}
 		this.dataRecv()
 	},
     methods: {
-	  async dataRecv(){
+	    async dataRecv(){
 			console.log("dataRecv 실행")
 			console.log(this.feed_no)
-			const res = await axios.get('../feed/detail',{
+			const res = await axios.get('../feed/comments',{
 					params:{
-							feed_no:this.feed_no
+							feed_no:this.feed_no,
+							page:this.page
 					}
+			}).then(res=>{
+				console.log(res.data)
+				this.list=res.data.list
+			}).catch(res=>{
+				console.log(error.response)
 			})
-            this.vo=res.data.vo
-			console.log(res.data)
+            
 		},
       expandInput() {
         this.isExpanded = true;
@@ -131,13 +203,39 @@ body {
       },
       submitComment() {
         if (this.newComment.trim() !== '') {
-          this.comments.push({
-            userName: '나',
-            content: this.newComment
-          });
-          this.cancelComment();
+          axios.post('../feed/comments',null,{
+				params:{
+					feed_no:this.feed_no,
+					msg:this.newComment
+				}
+		  }).then(res=>{
+			 console.log(res.data)
+			 this.list=res.data.list
+			 this.curpage=res.data.curpage
+   		 	 this.totalpage=res.data.totalpage
+   			 this.startPage=res.data.startPage
+   			 this.endPage=res.data.endPage
+   			 this.cancelComment(); //입력창 비우기, 확장 해제 등 후처리
+		  }).catch(error=> {
+			 console.log(error.res)
+		  })
+          
         }
-      }
+		
+      },
+      replyUpdateForm(no){
+		 console.log("수정버튼 클릭")
+         console.log("no값은 "+no)
+		 if(this.editingReply === no) {
+			this.editingReply = null;
+            console.log("if문에서 this.editingReply값" + this.editingReply)
+			this.editingReply = no;
+		 }
+		 else {
+            console.log("this.editingReply값" + this.editingReply)
+			this.editingReply = no;
+		 }
+	  }
     }
   }).mount('#app');
 </script>

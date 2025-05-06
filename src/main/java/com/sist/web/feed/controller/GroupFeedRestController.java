@@ -1,5 +1,6 @@
 package com.sist.web.feed.controller;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,9 @@ import com.sist.web.feed.vo.*;
 
 import java.io.File;
 import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @RestController
 public class GroupFeedRestController {
@@ -115,12 +119,13 @@ public class GroupFeedRestController {
 		return new ResponseEntity<>(result,HttpStatus.OK);
 	}
 	
-	@GetMapping("feed/detail")
-	public ResponseEntity<Map> feed_detail(int feed_no)
+	@GetMapping("feed/comments")
+	public ResponseEntity<Map> feed_comments_list(int page, int feed_no)
 	{
-		Map map = new HashMap();
+		System.out.println("댓글리스트 restcontroller");
+		Map map = new HashedMap();
 		try {
-			map = service.feedData(feed_no);
+			map = service.FeedCommentTotalList(page, feed_no);
 			
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -130,5 +135,53 @@ public class GroupFeedRestController {
 		return new ResponseEntity<>(map,HttpStatus.OK);
 	}
 	
+	@PostMapping("feed/comments")
+	public ResponseEntity<Map> feed_comment_insert(int feed_no, FeedCommentVO vo, HttpServletRequest request)
+	{
+		System.out.println("댓글쓰기 restcontroller");
+		Map map = new HashedMap();
+		try {
+			map = service.feedCommentAdd(feed_no, vo, request);
+			System.out.println("댓글쓰기 성공");
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<>(map,HttpStatus.OK);
+	}
+	/*
+	 * @PostMapping("feed/update_comment") public ResponseEntity<Map>
+	 * feed_comment_update(int feed_no, )
+	 * 
+	 */
+	@PostMapping("feed/comments_update")
+	public ResponseEntity<Map> feed_comments_update(FeedCommentVO vo)
+	{
+		Map map = new HashedMap();
+		try {
+			map = service.feedCommentUpdateData(vo);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<Map>(map, HttpStatus.OK);
+	}
+	
+	@PostMapping("feed/comments_delete")
+	public ResponseEntity<Map> feed_comments_delete(FeedCommentVO vo)
+	{
+		Map map = new HashedMap();
+		try {
+			map = service.feedCommentDeleteData(vo);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<Map>(map, HttpStatus.OK);
+	}
 	
 }

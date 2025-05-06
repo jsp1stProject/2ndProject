@@ -1,10 +1,17 @@
 package com.sist.web.feed.mapper;
 import java.util.*;
 
+import javax.xml.stream.events.Comment;
+
 import com.sist.web.feed.vo.*;
 
+import lombok.Delegate;
+
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 public interface GroupMapper {
 	//그룹
@@ -17,9 +24,15 @@ public interface GroupMapper {
 	@Select("SELECT * FROM p_group WHERE group_no=#{group_no}")
 	public GroupVO groupDetailData(int group_no);
 	
+	@Insert("INSERT INTO p_group VALUES(p_group_no_seq.nextval,#{group_name},#{profile_img},#{description},#{capacity},#{is_public},#{owner},current_timestamp)")
+	public void groupInsertData(GroupVO vo);
+	
+	@Select("SELECT p_group_no_seq.currval FROM DUAL")
+	public int groupCurentNodata();
+	
 	
 	//피드
-	// 피드는 페이징 안할거야 -> 무한스크롤로 수정할예쩡
+	// 피드는 페이징 안할거야 -> 무한스크롤로 수정할예정
 	@Select("SELECT feed_no,group_no,user_no,title,filecount,TO_CHAR(regdate,'YYYY-mm-DD') as dbday "
 			+ "FROM p_feed "
 			+ "WHERE group_no=#{group_no} "
@@ -38,13 +51,27 @@ public interface GroupMapper {
 	@Insert("INSERT INTO p_feed_fileInfo VALUES(p_feed_fileinfo_seq.nextval,#{feed_no},#{filename},#{filesize})")
 	public void feedFileInsert(FeedFileInfoVO vo);	
 	
-	@Select("SELECT * FROM p_feed WHERE feed_no=#{feed_no}")
+	@Select("SELECT feed_no, group_no, user_no, title, content, filecount,TO_CHAR(regdate,'YYYY-mm-DD') as dbday, update_time  FROM p_feed WHERE feed_no=#{feed_no}")
 	public FeedVO feedDetailData(int feed_no);
 	
-	@Insert("INSERT INTO p_group VALUES(p_group_no_seq.nextval,#{group_name},#{profile_img},#{description},#{capacity},#{is_public},#{owner},current_timestamp)")
-	public void groupInsertData(GroupVO vo);
+	//피드-댓글
+	@Select("SELECT no, user_no, feed_no, msg, group_step, group_id, TO_CHAR(regdate,'YYYY-MM-DD HH24:MI:SS') as dbday, num "
+			+ "FROM (SELECT no, user_no, feed_no, msg, group_step, group_id, regdate, rownum as num "
+			+ "FROM (SELECT no, user_no, feed_no, msg, group_step, group_id, regdate "
+			+ "FROM p_feed_comment WHERE feed_no=#{feed_no} ORDER BY group_id DESC, group_step ASC)) "
+			+ "WHERE num BETWEEN #{start} AND #{end}")
+	public List<FeedCommentVO> feedCommentListData(Map map);
 	
-	@Select("SELECT p_group_no_seq.currval FROM DUAL")
-	public int groupCurentNodata();
+	@Select("SELECT CEIL(COUNT(*)/10.0) FROM p_feed_comment WHERE feed_no={feed_no}")
+	public int feedCommentTotalPage(int feed_no);
+	
+	@Insert("INSERT INTO p_feed_comment(no,user_no,feed_no,msg, group_id) VALUES(p_feedcom_seq.nextval, #{user_no}, #{feed_no}, #{msg}, #{group_id})")
+	public void feedCommentInsert(FeedCommentVO vo);
+	
+	@Update("UPDATE p_feed_comment SET msg=#{msg} WHERE no=#{no}")
+	public void feedCommentUpdate(@Param("msg") String msg, @Param("no") int no);
+	
+	public void feedCommentDelete(Map map);
+
 }
 
