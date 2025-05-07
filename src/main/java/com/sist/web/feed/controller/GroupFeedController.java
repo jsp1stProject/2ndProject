@@ -19,7 +19,7 @@ public class GroupFeedController {
 	
 	@Autowired
 	private GroupFeedService service;
-		
+	/*
 	@GetMapping("/group/list")
 	public String group_list()
 	{
@@ -31,7 +31,7 @@ public class GroupFeedController {
 	{
 		return "group/detail";
 	}
-	
+	*/
 	@GetMapping("/group/feed")
 	public String group_feed(int feed_no, Model model, HttpServletRequest request)
 	{
