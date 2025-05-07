@@ -6,8 +6,6 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectKey;
 import com.sist.web.groupchat.dto.GroupChatDTO;
-import com.sist.web.groupchat.dto.GroupDTO;
-import com.sist.web.groupchat.dto.GroupMemberDTO;
 
 public interface GroupChatMapper {
 	@Insert("INSERT INTO p_group_msg (message_no, group_no, sender_no, content, sender_nickname) "

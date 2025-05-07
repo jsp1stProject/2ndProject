@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.mapper.GroupMapper;
-import com.sist.web.groupchat.dto.GroupMemberDTO;
+import com.sist.web.group.dto.GroupMemberDTO;
 
 import lombok.RequiredArgsConstructor;
 
