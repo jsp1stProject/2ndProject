@@ -1,8 +1,11 @@
 package com.sist.web.groupchat.dao;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import com.sist.web.groupchat.dto.GroupChatDTO;
+import com.sist.web.groupchat.dto.GroupDTO;
+import com.sist.web.groupchat.dto.GroupMemberDTO;
 import com.sist.web.groupchat.mapper.GroupChatMapper;
 import lombok.RequiredArgsConstructor;
 

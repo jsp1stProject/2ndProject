@@ -1,4 +1,4 @@
-package com.sist.web.group.dto;
+package com.sist.web.groupchat.dto;
 
 import java.sql.Timestamp;
 

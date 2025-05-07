@@ -3,7 +3,7 @@ package com.sist.web.group.service;
 import java.util.List;
 
 import com.sist.web.group.dto.GroupDTO;
-import com.sist.web.group.dto.GroupMemberDTO;
+import com.sist.web.groupchat.dto.GroupMemberDTO;
 
 public interface GroupService {
 	public List<GroupDTO> getGroupAllList();

@@ -1,14 +1,19 @@
 package com.sist.web.groupchat.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.sist.web.common.exception.code.CommonErrorCode;
 import com.sist.web.common.exception.code.GroupErrorCode;
+import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.common.exception.domain.GroupException;
 import com.sist.web.groupchat.dao.GroupChatDAO;
 import com.sist.web.groupchat.dto.GroupChatDTO;
+import com.sist.web.groupchat.dto.GroupDTO;
+import com.sist.web.groupchat.dto.GroupMemberDTO;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserVO;
 import lombok.RequiredArgsConstructor;

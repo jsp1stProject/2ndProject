@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +18,7 @@ import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.common.response.ApiResponse;
 import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.service.GroupService;
-import com.sist.web.group.dto.GroupMemberDTO;
+import com.sist.web.groupchat.dto.GroupMemberDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/groups")
-public class GroupRestController {
+public class GroupeRestController {
 	private final GroupService service;
 	
 	@GetMapping()
@@ -60,7 +59,7 @@ public class GroupRestController {
 	}
 	
 	@GetMapping("/{users}") // 계층 이동함 수정 예정
-	public ResponseEntity<ApiResponse<List<GroupDTO>>> getGroupAll(HttpServletRequest request, @PathVariable Integer users) {
+	public ResponseEntity<ApiResponse<List<GroupDTO>>> getGroupAll(HttpServletRequest request) {
 		Long userNo = (Long)request.getAttribute("userno");
 		List<GroupDTO> list = new ArrayList<GroupDTO>();
 		
