@@ -37,7 +37,7 @@ public class GroupRestController {
 			chatService.createGroup(vo);
 		} catch (Exception ex) {
 			log.info("그룹 생성 실패: {}", ex.getMessage());
-			throw new CommonException(CommonErrorCode.INTERNAL_ERROR);
+//			throw new CommonException(CommonErrorCode.INTERNAL_ERROR);
 		}
 		return ResponseEntity.ok(ApiResponse.success(vo));
 	}
@@ -51,7 +51,7 @@ public class GroupRestController {
 			list = chatService.getGroupAll(String.valueOf(userNo));
 		} catch (Exception ex) {
 			log.info("그룹 조회 실패: {}", ex.getMessage());
-			throw new CommonException(CommonErrorCode.INTERNAL_ERROR);
+//			throw new CommonException(CommonErrorCode.INTERNAL_ERROR);
 		}
 		
 		return ResponseEntity.ok(ApiResponse.success(list));

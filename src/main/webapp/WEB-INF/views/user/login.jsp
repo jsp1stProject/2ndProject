@@ -61,9 +61,10 @@
             });
             location.href='${pageContext.request.contextPath }/main'
         }catch (e) {
-            console.error(e)
-            console.error('status:', e.status);
-            console.error('status:', e.message);
+            if(e.status==500){
+                toast('아이디나 비밀번호가 일치하지 않습니다.');
+                console.error('status:', e.status);
+            }
         }
     }
 

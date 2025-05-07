@@ -19,9 +19,30 @@
 	<script src="${pageContext.request.contextPath }/assets/js/sidebarmenu.js"></script>
 	<script src="${pageContext.request.contextPath }/assets/js/app.min.js"></script>
 	<script src="${pageContext.request.contextPath }/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
-	<script src="${pageContext.request.contextPath }/assets/libs/simplebar/dist/simplebar.js"></script
-	<!-- solar icons -->
+	<script src="${pageContext.request.contextPath }/assets/libs/simplebar/dist/simplebar.js"></script>
+
 	<script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+	<script>
+		function toast(msg) {
+			Toastify({
+				text: msg,
+				duration: 3000,
+				newWindow: true,
+				close: true,
+				gravity: "bottom", // `top` or `bottom`
+				position: "right", // `left`, `center` or `right`
+				stopOnFocus: true, // Prevents dismissing of toast on hover
+				style: {
+					background: "linear-gradient(to right, #00b09b, #96c93d)",
+				},
+				onClick: function () {
+				} // Callback after click
+			}).showToast();
+		}
+	</script>
 </head>
 <body>
 	<jsp:include page="header.jsp"></jsp:include>
