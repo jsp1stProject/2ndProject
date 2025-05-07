@@ -10,10 +10,10 @@ import com.sist.web.feed.vo.*;
 import com.sist.web.feed.mapper.*;
 
 @Repository
-public class GroupDAO {
+public class GroupFeedDAO {
 
 	@Autowired
-	private GroupMapper mapper;
+	private GroupFeedMapper mapper;
 	
 	public List<GroupVO> groupListData()
 	{

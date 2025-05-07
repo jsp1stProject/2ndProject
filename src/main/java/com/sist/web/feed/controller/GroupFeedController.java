@@ -15,10 +15,10 @@ import com.sist.web.feed.service.*;
 import com.sist.web.feed.vo.*;
 
 @Controller
-public class GroupController {
+public class GroupFeedController {
 	
 	@Autowired
-	private GroupService service;
+	private GroupFeedService service;
 		
 	@GetMapping("/group/list")
 	public String group_list()

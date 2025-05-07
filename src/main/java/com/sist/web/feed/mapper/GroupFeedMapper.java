@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-public interface GroupMapper {
+public interface GroupFeedMapper {
 	//그룹
 	@Select("SELECT group_no, group_name, profile_img, description, capacity, is_public, owner,created_at, num "
 			+ "FROM (SELECT group_no, group_name, profile_img, description, capacity, is_public, owner,created_at, rownum as num "
@@ -65,7 +65,7 @@ public interface GroupMapper {
 	@Select("SELECT CEIL(COUNT(*)/10.0) FROM p_feed_comment WHERE feed_no={feed_no}")
 	public int feedCommentTotalPage(int feed_no);
 	
-	@Insert("INSERT INTO p_feed_comment(no,user_no,feed_no,msg, group_id) VALUES(p_feedcom_seq.nextval, #{user_no}, #{feed_no}, #{msg}, #{group_id})")
+	@Insert("INSERT INTO p_feed_comment(no,user_no,feed_no,msg, group_id) VALUES(p_feedcom_seq.nextval, #{user_no}, #{feed_no}, #{msg}, (SELECT NVL(MAX(group_id)+1,1) FROM p_feed_comment))")
 	public void feedCommentInsert(FeedCommentVO vo);
 	
 	@Update("UPDATE p_feed_comment SET msg=#{msg} WHERE no=#{no}")

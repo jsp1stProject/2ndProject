@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.sist.web.feed.vo.*;
 
-public interface GroupService {
+public interface GroupFeedService {
 	
 	public List<GroupVO> groupListData();	
 	public GroupVO groupDetailData(int group_no);

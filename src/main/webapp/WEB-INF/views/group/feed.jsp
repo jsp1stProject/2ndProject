@@ -8,6 +8,7 @@
 <title>피드 상세보기</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <style>
@@ -136,15 +137,17 @@ textarea.form-control {
 		        <small class="text-muted ms-2">{{ vo.dbday }}</small>
 		      </div>
 		      <div>
-		        <button class="btn btn-sm btn-outline-primary me-1" @click="replyUpdateForm(vo.no)">수정</button>
+		        <button v-if="editingComment !==vo.no" class="btn btn-sm btn-outline-primary me-1" @click="replyUpdateForm(vo.no, vo.msg)">수정</button>
 		        <button class="btn btn-sm btn-outline-danger me-1" @click="replyDeleteForm(vo.no)">삭제</button>
 		        <button class="btn btn-sm btn-outline-success" @click="replyReplyInsertForm(vo.no)">답글</button>
 		      </div>
 		    </div>
-		    <div v-if="editingReply !== vo.no" class="mt-2">{{ vo.msg }}</div>
-		    <textarea v-else v-model="vo.editMsg" class="form-control mt-2"></textarea>
-		
-		    
+		    <div class="mt-2">{{ vo.msg }}</div>
+		    <textarea v-if="editingComment == vo.no" v-model="vo.editMsg" class="form-control mt-2"></textarea>
+		    <div v-if="editingComment == vo.no">
+		     <button class="btn btn-sm btn-outline-success me-1" @click="replyUpdate(vo.no, vo.editMsg)">수정하기</button>
+		     <button class="btn btn-sm btn-outline-secondary me-1" @click="replyCancelUpdate(vo.no)">취소</button>
+		    </div>
 		  </div>
 		
 		  <!-- 대댓글 -->
@@ -226,14 +229,42 @@ textarea.form-control {
       replyUpdateForm(no){
 		 console.log("수정버튼 클릭")
          console.log("no값은 "+no)
-		 if(this.editingReply === no) {
-			this.editingReply = null;
-            console.log("if문에서 this.editingReply값" + this.editingReply)
-			this.editingReply = no;
+		 if(this.editingComment === no) {
+			this.editingComment = null;
 		 }
 		 else {
-            console.log("this.editingReply값" + this.editingReply)
-			this.editingReply = no;
+            console.log("this.editingComment값" + this.editingComment)
+			this.editingComment = no;
+			console.log("변경 후this.editingComment값" + this.editingComment)
+		 }
+	  },
+	  replyCancelUpdate(no){
+		 const comment = this.list.find(c => c.no === no)
+ 		 if (comment) {
+ 		   comment.editMsg = '' // 입력값 초기화
+		  }
+         this.editingComment = null;
+		 
+	  },
+	  replyUpdate(no, editMsg){
+		 if(editMsg.trim() !== '')
+		 {
+		 	axios.post('../feed/comments_update',null,{
+				params:{
+					msg:editMsg,
+					no:no
+				}
+			}).then(res=> {
+				const comment = this.list.find(c => c.no === no)
+ 		 		if (comment) {
+ 		   			comment.msg = editMsg // 입력값 초기화
+					comment.editMsg='';
+		  		}
+			    this.editingComment = null;
+			 	
+			}).catch(error => {
+				console.log(error.res)
+			})	
 		 }
 	  }
     }

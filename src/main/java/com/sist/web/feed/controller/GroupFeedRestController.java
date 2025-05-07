@@ -23,7 +23,7 @@ import javax.servlet.http.HttpSession;
 public class GroupFeedRestController {
 	
 	@Autowired
-	private GroupService service;
+	private GroupFeedService service;
 	
 	@GetMapping("group/groups")
 	public ResponseEntity<Map> group_groups()

@@ -19,10 +19,10 @@ import com.sist.web.feed.dao.*;
 import com.sist.web.feed.vo.*;
 
 @Service
-public class GroupServiceImpl implements GroupService{
+public class GroupFeedServiceImpl implements GroupFeedService{
 	
 	@Autowired
-	private GroupDAO dao;
+	private GroupFeedDAO dao;
 	
 	@Override
 	public List<GroupVO> groupListData() {
