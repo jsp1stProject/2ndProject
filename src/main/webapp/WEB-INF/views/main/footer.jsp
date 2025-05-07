@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <body>
-<div class="container-fluid bg-dark text-light footer my-6 mb-0 py-5">
+<div class="container-fluid bg-light text-dark footer my-6 mb-0 py-5">
     <div class="container">
         <div class="row">
             <div class="footer-wrap col-12">

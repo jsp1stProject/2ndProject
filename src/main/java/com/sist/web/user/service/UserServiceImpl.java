@@ -1,6 +1,8 @@
 package com.sist.web.user.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sist.web.common.exception.code.UserErrorCode;
+import com.sist.web.common.exception.domain.UserException;
 import com.sist.web.security.JwtTokenProvider;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.KakaoUserDTO;
@@ -61,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String GetKakaoAccessToken(String code) {
+    public String GetKakaoAccessToken(String code,String url) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -70,7 +72,8 @@ public class UserServiceImpl implements UserService {
         MultiValueMap<String,String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("grant_type","authorization_code");
         requestBody.add("client_id","edc96d6c4e60c395ff9312d2ed6f71ba");
-        requestBody.add("redirect_uri","http://localhost:8080/web/auth/join");
+
+        requestBody.add("redirect_uri",url+"/auth/join");
         requestBody.add("code",code);
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
@@ -85,7 +88,7 @@ public class UserServiceImpl implements UserService {
             Map map= (Map)response.getBody();
             return (String)map.get("access_token");
         }catch (HttpClientErrorException e){
-            System.out.println("[KAKAO ERROR BODY] " + e.getResponseBodyAsString());
+            log.error("[KAKAO ERROR BODY] " + e.getResponseBodyAsString());
             throw e;
         }
     }
@@ -93,19 +96,21 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity InsertOrLoginKakaoUser(String kakaoAccessToken, HttpServletResponse res) {
         //kakao 유저 정보 가져오기 api
         RestTemplate restTemplate = new RestTemplate();
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + kakaoAccessToken);
         headers.set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
         HttpEntity<?> request = new HttpEntity<>(headers);
-
         ResponseEntity<String> response = restTemplate.exchange(
                 "https://kapi.kakao.com/v2/user/me",
                 HttpMethod.GET,
                 request,
                 String.class
         );
+        if(response.getStatusCode() != HttpStatus.OK) {
+            log.error("[KAKAO ERROR BODY] " + response.getBody());
+            throw new UserException(UserErrorCode.NOT_FOUND);
+        }
 
         KakaoUserDTO kakaoUserDTO;
         try{
@@ -148,13 +153,13 @@ public class UserServiceImpl implements UserService {
                     res.addCookie(addCk("refreshToken", refreshToken, 1*60*60*24*7));
                 }else {
                     //소셜 연동되지 않았다면
-                    return ResponseEntity.status(HttpStatus.CONFLICT)
-                            .body("이미 가입된 이메일입니다.");
+                    throw new UserException(UserErrorCode.CONFLICT_EMAIL);
                 }
             }
         }catch (Exception e){
             e.printStackTrace();
             log.error(e.getMessage());
+            throw new UserException(UserErrorCode.NOT_FOUND);
         }
         return ResponseEntity.ok().build();
     }

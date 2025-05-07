@@ -10,6 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 @Controller
 @RequiredArgsConstructor
 public class UserController {
@@ -17,6 +20,12 @@ public class UserController {
     @GetMapping("/main")
     public String main_home(Model model){
         model.addAttribute("main_jsp", "home.jsp");
+        return "main/main";
+    }
+
+    @GetMapping("/dev")
+    public String dev_home(Model model){
+        model.addAttribute("main_jsp", "dev.jsp");
         return "main/main";
     }
 
@@ -37,14 +46,32 @@ public class UserController {
     }
 
     @GetMapping("login")
-    public String login() {
+    public String login(Model model) {
+        model.addAttribute("main_jsp", "../user/login.jsp");
+        return "main/main";
+    }
 
-        return "user/login";
+    @PostMapping("logout")
+    public String logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("accessToken", null);
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        Cookie cookie2 = new Cookie("refreshToken", null);
+        cookie2.setMaxAge(0);
+        cookie2.setHttpOnly(true);
+        cookie2.setPath("/");
+        response.addCookie(cookie2);
+
+        return "redirect:/main";
     }
 
     @GetMapping("auth/join")
     public String join(@RequestParam(required = false, value="code") String code, Model model) {
-        return "user/join";
+        model.addAttribute("main_jsp", "../user/join.jsp");
+        return "main/main";
     }
 
 }

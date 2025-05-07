@@ -8,6 +8,6 @@ import java.util.Map;
 
 public interface UserService {
     public Map<String, Object> loginUser(UserVO vo);
-    public String GetKakaoAccessToken(String code);
+    public String GetKakaoAccessToken(String code, String url);
     public ResponseEntity InsertOrLoginKakaoUser(String kakaoAccessToken,  HttpServletResponse res);
 }
