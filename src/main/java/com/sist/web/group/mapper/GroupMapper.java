@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectKey;
 import com.sist.web.group.dto.GroupDTO;
-import com.sist.web.groupchat.dto.GroupMemberDTO;
+import com.sist.web.group.dto.GroupMemberDTO;
 
 public interface GroupMapper {
 		//그룹

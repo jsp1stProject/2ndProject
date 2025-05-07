@@ -78,7 +78,7 @@
             },
             async loadGroups() {
                 try {
-                    const res = await axios.get(`${contextPath}/api/groups`);
+                    const res = await axios.get(`${contextPath}/api/groups/${this.user_no}`);
                     this.availableGroups = res.data.data;
                     if (this.availableGroups.length > 0) {
                         this.group_no = this.availableGroups[0].group_no;
