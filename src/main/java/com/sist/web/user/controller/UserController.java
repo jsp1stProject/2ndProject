@@ -74,4 +74,9 @@ public class UserController {
         return "main/main";
     }
 
+    @GetMapping("chat/test")
+    public String chat_test(Model model) {
+        return "chat/group/chat_style";
+    }
+
 }

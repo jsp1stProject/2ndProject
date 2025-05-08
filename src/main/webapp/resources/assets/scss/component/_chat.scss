@@ -1,0 +1,71 @@
+.chat-wrapper {
+  $chat-header: 50px;
+  $chat-body-padding: 12px;
+  height:100vh;
+
+  @include transition($btn-transition);
+
+  .group-list {
+    ul {
+      background-color: $light-gray;
+      li {
+        margin-bottom: 12px;
+      }
+    }
+  }
+
+  .group-room {
+    .group-header {
+      height:$chat-header;
+      box-shadow: 7px 7px 14px rgba(0, 0, 0, 0.04);
+
+      #groupdrop {
+        border: none;
+        height: $chat-header;
+        padding: 12px;
+        background-color: transparent;
+      }
+
+      .group-title {
+        line-height:$chat-header;
+        text-align: center;
+      }
+    }
+
+    .group-main {
+      .group-chat {
+        .chat-body {
+          padding: $chat-body-padding;
+
+          .msg {
+            margin-bottom: 1em;
+            gap: 0.6em;
+
+            .user-profile {
+              margin-top: 0.3em;
+            }
+
+            .msg-body {
+              .user-info {
+                span {
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  font-size: 0.9em;
+
+                  &:not(:last-child) {
+                    margin-right: 0.3em;
+                  }
+                }
+              }
+
+              .msg-content {
+                color:$dark
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
