@@ -1,6 +1,7 @@
 package com.sist.web.feed.dao;
 
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -9,10 +10,10 @@ import com.sist.web.feed.vo.*;
 import com.sist.web.feed.mapper.*;
 
 @Repository
-public class GroupDAO {
+public class GroupFeedDAO {
 
 	@Autowired
-	private GroupMapper mapper;
+	private GroupFeedMapper mapper;
 	
 	public List<GroupVO> groupListData()
 	{
@@ -54,4 +55,30 @@ public class GroupDAO {
 		mapper.groupInsertData(vo);
 		return mapper.groupCurentNodata();
 	}
+	
+	public List<FeedCommentVO> feedCommentListData(Map map)
+	{
+		return mapper.feedCommentListData(map);
+	}
+	
+	public int feedCommentTotalPage(int feed_no)
+	{
+		return mapper.feedCommentTotalPage(feed_no);
+	}
+	
+	public void feedCommentInsert(FeedCommentVO vo)
+	{
+		mapper.feedCommentInsert(vo);
+	}
+	
+	public void feedCommentUpdate(@Param("msg") String msg, @Param("no") int no)
+	{
+		mapper.feedCommentUpdate(msg, no);
+	}
+	
+	public void feedCommentDelete(Map map)
+	{
+		mapper.feedCommentDelete(map);
+	}
+	
 }
