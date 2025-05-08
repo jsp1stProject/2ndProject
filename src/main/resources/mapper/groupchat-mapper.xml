@@ -11,18 +11,5 @@
 		ORDER BY message_no DESC
 		FETCH FIRST 30 ROWS ONLY
 	</select>
-	<insert id="insertGroupMember" parameterType="com.sist.web.groupchat.dto.GroupMemberDTO">
-		INSERT INTO p_group_member (group_no, user_no
-		    <if test="role != null and role != ''">
-		        , role
-		    </if>
-	    )
-	    VALUES
-	    (#{group_no}, #{user_no}
-	    <if test="role != null and role != ''">
-	        , #{role}
-	    </if>
-	    )
-	</insert>
 	<!-- insertGroup 작성 예정 -->
 </mapper>

@@ -4,15 +4,9 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-
 import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.mapper.GroupMapper;
-<<<<<<< HEAD
 import com.sist.web.group.dto.GroupMemberDTO;
-=======
-import com.sist.web.groupchat.dto.GroupMemberDTO;
->>>>>>> feature/schedule
-
 import lombok.RequiredArgsConstructor;
 
 @Repository
