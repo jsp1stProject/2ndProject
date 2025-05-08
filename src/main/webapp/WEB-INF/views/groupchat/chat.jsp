@@ -53,7 +53,6 @@
 		</div>
 		<div class="rooms">
 			<input type="button" value="그룹 생성" @click="groupOpen()">
-			<input type="button" value="에러테스트" @click="errTest()">
 		</div>
 		<label>방 선택&nbsp;&nbsp;</label>
 		<select v-model="group_no" @change="changeGroup()">
@@ -64,8 +63,8 @@
 		</div>
 		<input v-model="message" @keyup.enter="sendMessage()">
 		<div v-for="member in members" :key="member.user_no">
-			<span>{{ member.nickname || member.user_no }}</span>
-			<span v-if="member.isOnline">🟢</span>
+			<span>{{ member.nickname }}</span>
+			<span v-if="member.isOnline === true">🟢</span>
 			<span v-else>⚪</span>
 		</div>
 	</div>
