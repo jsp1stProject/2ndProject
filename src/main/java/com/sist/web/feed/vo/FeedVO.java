@@ -19,7 +19,8 @@ import lombok.Data;
 
 @Data
 public class FeedVO {
-	private int  user_no,feed_no, group_no,filecount;
+	private int feed_no, group_no,filecount;
+	private long user_no;
 	private String title,content,dbday;
 	private Date regdate, update_time;
 	private List<MultipartFile> files= new ArrayList<MultipartFile>();

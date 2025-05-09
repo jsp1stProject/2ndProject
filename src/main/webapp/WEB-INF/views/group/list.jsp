@@ -37,6 +37,13 @@ body {
 	object-fit: cover;
 }
 
+.group-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 @media ( max-width : 768px) {
 	.custom-container {
 		width: 95%;

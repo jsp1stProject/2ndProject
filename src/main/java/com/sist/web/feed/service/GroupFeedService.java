@@ -1,0 +1,34 @@
+package com.sist.web.feed.service;
+
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.sist.web.feed.vo.*;
+
+public interface GroupFeedService {
+	
+	public List<GroupVO> groupListData();	
+	public GroupVO groupDetailData(int group_no);
+	public List<FeedVO> feedListData(int group_no);
+	public List<FeedFileInfoVO> fileListData(int feed_no);
+	public Map groupFeedData(int group_no);
+	public int feedInsertData(FeedVO vo);
+	public void feedFileInsert(FeedFileInfoVO vo);
+	public FeedVO feedDetailData(int feed_no);
+	public FeedVO feedData(int feed_no);
+	public int groupInsertData(GroupVO vo);
+	public List<FeedCommentVO> feedCommentListData(Map map);
+	public int feedCommentTotalPage(int feed_no);
+	public Map FeedCommentTotalList(int page, int feed_no);
+	public void feedCommentInsert(FeedCommentVO vo);
+	public Map feedCommentAdd(int feed_no, FeedCommentVO vo, HttpServletRequest request);
+	public void feedCommentUpdate(@Param("msg") String msg, @Param("no") int no);	
+	public Map feedCommentUpdateData(FeedCommentVO vo);
+	public void feedCommentDelete(Map map);
+	public Map feedCommentDeleteData(FeedCommentVO vo);
+	
+}

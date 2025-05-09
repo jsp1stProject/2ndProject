@@ -144,9 +144,9 @@ body {
 					<!-- 게시글 반복 렌더링 -->
 					<div v-for="(vo, index) in list" :key="vo.feed_no"
 						class="card mb-4">
-						<div class="card-body" @click="feed_detail(vo.feed_no)">
+						<div class="card-body" >
 							<!-- 제목 -->
-							<h5 class="card-title">{{ vo.title }}</h5>
+							<h5 class="card-title" @click="feed_detail(vo.feed_no)">{{ vo.title }}</h5>
 							<!-- 작성일 -->
 							<h6 class="card-subtitle mb-2 text-muted">{{ vo.dbday }}</h6>
 
@@ -158,7 +158,7 @@ body {
 									<div class="carousel-item" v-for="(img, imgIndex) in vo.images"
 										:class="{ active: imgIndex === 0 }" :key="imgIndex">
 										<img :src="'/web/images/' + img" class="d-block w-100 rounded"
-											style="height: 400px; object-fit: cover;">
+											style="max-height: 100%; max-width: 100%; object-fit: contain;">
 									</div>
 								</div>
 								<button class="carousel-control-prev" type="button"
