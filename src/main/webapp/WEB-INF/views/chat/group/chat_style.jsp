@@ -16,9 +16,7 @@
 
     <script src="${pageContext.request.contextPath }/assets/libs/jquery/dist/jquery.min.js"></script>
     <script src="${pageContext.request.contextPath }/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="${pageContext.request.contextPath }/assets/js/sidebarmenu.js"></script>
-    <script src="${pageContext.request.contextPath }/assets/js/app.min.js"></script>
-    <script src="${pageContext.request.contextPath }/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+    <script src="${pageContext.request.contextPath }/assets/js/chat.js"></script>
     <script src="${pageContext.request.contextPath }/assets/libs/simplebar/dist/simplebar.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
@@ -46,7 +44,7 @@
 </head>
 <body>
     <div class="chat-wrapper d-flex">
-        <div class="group-list d-flex flex-column justify-content-between">
+        <div class="group-list d-flex flex-column justify-content-between" id="glist">
             <ul class="p-2 m-0" data-simplebar="init">
                 <li>
                     <a href="#">
@@ -93,10 +91,16 @@
             </div>
         </div>
         <div class="group-room flex-grow-1">
-            <div class="group-header">
-                <div class="group-title">
+            <div class="group-header d-flex">
+                <button type="button" class="chattoggler d-block d-md-none" data-target="glist">
+                    <iconify-icon icon="solar:widget-2-linear" class="d-flex align-items-center fs-10 h-100 px-2"></iconify-icon>
+                </button>
+                <div class="group-title flex-grow-1">
                     <p class="fs-5">그룹 이름</p>
                 </div>
+                <button type="button"  class="chattoggler d-block d-md-none" data-target="gside">
+                    <iconify-icon icon="solar:users-group-rounded-broken" class="d-flex align-items-center fs-10 h-100 px-2"></iconify-icon>
+                </button>
             </div>
             <div class="group-main">
                 <div class="group-chat">
@@ -174,10 +178,10 @@
                 </div>
             </div>
         </div>
-        <div class="group-side">
-            <div class="group-header">
-                <div class="dropdown d-flex h-100 p-2">
-                    <div class="search-wrap d-flex h-100 gap-1 align-items-center" id="searchdrop" data-bs-toggle="dropdown" aria-expanded="false">
+        <div class="group-side" id="gside">
+            <div class="group-header d-flex">
+                <div class="dropdown d-flex flex-grow-1 h-100 p-2">
+                    <div class="search-wrap d-flex flex-grow-1 h-100 gap-1 align-items-center" id="searchdrop" data-bs-toggle="dropdown" aria-expanded="false">
                         <iconify-icon icon="solar:magnifer-broken" class="fs-6 align-middle"></iconify-icon>
                         <input type="text"  class="search-input w-100" placeholder="검색하기">
                     </div>
@@ -187,6 +191,9 @@
                         <button type="button" class="dropdown-item">사용자</button>
                     </div>
                 </div>
+                <button type="button" class="px-2 chatclose d-block d-md-none" data-target="gside">
+                    <iconify-icon icon="solar:close-circle-line-duotone" class="fs-10 d-flex align-items-center"></iconify-icon>
+                </button>
             </div>
             <div class="group-submenu p-2" data-simplebar="init">
                 <div class="accordion accordion-flush open">
