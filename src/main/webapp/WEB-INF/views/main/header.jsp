@@ -26,6 +26,11 @@
 				</li>
 				<li class="nav-item">
 					<a class="nav-link fs-4" href="#">
+						일정
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link fs-4" href="#">
 						게시판
 					</a>
 				</li>
@@ -92,7 +97,7 @@
 			</ul>
 		</div>
 	</nav>
-	<ul class="navbar-nav collapse d-md-none text-center pb-2" id="navCollapse">
+	<ul class="navbar-nav collapse d-md-none text-center" id="navCollapse">
 		<li class="nav-item">
 			<a class="nav-link" href="#">그룹</a>
 		</li>
@@ -100,6 +105,9 @@
 			<a class="nav-link" href="#">돌봄 신청</a>
 		</li>
 		<li class="nav-item">
+			<a class="nav-link" href="#">일정</a>
+		</li>
+		<li class="nav-item mb-2">
 			<a class="nav-link" href="#">게시판</a>
 		</li>
 	</ul>
