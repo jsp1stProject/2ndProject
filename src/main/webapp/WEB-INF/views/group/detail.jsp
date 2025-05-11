@@ -59,16 +59,72 @@ body {
 <body>
 	<div class="container-fluid custom-container">
 		<div class="row">
-
+			
 			<!-- 왼쪽 일정 영역 -->
 			<div class="col-md-3 mb-4">
 				<div class="card">
-					<div class="card-header">📅 오늘의 일정</div>
+					<div class="card-header">📅 그룹 일정</div>
 					<div class="card-body">
+						<!-- 그룹 일정 추가 버튼 (상단에 위치) -->
+			<div class="mb-3 text-end">
+			  <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newScheduleModal">
+			    📅 그룹 일정 추가
+			  </button>
+			</div>
+			
+			<!-- 일정 추가 모달 -->
+			<div class="modal fade" id="newScheduleModal" tabindex="-1" aria-labelledby="newScheduleModalLabel" aria-hidden="true">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title" id="newScheduleModalLabel">📅 새 일정 추가</h5>
+			        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			      </div>
+			      <div class="modal-body">
+			        <form @submit.prevent="addSchedule">
+			          <div class="mb-3">
+			            <label class="form-label">제목</label>
+			            <input type="text" class="form-control" v-model="newSchedule.title" required>
+			          </div>
+			
+			          <div class="mb-3">
+			            <label class="form-label">내용</label>
+			            <textarea class="form-control" rows="3" v-model="newSchedule.content" required></textarea>
+			          </div>
+			
+			          <div class="mb-3">
+			            <label class="form-label">시작일</label>
+			            <input type="datetime-local" class="form-control" v-model="newSchedule.start" required>
+			          </div>
+			
+			          <div class="mb-3">
+			            <label class="form-label">종료일</label>
+			            <input type="datetime-local" class="form-control" v-model="newSchedule.end" required>
+			          </div>
+			
+			          <!-- 참여자 선택 UI (예시) -->
+			          <div class="mb-3">
+			            <label class="form-label">참여자 선택</label>
+			            <div v-for="member in mvo" :key="mvo.user_no" class="form-check">
+			              <input class="form-check-input" type="checkbox" :id="'member-' + member.user_no" :value="member.user_no" v-model="newSchedule.participants">
+			              <label class="form-check-label" :for="'member-' + member.user_no">
+			                {{ member.user_no }} ({{ member.role }})
+			              </label>
+			            </div>
+			          </div>
+			
+			          <div class="mt-3 text-end">
+			            <button type="submit" class="btn btn-success">일정 등록</button>
+			          </div>
+			        </form>
+			      </div>
+			    </div>
+			  </div>
+			</div>
 						<ul class="list-unstyled">
-							<li><strong>10:00</strong> 회의</li>
-							<li><strong>13:30</strong> 디자인 피드백</li>
-							<li><strong>16:00</strong> 개발 회의</li>
+						  <li v-for="(item, index) in schedulelist" :key="index">
+						    <strong>{{ item.sche_start_str }}</strong> {{ item.sche_title }}
+						  </li>
 						</ul>
 					</div>
 				</div>
@@ -111,7 +167,7 @@ body {
 										aria-label="Close"></button>
 								</div>
 								<div class="modal-body">
-									<form @submit.prevent="addPost">
+									<form @submit.prevent="addPost"> <!-- .prevent는 새로고침 막아줌 -->
 										<div class="mb-3">
 											<label class="form-label">제목</label> <input type="text"
 												class="form-control" v-model="newPost.title" required>
@@ -209,8 +265,17 @@ body {
          			content: '',
       			   },
 		 selectedFiles: [],
-    	 imagePreviews: []
-		 
+    	 imagePreviews: [],
+		 schedulelist:[],
+		 newSchedule: {
+				title:'',
+				content:'',
+				start:'',
+				end:'',
+				participants:[],
+				type:1
+			},
+		  groupMembers:[]
       }
     },
 	mounted(){
@@ -221,8 +286,32 @@ body {
     this.group_no = parseInt(groupNoParam);
   }
 		this.dataRecv()
+		this.scheduleRecv()
 	},
     methods:{
+		addSchedule(){
+			console.log("일정추가")
+			const scheduleformData = new FormData();
+			scheduleformData.append('group_no', this.group_no)
+			scheduleformData.append('sche_title',this.newSchedule.title)
+			scheduleformData.append('sche_content',this.newSchedule.content)
+			scheduleformData.append('sche_start_str',this.newSchedule.start)
+			scheduleformData.append('sche_end_str',this.newSchedule.end)
+			scheduleformData.append('type',this.newSchedule.type)
+			this.newSchedule.participants.forEach(p => {
+   				 scheduleformData.append('participants', p);
+			});
+			axios.post('../api/schedules',scheduleformData)	
+			.then(res => {
+				const schedulemodal = bootstrap.Modal.getInstance(document.getElementById('newScheduleModal'));
+  				schedulemodal.hide();
+    			//this.scheduleresetForm();
+    			//this.scheduleRecv();
+			})
+			.catch(err => {
+     			 console.error("일정 등록 실패", err);
+    		});
+		},
 		feed_detail(feed_no)
 		{
 			location.href='../group/feed?feed_no='+feed_no
@@ -300,6 +389,17 @@ body {
 			})
             this.list=res.data.list
 			this.gvo=res.data.gvo
+			this.mvo=res.data.mvo
+			console.log(res.data)
+		},
+		async scheduleRecv(){
+			console.log("스케쥴리스트출력 실행")
+			const res = await axios.get('../api/schedules',{
+					params:{
+							group_no:this.group_no
+					}
+			})
+			this.schedulelist=res.data.list
 			console.log(res.data)
 		}
 

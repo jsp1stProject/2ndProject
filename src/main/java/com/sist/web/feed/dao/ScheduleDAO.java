@@ -1,5 +1,7 @@
 package com.sist.web.feed.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -13,13 +15,19 @@ public class ScheduleDAO {
 	@Autowired
 	private ScheduleMapper mapper;
 	
-	public void ScheduleInsert(ScheduleVO vo)
+	public void scheduleInsert(ScheduleVO vo)
 	{
-		mapper.ScheduleInsert(vo);
+		mapper.scheduleInsert(vo);
 	}
 	
-	public void ScheduleMemberInsert(ScheduleMemberVO vo)
+	public void scheduleMemberInsert(ScheduleMemberVO vo)
 	{
-		mapper.ScheduleMemberInsert(vo);
+		mapper.scheduleMemberInsert(vo);
 	}
+	
+	public List<ScheduleVO> scheduleGroupList(int group_no)
+	{
+		return mapper.scheduleGroupList(group_no);
+	}
+	
 }
