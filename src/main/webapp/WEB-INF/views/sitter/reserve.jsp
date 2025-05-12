@@ -58,7 +58,7 @@
       시간: {{ summaryTime }}<br>
       장소: {{ form.location_type }}<br>
       선택한 반려동물 수: {{ form.pet_nos.length }}<br>
-      총 가격: {{ formattedPrice }} 원
+      예상 총 가격: {{ formattedPrice }} 원
     </div>
 
     <button type="submit" class="btn btn-primary mt-4">예약하기</button>
@@ -81,7 +81,8 @@
         locationTypes: ['신청자 집', '거리', '기타'],
         timeOptions: [...Array(14).keys()].flatMap(h => {
           const hour = h + 8;
-          return [`${hour}:00`, `${hour}:30`];
+          const hStr = hour < 10 ? '0' + hour : hour.toString();
+          return [`${hStr}:00`, `${hStr}:30`];
         }),
         form: {
           res_date: '',
@@ -96,7 +97,7 @@
     computed: {
       summaryTime() {
         return this.form.start_time && this.form.end_time
-          ? this.form.start_time ~ this.form.end_time
+          ? this.form.start_time + ' ~ ' + this.form.end_time
           : '-';
       },
       formattedPrice() {
