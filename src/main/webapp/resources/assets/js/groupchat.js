@@ -1,4 +1,7 @@
-﻿export function initGroupChat(contextPath, createApp) {
+﻿const axios = window.axios;
+const Stomp = window.Stomp;
+
+export function initGroupChat(contextPath, createApp) {
   createApp({
     data() {
       return {
@@ -22,11 +25,12 @@
         createCheck: false,
         group_name: '',
         group_description: '',
+
+        scrollTarget: null
       };
     },
     mounted() {
       this.initialize();
-      this.addEventListeners();
     },
     beforeUnmount() {
       this.removeEventListeners();
@@ -40,16 +44,16 @@
           this.token = res.data.token;
           this.sender_no = res.data.userNo;
           this.sender_nickname = res.data.nickname;
-      
+
           const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-          const host = location.host; // ex) ec2-xx-xx-xx.ap-northeast-2.compute.amazonaws.com:8080
+          const host = location.host;
           const socketUrl = `${protocol}://${host}${contextPath}/ws`;
-      
+
           const socket = new WebSocket(socketUrl);
           this.stompClient = Stomp.over(socket);
           this.stompClient.heartbeat.outgoing = 10000;
           this.stompClient.heartbeat.incoming = 10000;
-      
+
           this.stompClient.connect(
             { Authorization: 'Bearer ' + this.token },
             this.loadGroups,
@@ -87,41 +91,45 @@
         this.stompClient.send("/pub/user/join", {}, JSON.stringify(payload));
       },
       async loadMessages() {
+        await this.waitForScorllTarget();
+        const container = this.scrollTarget;
+        
         let url = `${contextPath}/api/chats/groups/${this.group_no}/messages`;
         if (this.lastMessageNo) url += `?lastMessageNo=${this.lastMessageNo}`;
-      
-        const container = this.$refs.scrollContainer;
+
         const previousHeight = container?.scrollHeight || 0;
         const previousScrollTop = container?.scrollTop || 0;
-      
+
         this.isLoading = true;
         const res = await axios.get(url);
+        console.log('res:', res);
         const newMessages = res.data.data;
-      
+
         if (newMessages.length === 0) {
           this.noMoreMessages = true;
           this.isLoading = false;
           return;
         }
-      
+
         if (!this.lastMessageNo) {
           this.messages = newMessages;
         } else {
           this.messages.unshift(...newMessages);
         }
-      
+
         this.lastMessageNo = newMessages[0].message_no;
-      
+
         await Vue.nextTick();
-      
+
         if (!this.lastMessageNo) {
-          this.scrollToBottom(); 
+          this.scrollToBottom();
         } else {
           const newHeight = container?.scrollHeight || 0;
           container.scrollTop = newHeight - previousHeight + previousScrollTop;
         }
-      
+
         this.isLoading = false;
+        
       },
       async loadGroupMembers() {
         const res = await axios.get(`${contextPath}/api/groups/members`, {
@@ -136,14 +144,13 @@
       async loadInitialOnlineUsers() {
         const res = await axios.get(`${contextPath}/api/groups/${this.group_no}/online`);
         this.onlineUserNos = res.data.data.map(u => Number(u.userNo));
-        console.log('res: ', res.data);
         this.updateMemberOnlineStatus();
       },
       subscribeGroupMessages() {
         this.subscription?.unsubscribe();
         this.subscription = this.stompClient.subscribe(`/sub/chats/groups/${this.group_no}`, async msg => {
           const body = JSON.parse(msg.body);
-          const container = this.$refs.scrollContainer;
+          const container = this.scrollTarget;
           const atBottom = container.scrollHeight - (container.scrollTop + container.clientHeight) < 300;
           this.messages.push(body);
           await Vue.nextTick();
@@ -165,7 +172,7 @@
         }));
       },
       scrollToBottom() {
-        const c = this.$refs.scrollContainer;
+        const c = this.scrollTarget;
         if (c) c.scrollTop = c.scrollHeight;
       },
       changeGroup() {
@@ -196,12 +203,12 @@
         await this.loadGroups();
       },
       addEventListeners() {
-        const c = this.$refs.scrollContainer;
+        const c = this.scrollTarget;
         if (c) c.addEventListener('scroll', this.onScroll);
         document.addEventListener('visibilitychange', this.handleVisibilityChange);
       },
       removeEventListeners() {
-        const c = this.$refs.scrollContainer;
+        const c = this.scrollTarget;
         if (c) c.removeEventListener('scroll', this.onScroll);
         document.removeEventListener('visibilitychange', this.handleVisibilityChange);
       },
@@ -211,10 +218,24 @@
         }
       },
       async onScroll() {
-        const c = this.$refs.scrollContainer;
+        const c = this.scrollTarget;
         if (c.scrollTop === 0 && !this.isLoading && !this.noMoreMessages) {
           this.lastMessageNo = this.messages[0]?.message_no;
           await this.loadMessages();
+        }
+      },
+      async waitForScorllTarget(timeout = 2000) {
+        const start = Date.now();
+        while(!this.scrollTarget && Date.now() - start < timeout) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+          const wrapper = this.$refs.scrollContainer?.querySelector('.simplebar-content-wrapper');
+          if (wrapper) {
+            this.scrollTarget = wrapper;
+            this.addEventListeners();
+          }
+        }
+        if (!this.scrollTarget) {
+          console.warn('scroll 설정 실패');
         }
       }
     }

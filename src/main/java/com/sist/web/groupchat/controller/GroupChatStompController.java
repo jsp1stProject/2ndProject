@@ -7,6 +7,7 @@ import com.sist.web.groupchat.service.GroupOnlineUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.security.Principal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class GroupChatStompController {
     private final Validator validator;
     
     @MessageMapping("/user/join")
-    public void join(@Payload GroupJoinDTO req, StompHeaderAccessor accessor) {
+    public void join(@Payload GroupJoinDTO req, Principal principal, StompHeaderAccessor accessor) {
     	
     	Set<ConstraintViolation<GroupJoinDTO>> violations = validator.validate(req);
     	if (!violations.isEmpty()) {
@@ -38,12 +39,11 @@ public class GroupChatStompController {
     		throw new GroupChatException(GroupChatErrorCode.INVALID_JOIN_REQUEST, errorMsg);
 		}
     	
-    	Authentication auth = (Authentication) accessor.getUser();
-    	if (auth == null) {
+    	if (principal == null) {
 			throw new GroupChatException(GroupChatErrorCode.UNAUTHORIZED);
 		}
     	
-    	Long userNo = Long.parseLong(auth.getName());
+    	Long userNo = Long.parseLong(principal.getName());
         String sessionId = accessor.getSessionId();
         
         groupOnlineUserService.markOnline(sessionId, req.getGroupNo(), userNo, req.getNickname());

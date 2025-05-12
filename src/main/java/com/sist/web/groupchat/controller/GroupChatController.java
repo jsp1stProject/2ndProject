@@ -37,4 +37,9 @@ public class GroupChatController {
     public String chat_test(Model model) {
         return "groupchat/chat_style";
     }
+	
+	@GetMapping("chat/before")
+	public String chat_before() {
+		return "groupchat/TEST";
+	}
 }
