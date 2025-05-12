@@ -1,5 +1,7 @@
 package com.sist.web.group.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,12 +35,15 @@ public class GroupRestController {
 	private final GroupService service;
 	
 	@GetMapping
-	public ResponseEntity<ApiResponse<Map<String, Object>>> group_groups()
+	public ResponseEntity<ApiResponse<Map<String, Object>>> group_groups(HttpServletRequest request)
 	{
 		Map<String, Object> map = new HashMap<>();
 		try {
-			List<GroupDTO> list = service.getGroupAllList();
-			map.put("list", list);
+			Long userNo = (Long)request.getAttribute("userno");
+			int user_no = userNo.intValue();
+			System.out.println(user_no);
+			map = service.getGroupListAndStates(user_no);
+			System.out.println(map);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

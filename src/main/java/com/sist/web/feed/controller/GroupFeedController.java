@@ -21,19 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class GroupFeedController {
 	
 	private final GroupFeedService service;
-	/*
-	@GetMapping("/group/list")
-	public String group_list()
-	{
-		return "group/list";
-	}
-	
-	@GetMapping("/group/detail")
-	public String group_detail()
-	{
-		return "group/detail";
-	}
-	*/
+
 	@GetMapping("/group/feed")
 	public String group_feed(int feed_no, Model model, HttpServletRequest request)
 	{

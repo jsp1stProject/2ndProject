@@ -14,6 +14,11 @@ public class GroupDTO {
 	private Integer owner;
 	@NotNull(message = "그룹 이름은 필수값입니다")
 	private String group_name;
+	private String owner_name;
+	//is_member, join_status => 그룹가입여부 확인을 위한 컬럼
+	private String is_member;
+	private String join_status; 
+	private Integer current_member_count;
 	private String description;
 	private String profile_img;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")

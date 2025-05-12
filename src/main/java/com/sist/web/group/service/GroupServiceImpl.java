@@ -1,7 +1,10 @@
 package com.sist.web.group.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +28,23 @@ public class GroupServiceImpl implements GroupService{
 		return gDao.selectGroupAllList();
 	}
 
+	@Override
+	public List<Map<String, Object>> selectGroupMemberStates(int user_no) {
+		// TODO Auto-generated method stub
+		return gDao.selectGroupMemberStates(user_no);
+	}
+	
+	@Override
+	public Map<String, Object> getGroupListAndStates(int user_no){
+		
+		List<GroupDTO> group_list = gDao.selectGroupAllList();
+		List<Map<String, Object>> states_list = gDao.selectGroupMemberStates(user_no);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("group_list", group_list);
+		map.put("states_list", states_list);
+		map.put("user_no", user_no);
+		return map;
+	}
 	@Override
 	public GroupDTO getGroupDetail(int group_no) {
 		return gDao.selectGroupDetail(group_no);
@@ -73,4 +93,6 @@ public class GroupServiceImpl implements GroupService{
 		gDao.insertJoinRequests(dto);
 		
 	}
+
+
 }

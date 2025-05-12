@@ -1,6 +1,7 @@
 package com.sist.web.group.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -20,6 +21,10 @@ public class GroupDAO {
 		return mapper.selectGroupAllList();
 	}
 	
+	public List<Map<String, Object>> selectGroupMemberStates(int user_no)
+	{
+		return mapper.selectGroupMemberStates(user_no);
+	}
 	public GroupDTO selectGroupDetail(int group_no)
 	{
 		return mapper.selectGroupDetail(group_no);
