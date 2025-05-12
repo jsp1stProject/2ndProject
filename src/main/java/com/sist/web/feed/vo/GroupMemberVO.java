@@ -7,7 +7,8 @@ import lombok.Setter;
 
 @Getter @Setter
 public class GroupMemberVO {
-	private int group_no, user_no;
+	private int group_no;
+	private long user_no;
 	private long last_read_message;
 	private String nickname, role, status;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")

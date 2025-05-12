@@ -1,288 +1,222 @@
 ﻿export function initGroupChat(contextPath, createApp) {
-    Vue.createApp({
-        data() {
-            return {
-                stompClient: null,
-                messages: [],
-                message: '',
-                sender_no: '',
-                sender_nickname: '',
-                availableGroups: [],
-                group_no: '',
-                subscription: null,
-                createCheck: false,
-                group_name: '',
-                group_description: '',
-                lastMessageNo: null,
-                isLoading: false,
-                noMoreMessages: false,
-                onlineUserNos: [],
-                members: [],
-            };
-        },
-        mounted() {
-            this.initialize();
-            this.addEventListeners();
-        },
-        beforeUnmount() {
-            this.removeEventListeners();
-            if (this.stompClient?.connected) {
-                this.stompClient.disconnect(() => {
-                    console.log('STOMP 연결 종료');
-                });
-            }
-        },
-        methods: {
-            scrollToBottom() {
-                const container = this.$refs.scrollContainer;
-                if (container) {
-                    container.scrollTop = container.scrollHeight;
-                }
-            },
-            async errTest() {
-                try {
-                    const res = await axios.get(`${contextPath}/api/err/test`);
-                    const data = res.data;
-                } catch (error) {
-                    const { code, message } = error.response.data;
-                    alert(`[${code}] ${message}`);
-                    console.error('err: ', error);
-                }
-            },
-            async initialize() {
-                try {
-                    const res = await axios.get(`${contextPath}/api/token`);
-                    const accessToken = res.data.token;
+  createApp({
+    data() {
+      return {
+        stompClient: null,
+        token: '',
+        sender_no: '',
+        sender_nickname: '',
 
-                    this.sender_no = res.data.userNo;
-                    this.sender_nickname = res.data.nickname;
+        group_no: '',
+        availableGroups: [],
+        members: [],
+        onlineUserNos: [],
 
-                    const socket = new SockJS(`${contextPath}/ws`);
-                    this.stompClient = Stomp.over(socket);
+        messages: [],
+        message: '',
+        lastMessageNo: null,
+        isLoading: false,
+        noMoreMessages: false,
 
-                    this.stompClient.heartbeat.outgoing = 10000; // client -> server
-                    this.stompClient.heartbeat.incoming = 10000; // server -> client
-
-                    this.stompClient.connect(
-                        { Authorization: 'Bearer ' + accessToken },
-                        async () => {
-                            await this.loadInitialOnlineUsers();
-                            this.subscribeOnlineStatus();
-                            this.loadGroups();
-                        },
-                        (error) => console.error('STOMP 연결 실패', error)
-                    );
-                } catch (err) {
-                    console.error('토큰 가져오기 실패:', err);
-                }
-            },
-            async loadGroups() {
-                try {
-                    const res = await axios.get(`${contextPath}/api/groups`);
-                    this.availableGroups = res.data.data;
-                    if (this.availableGroups.length > 0) {
-                        this.group_no = this.availableGroups[0].group_no;
-                        this.subscribeGroup();
-                    }
-                } catch (err) {
-                    console.error('group_id 불러오기 실패: ', err);
-                }						 
-            },
-            subscribeOnlineStatus() {
-                this.stompClient.subscribe('/topic/groups/online', (message) => {
-                    let onlineUserNos = JSON.parse(message.body);
-                    onlineUserNos = onlineUserNos.map(no => Number(no));
-                    this.onlineUserNos = onlineUserNos;
-                    
-                    this.updateMemberOnlineStatus();
-                });
-            },
-            updateMemberOnlineStatus() {
-                if (!this.members) {
-                    return;
-                }
-                const onlineSet = new Set(this.onlineUserNos);
-                this.members = this.members.map(member => ({
-                    ...member,
-                    isOnline: onlineSet.has(member.user_no)
-                }));
-            },
-            async loadInitialOnlineUsers() {
-                try {
-                    const res = await axios.get(`${contextPath}/api/groups/online`);
-                    this.onlineUserNos = res.data.data.map(no => Number(no));
-                    console.log('init ou: ', this.onlineUserNos);
-
-                    if(this.members) {
-                        this.updateMemberOnlineStatus();
-                    }
-                } catch (err) {
-                    console.error(err);
-                }
-            },
-            async loadMessages() {
-                if (!this.group_no || this.noMoreMessages) {
-                    return;
-                }  
-                let url = `${contextPath}/api/chats/groups/${this.group_no}/messages`;
-                if (this.lastMessageNo) {
-                    url += `?lastMessageNo=${this.lastMessageNo}`;
-                }
-
-                const container = this.$refs.scrollContainer;
-                const oldScrollHeight = container.scrollHeight;
-
-                try {
-                    this.isLoading = true;
-                    const res = await axios.get(url);
-
-                    const newMessages = res.data.data;
-                    console.log('res: ', res.data);
-
-                    if (newMessages.length === 0) {
-                        this.noMoreMessages = true;
-                        return newMessages;
-                    }
-                    if (!this.lastMessageNo) {
-                        this.messages = newMessages;
-                    } else {
-                        this.messages.unshift(...newMessages);
-                    }
-                    if (newMessages.length > 0) {
-                        this.lastMessageNo = newMessages[0].message_no; // 이 부분 수정
-                    }
-                    Vue.nextTick(() => {
-                        const newScrollHeight = container.scrollHeight;
-                        if (this.lastMessageNo) {
-                            container.scrollTop = newScrollHeight - oldScrollHeight;
-                        } else {
-                            container.scrollTop = container.scrollHeight;
-                        }
-                    });
-
-                    return newMessages;
-                } catch (err) {
-                    console.error('이전 메시지 불러오기 실패: ', err);
-                } finally {
-                    this.isLoading = false;
-                }
-            },
-            async onScroll() {
-                const container = this.$refs.scrollContainer;
-                if (container.scrollTop === 0 && !this.isLoading && !this.noMoreMessages) {
-                    if (this.message.length > 0) {
-                        this.lastMessageNo = this.messages[0].message_no;
-                    }
-                    const newMessages = await this.loadMessages();
-                    if (newMessages && newMessages.length === 0) {
-                        this.noMoreMessages = true;
-                    }
-                }
-            },
-            async subscribeGroup() {
-                if (this.subscription) {
-                    this.subscription.unsubscribe();
-                }
-                this.messages = [];
-                this.lastMessageNo = null;
-                await this.loadMessages();
-            
-                const container = this.$refs.scrollContainer;
-                if (!container) return;
-            
-                this.subscription = this.stompClient.subscribe(`/sub/chats/groups/${this.group_no}`, async (msg) => {
-                    const body = JSON.parse(msg.body);
-            
-                    const threshold = 300;
-                    const isAtBottomBefore = container.scrollHeight - (container.scrollTop + container.clientHeight) < threshold;
-            
-                    this.messages.push(body);
-            
-                    await Vue.nextTick();
-            
-                    if (body.sender_no === this.sender_no || isAtBottomBefore) {
-                        this.scrollToBottom();
-                    }
-                }, {
-                    nickname: this.sender_nickname
-                });
-            
-                const res = await axios.get(`${contextPath}/api/groups/members`, {
-                    params: { groupNo: this.group_no }
-                });
-                this.members = res.data.data || [];
-                this.updateMemberOnlineStatus();
-            },
-            changeGroup() {
-                this.subscribeGroup();
-            },
-            sendMessage() {
-                if (!this.message.trim()) {
-                    return;
-                }
-                const chatMessage = {
-                    sender_no: this.sender_no,
-                    sender_nickname: this.sender_nickname,
-                    content: this.message,
-                    group_no: this.group_no,
-                };
-                
-                if (this.stompClient && this.stompClient.connected) {
-                    this.stompClient.send(`/pub/chats/groups/${this.group_no}`, {}, JSON.stringify(chatMessage));
-                    this.message = ''; // /app/chat => 클라이언트 -> 서버
-                }
-
-                
-            },
-            groupOpen() {
-                this.createCheck = !this.createCheck;
-            },
-            async createGroup() {
-                try {
-                    const res = await axios.post(`${contextPath}/api/groups`, {
-                        owner: this.sender_no,
-                        group_name: this.group_name,
-                        description: this.group_description
-                    });
-                    alert('그룹 이름: ' + res.data.group_name + '으로 생성되었습니다.');
-                    this.createCheck = !this.createCheck;
-                    this.loadGroups();
-                } catch (err) {
-                    console.error('요청 실패: ', err);
-                }	
-            },
-            handleVisibilityChange() {
-                if (document.visibilityState === 'visible') {
-                    if (!this.stompClient?.connected) {
-                        console.warn('STOMP 연결 없음');
-                        this.initialize();
-                    }
-                }
-            },
-            addEventListeners() {
-                const container = this.$refs.scrollContainer;
-                if (container) {
-                    container.addEventListener('scroll', this.onScroll);
-                }
-                document.addEventListener('visibilitychange', this.handleVisibilityChange);
-            },
-            removeEventListeners() {
-                const container = this.$refs.scrollContainer;
-                if (container) {
-                    container.removeEventListener('scroll', this.onScroll);
-                }
-                document.removeEventListener('visibilitychange', this.handleVisibilityChange);
-            },
-        },
-        watch: {
-            messages() {
-                Vue.nextTick(() => {
-                    const container = this.$refs.scrollContainer;
-                    if (container) {
-                        container.scrollTop = container.scrollHeight;
-                    }
-                });
-            }
+        subscription: null,
+        createCheck: false,
+        group_name: '',
+        group_description: '',
+      };
+    },
+    mounted() {
+      this.initialize();
+      this.addEventListeners();
+    },
+    beforeUnmount() {
+      this.removeEventListeners();
+      this.subscription?.unsubscribe();
+      this.stompClient?.disconnect(() => console.log('STOMP 연결 종료'));
+    },
+    methods: {
+      async initialize() {
+        try {
+          const res = await axios.get(`${contextPath}/api/token`);
+          this.token = res.data.token;
+          this.sender_no = res.data.userNo;
+          this.sender_nickname = res.data.nickname;
+      
+          const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+          const host = location.host; // ex) ec2-xx-xx-xx.ap-northeast-2.compute.amazonaws.com:8080
+          const socketUrl = `${protocol}://${host}${contextPath}/ws`;
+      
+          const socket = new WebSocket(socketUrl);
+          this.stompClient = Stomp.over(socket);
+          this.stompClient.heartbeat.outgoing = 10000;
+          this.stompClient.heartbeat.incoming = 10000;
+      
+          this.stompClient.connect(
+            { Authorization: 'Bearer ' + this.token },
+            this.loadGroups,
+            err => console.error('STOMP 연결 실패', err)
+          );
+        } catch (e) {
+          console.error('토큰 가져오기 실패:', e);
         }
-    }).mount('#app');
+      },
+      async loadGroups() {
+        const res = await axios.get(`${contextPath}/api/groups/${this.sender_no}`);
+        this.availableGroups = res.data.data;
+        if (this.availableGroups.length > 0) {
+          await this.joinGroup(this.availableGroups[0].group_no);
+        }
+      },
+      async joinGroup(groupNo) {
+        this.group_no = groupNo;
+        this.messages = [];
+        this.lastMessageNo = null;
+        this.noMoreMessages = false;
+
+        this.sendJoinMessage();
+        await this.loadMessages();
+        await this.loadGroupMembers();
+        await this.loadInitialOnlineUsers();
+        this.subscribeGroupMessages();
+        this.subscribeGroupOnline();
+      },
+      sendJoinMessage() {
+        const payload = {
+          groupNo: this.group_no,
+          nickname: this.sender_nickname
+        };
+        this.stompClient.send("/pub/user/join", {}, JSON.stringify(payload));
+      },
+      async loadMessages() {
+        let url = `${contextPath}/api/chats/groups/${this.group_no}/messages`;
+        if (this.lastMessageNo) url += `?lastMessageNo=${this.lastMessageNo}`;
+      
+        const container = this.$refs.scrollContainer;
+        const previousHeight = container?.scrollHeight || 0;
+        const previousScrollTop = container?.scrollTop || 0;
+      
+        this.isLoading = true;
+        const res = await axios.get(url);
+        const newMessages = res.data.data;
+      
+        if (newMessages.length === 0) {
+          this.noMoreMessages = true;
+          this.isLoading = false;
+          return;
+        }
+      
+        if (!this.lastMessageNo) {
+          this.messages = newMessages;
+        } else {
+          this.messages.unshift(...newMessages);
+        }
+      
+        this.lastMessageNo = newMessages[0].message_no;
+      
+        await Vue.nextTick();
+      
+        if (!this.lastMessageNo) {
+          this.scrollToBottom(); 
+        } else {
+          const newHeight = container?.scrollHeight || 0;
+          container.scrollTop = newHeight - previousHeight + previousScrollTop;
+        }
+      
+        this.isLoading = false;
+      },
+      async loadGroupMembers() {
+        const res = await axios.get(`${contextPath}/api/groups/members`, {
+          params: { groupNo: this.group_no }
+        });
+        this.members = res.data.data.map(m => ({
+          user_no: m.user_no,
+          nickname: m.nickname,
+          isOnline: false
+        }));
+      },
+      async loadInitialOnlineUsers() {
+        const res = await axios.get(`${contextPath}/api/groups/${this.group_no}/online`);
+        this.onlineUserNos = res.data.data.map(u => Number(u.userNo));
+        console.log('res: ', res.data);
+        this.updateMemberOnlineStatus();
+      },
+      subscribeGroupMessages() {
+        this.subscription?.unsubscribe();
+        this.subscription = this.stompClient.subscribe(`/sub/chats/groups/${this.group_no}`, async msg => {
+          const body = JSON.parse(msg.body);
+          const container = this.$refs.scrollContainer;
+          const atBottom = container.scrollHeight - (container.scrollTop + container.clientHeight) < 300;
+          this.messages.push(body);
+          await Vue.nextTick();
+          if (body.sender_no === this.sender_no || atBottom) this.scrollToBottom();
+        });
+      },
+      subscribeGroupOnline() {
+        this.stompClient.subscribe(`/topic/groups/${this.group_no}/online`, msg => {
+          const onlineList = JSON.parse(msg.body);
+          this.onlineUserNos = onlineList.map(u => Number(u.userNo));
+          this.updateMemberOnlineStatus();
+        });
+      },
+      updateMemberOnlineStatus() {
+        const set = new Set(this.onlineUserNos);
+        this.members = this.members.map(m => ({
+          ...m,
+          isOnline: set.has(Number(m.user_no))
+        }));
+      },
+      scrollToBottom() {
+        const c = this.$refs.scrollContainer;
+        if (c) c.scrollTop = c.scrollHeight;
+      },
+      changeGroup() {
+        if (this.group_no) this.joinGroup(this.group_no);
+      },
+      sendMessage() {
+        if (!this.message.trim()) return;
+        const msg = {
+          sender_no: this.sender_no,
+          sender_nickname: this.sender_nickname,
+          content: this.message,
+          group_no: this.group_no
+        };
+        this.stompClient.send(`/pub/chats/groups/${this.group_no}`, {}, JSON.stringify(msg));
+        this.message = '';
+      },
+      groupOpen() {
+        this.createCheck = !this.createCheck;
+      },
+      async createGroup() {
+        const res = await axios.post(`${contextPath}/api/groups`, {
+          owner: this.sender_no,
+          group_name: this.group_name,
+          description: this.group_description
+        });
+        alert(`그룹 이름: ${res.data.group_name} 으로 생성되었습니다.`);
+        this.createCheck = false;
+        await this.loadGroups();
+      },
+      addEventListeners() {
+        const c = this.$refs.scrollContainer;
+        if (c) c.addEventListener('scroll', this.onScroll);
+        document.addEventListener('visibilitychange', this.handleVisibilityChange);
+      },
+      removeEventListeners() {
+        const c = this.$refs.scrollContainer;
+        if (c) c.removeEventListener('scroll', this.onScroll);
+        document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+      },
+      handleVisibilityChange() {
+        if (document.visibilityState === 'visible' && !this.stompClient?.connected) {
+          this.initialize();
+        }
+      },
+      async onScroll() {
+        const c = this.$refs.scrollContainer;
+        if (c.scrollTop === 0 && !this.isLoading && !this.noMoreMessages) {
+          this.lastMessageNo = this.messages[0]?.message_no;
+          await this.loadMessages();
+        }
+      }
+    }
+  }).mount('#app');
 }
