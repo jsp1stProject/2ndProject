@@ -1,5 +1,7 @@
 package com.sist.web.user.service;
 
+import com.sist.web.common.exception.code.UserErrorCode;
+import com.sist.web.common.exception.domain.UserException;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserVO;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,7 @@ public class UserTransactionalService {
     private final UserMapper userMapper;
 
     @Transactional
-    public boolean insertDefaultUser(UserVO vo) {
+    public void insertDefaultUser(UserVO vo) {
         //일반 회원가입
         int count = userMapper.getUserMailCount(vo.getUser_mail());
         //가입되지 않은 이메일이면
@@ -28,11 +30,9 @@ public class UserTransactionalService {
             map.put("user_no",userno);
             map.put("authority", "ROLE_USER");
             userMapper.insertUserAuthority(map);
-
-            return true;
         } else {
             //동일한 메일이 이미 가입되어 있으면
-            return false;
+            throw new UserException(UserErrorCode.CONFLICT_EMAIL);
         }
     }
 

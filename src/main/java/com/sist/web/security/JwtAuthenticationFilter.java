@@ -36,13 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestPath = request.getServletPath();
 
-        // 공개 경로에 해당하면 필터 로직을 건너뛰고 체인을 바로 진행
-        for (String pattern : SecurityConfig.AUTH_WHITELIST) {
-            if (pathMatcher.match(pattern, requestPath)) {
-//                log.debug("WHITELIST [{}]", requestPath);
-                filterChain.doFilter(request, response);
-                return;
-            }
+        // static resource에 해당하면 필터 로직을 건너뛰고 체인을 바로 진행
+        if (pathMatcher.match("/assets/**", requestPath)) {
+//            log.debug("resource [{}]", requestPath);
+            filterChain.doFilter(request, response);
+            return;
         }
 
         //쿠키에서 jwt 추출

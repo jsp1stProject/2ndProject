@@ -1,26 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sist.web.chat.group.mapper.GroupChatMapper">
-	<select id="selectLatestMessageByGroupNo" resultType="com.sist.web.chat.group.vo.GroupChatVO" parameterType="hashmap">
-		SELECT * FROM p_group_msg 
-		WHERE group_no = #{group_no} 
+<mapper namespace="com.sist.web.groupchat.mapper.GroupChatMapper">
+	<select id="selectLatestMessageByGroupNo" resultType="com.sist.web.groupchat.dto.GroupChatDTO" parameterType="hashmap">
+		SELECT message_no, group_no, sender_no, content, message_type, sent_at, sender_nickname 
+		FROM p_group_msg
+		WHERE group_no = #{group_no}
 		<if test="last_message_no != null">
-			AND message_no &lt; #{last_message_no}
+		  AND message_no &lt; #{last_message_no}
 		</if>
 		ORDER BY message_no DESC
-		FETCH FIRST 20 ROWS ONLY
+		FETCH FIRST 30 ROWS ONLY
 	</select>
-	<insert id="insertGroupMember" parameterType="com.sist.web.chat.group.vo.GroupMemberVO">
-		INSERT INTO p_group_member (group_no, user_no
-		    <if test="role != null and role != ''">
-		        , role
-		    </if>
-	    )
-	    VALUES
-	    (#{group_no}, #{user_no}
-	    <if test="role != null and role != ''">
-	        , #{role}
-	    </if>
-	    )
-	</insert>
+	<!-- insertGroup 작성 예정 -->
 </mapper>

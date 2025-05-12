@@ -24,9 +24,10 @@ $yellow: #ffae1f !default;
 $green: #13deb9 !default;
 $teal: #20c997 !default;
 $cyan: #539bff !default;
+$kakao: #FEE500 !default;
 
 // Main Colors
-$primary: #00a1ff !default;
+$primary: #19d5bb !default;
 $secondary: #8965e5 !default;
 $success: #00ceb6 !default;
 $info: #46caeb !default;
@@ -234,3 +235,6 @@ $navbar-light-color: rgba($gray-600, 1) !default;
 $navbar-light-hover-color: rgba($primary, 1) !default;
 $navbar-dark-color: rgba($gray-300, 1) !default;
 $navbar-dark-hover-color: rgba($primary, 1) !default;
+
+// form color
+$form-check-input-checked-bg-color: rgb(25, 213, 187);

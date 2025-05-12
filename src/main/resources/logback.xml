@@ -29,4 +29,17 @@
         <appender-ref ref="FILE"/>
     </root>
 
+    <!-- Application Loggers -->
+    <logger name="com.sist.web">
+        <level value="all" />
+    </logger>
+
+    <logger name="com.sist.config">
+        <level value="all" />
+    </logger>
+
+    <logger name="com.sist.security">
+        <level value="all" />
+    </logger>
+
 </configuration>

@@ -1,6 +1,8 @@
 package com.sist.web.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sist.web.common.exception.code.UserErrorCode;
+import com.sist.web.common.exception.domain.UserException;
 import com.sist.web.user.mapper.UserMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +54,8 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
             if (loginRequest.getPassword() == null) {
                 loginRequest.setPassword("");
             }
-
+            log.debug(loginRequest.getUsername());
+            log.debug(loginRequest.getPassword());
             //user_mail  -> 현재 유효한 회원의 user_no로 변경
             String userNo = userMapper.getEnableUserNo(loginRequest.getUsername().trim());
 
@@ -63,7 +66,8 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 
             return this.getAuthenticationManager().authenticate(authRequest);
         } catch (Exception e) {
-            throw new RuntimeException("로그인 에러 or 비밀번호 불일치",e);
+            log.debug("Login failed", e);
+            throw new UserException(UserErrorCode.FAILED_LOGIN);
         }
     }
 
