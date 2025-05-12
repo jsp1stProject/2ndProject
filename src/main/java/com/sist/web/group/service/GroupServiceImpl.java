@@ -11,6 +11,7 @@ import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.common.exception.domain.GroupException;
 import com.sist.web.group.dao.GroupDAO;
 import com.sist.web.group.dto.GroupDTO;
+import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.dto.GroupMemberDTO;
 import lombok.RequiredArgsConstructor;
 
@@ -65,5 +66,11 @@ public class GroupServiceImpl implements GroupService{
 			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
 		}
 		return list;
+	}
+
+	@Override
+	public void insertJoinRequests(GroupJoinRequestsDTO dto) {
+		gDao.insertJoinRequests(dto);
+		
 	}
 }

@@ -18,6 +18,7 @@ import com.sist.web.common.exception.code.CommonErrorCode;
 import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.common.response.ApiResponse;
 import com.sist.web.group.dto.GroupDTO;
+import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.service.GroupService;
 import com.sist.web.group.dto.GroupMemberDTO;
 
@@ -78,5 +79,25 @@ public class GroupRestController {
 	public ResponseEntity<ApiResponse<List<GroupMemberDTO>>> getGroupMember(Integer groupNo) {
 		List<GroupMemberDTO> list = service.getGroupMemberAllByGroupNo(groupNo);
 		return ResponseEntity.ok(ApiResponse.success(list));
+	}
+	
+	@PostMapping("/{groupNo}/join")
+	public ResponseEntity<ApiResponse<Map<String, Object>>> joinGroupRequests(HttpServletRequest request, int group_no)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+		GroupJoinRequestsDTO dto = new GroupJoinRequestsDTO();
+		try {
+			Long userNo = (Long)request.getAttribute("userno");
+			dto.setUser_no(userNo);
+			dto.setGroup_no(group_no);
+			service.insertJoinRequests(dto);
+			map.put("userNo", userNo);
+			map.put("groupNo", group_no);
+			
+		} catch (Exception e) {
+			log.info("가입 신청 실패: {}", e.getMessage());
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		}
+		return ResponseEntity.ok(ApiResponse.success(map));
 	}
 }

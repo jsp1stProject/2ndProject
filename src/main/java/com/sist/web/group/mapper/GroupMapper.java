@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectKey;
 import com.sist.web.group.dto.GroupDTO;
+import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.dto.GroupMemberDTO;
 
 public interface GroupMapper {
@@ -38,5 +39,8 @@ public interface GroupMapper {
 		
 		@Select("SELECT group_no, user_no, nickname FROM p_group_member WHERE group_no = #{group_no}")
 		public List<GroupMemberDTO> selectGroupMemberAllByGroupNo(@Param("group_no") int groupNo);
+		
+		@Insert("INSERT INTO p_group_joinrequest(request_no, group_no, user_no) VALUES(p_gjoin_req_seq.nextval(), #{group_no}, #{user_no} )")
+		public void insertJoinRequests(GroupJoinRequestsDTO dto);
 		
 }
