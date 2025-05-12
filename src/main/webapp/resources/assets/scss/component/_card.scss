@@ -13,3 +13,8 @@
 .card {
     margin-bottom: 30px;
 }
+
+.accordion-button.inline-accordion:not(.collapsed){
+    background-color:transparent;
+    box-shadow: none;
+}
