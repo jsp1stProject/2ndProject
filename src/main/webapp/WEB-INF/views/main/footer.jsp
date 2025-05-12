@@ -1,8 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<body>
 <div class="container-fluid bg-light text-dark footer my-6 mb-0 py-5">
     <div class="container">
         <div class="row">
@@ -22,5 +19,3 @@
         </div>
     </div>
 </div>
-</body>
-</html>
