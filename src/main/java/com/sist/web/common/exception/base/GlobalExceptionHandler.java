@@ -1,5 +1,9 @@
 package com.sist.web.common.exception.base;
 
+import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolationException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -23,18 +27,28 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
 	}
 	
-	/** 잘못된 입력 (폼 검증 실패) */
+	/** DTO 유효성 검사 실패 (@Valid @RequestBody 등) 
+	 * 	@Valid 또는 @Validated 가 붙은 @RequestBody DTO 에서 유효성 제약 위반 시 자동으로 이곳으로 오게 됩니다
+	 * */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Object>> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        String errorMsg = ex.getBindingResult().getFieldErrors().stream()
+                .map(err -> err.getDefaultMessage())
+                .collect(Collectors.joining(", "));
         ErrorInfo info = CommonErrorCode.INVALID_INPUT;
-        return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
+        return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), errorMsg));
     }
 
-    /** 요청 파라미터 누락 */
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ApiResponse<Object>> handleMissingParameter(MissingServletRequestParameterException ex) {
-        ErrorInfo info = CommonErrorCode.MISSING_PARAMETER;
-        return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
+    /** 단일 파라미터 유효성 검사 실패 (@PathVariable, @RequestParam 등) 
+     * 	위와 동일
+     * */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleConstraintViolation(ConstraintViolationException ex) {
+        String errorMsg = ex.getConstraintViolations().stream()
+                .map(v -> v.getMessage())
+                .collect(Collectors.joining(", "));
+        ErrorInfo info = CommonErrorCode.INVALID_INPUT;
+        return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), errorMsg));
     }
 
     /** 잘못된 HTTP 메서드 요청 */

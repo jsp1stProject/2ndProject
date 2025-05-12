@@ -6,25 +6,22 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <security:authentication-manager>
-        <security:authentication-provider user-service-ref="jdbcUserService">
-            <security:password-encoder ref="bCryptPasswordEncoder"/>
-        </security:authentication-provider>
-        <security:authentication-provider>
-            <security:user-service>
-                <security:user name="admin" password="123" authorities="ROLE_ADMIN" />
-            </security:user-service>
-        </security:authentication-provider>
-    </security:authentication-manager>
+<!--    <security:authentication-manager>-->
+<!--        <security:authentication-provider>-->
+<!--            <security:password-encoder ref="bCryptPasswordEncoder"/>-->
+<!--            <security:jdbc-user-service id="jdbcUserService"-->
+<!--                data-source-ref="ds"-->
+<!--                users-by-username-query="SELECT user_no as username, password, enabled from P_USERS where user_no=? and ENABLED=1"-->
+<!--                authorities-by-username-query="SELECT user_no as username, AUTHORITY from P_AUTHORITIES where user_no=?"-->
 
-    <security:jdbc-user-service id="jdbcUserService"
-        data-source-ref="ds"
-        users-by-username-query="SELECT user_no as username, password, enabled from P_USERS where user_no=? and ENABLED=1"
-        authorities-by-username-query="SELECT user_no as username, AUTHORITY from P_AUTHORITIES where user_no=?"
-    />
-    <import resource="application-datasource.xml"/>
-    <bean id="bCryptPasswordEncoder"
-          class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+<!--            />-->
+<!--        </security:authentication-provider>-->
+<!--    </security:authentication-manager>-->
+
+
+<!--    <import resource="application-datasource.xml"/>-->
+<!--    <bean id="bCryptPasswordEncoder"-->
+<!--          class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>-->
 
 
 

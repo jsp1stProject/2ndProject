@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GroupRestController {
 	private final GroupService service;
 	
-	@GetMapping()
+	@GetMapping
 	public ResponseEntity<ApiResponse<Map<String, Object>>> group_groups()
 	{
 		Map<String, Object> map = new HashMap<>();

@@ -40,12 +40,16 @@
           this.token = res.data.token;
           this.sender_no = res.data.userNo;
           this.sender_nickname = res.data.nickname;
-
-          const socket = new WebSocket(`ws://localhost:8080${contextPath}/ws`);
+      
+          const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+          const host = location.host; // ex) ec2-xx-xx-xx.ap-northeast-2.compute.amazonaws.com:8080
+          const socketUrl = `${protocol}://${host}${contextPath}/ws`;
+      
+          const socket = new WebSocket(socketUrl);
           this.stompClient = Stomp.over(socket);
           this.stompClient.heartbeat.outgoing = 10000;
           this.stompClient.heartbeat.incoming = 10000;
-
+      
           this.stompClient.connect(
             { Authorization: 'Bearer ' + this.token },
             this.loadGroups,
@@ -132,6 +136,7 @@
       async loadInitialOnlineUsers() {
         const res = await axios.get(`${contextPath}/api/groups/${this.group_no}/online`);
         this.onlineUserNos = res.data.data.map(u => Number(u.userNo));
+        console.log('res: ', res.data);
         this.updateMemberOnlineStatus();
       },
       subscribeGroupMessages() {
