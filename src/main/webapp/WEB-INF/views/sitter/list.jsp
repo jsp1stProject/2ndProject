@@ -74,7 +74,6 @@
     </nav>
   </div>
 
-  <!-- Vue + axios ESM -->
   <script type="module">
     import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
     import axios from 'https://cdn.skypack.dev/axios'

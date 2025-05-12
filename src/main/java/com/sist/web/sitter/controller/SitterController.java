@@ -23,12 +23,14 @@ public class SitterController {
 	}
 	
 	@GetMapping("/sitter/insert")
-    public String sitter_insert() {
+    public String sitter_insert() 
+	{
         return "sitter/insert";
     }
 
 	@GetMapping("/sitter/update")
-	public String sitter_update() {
+	public String sitter_update() 
+	{
 	    return "sitter/update";
 	}
 }

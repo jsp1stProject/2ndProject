@@ -11,7 +11,6 @@ import org.apache.ibatis.annotations.Update;
 
 import com.sist.web.sitter.vo.*;
 
-import lombok.Delegate;
 public interface SitterMapper {
 	// 목록
 	// 전체 목록
