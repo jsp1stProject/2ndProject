@@ -46,6 +46,7 @@ public class GroupChatServiceImpl implements GroupChatService {
 		List<GroupChatDTO> list = cDao.selectLatestMessageByGroupNo(groupNo, lastMessageNo);
 		if (list == null || list.isEmpty()) {
 			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
+			// 채팅 내역 비어있을 시 분기 작성 필요.
 		}
 		Collections.reverse(list);
 		return list;
