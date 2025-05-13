@@ -184,7 +184,7 @@
     </div>
 </body>
     <script type="module">
-    	import { initGroupChat } from '${pageContext.request.contextPath}/assets/js/groupchat.js';
+    	import { initGroupChat } from '${pageContext.request.contextPath}/assets/js/groupchat/init.js';
 		import * as Vue from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
     	document.addEventListener('DOMContentLoaded', () => {
    			initGroupChat(`${pageContext.request.contextPath}`, Vue.createApp);

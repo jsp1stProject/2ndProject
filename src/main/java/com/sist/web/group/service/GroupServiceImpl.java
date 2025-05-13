@@ -56,7 +56,7 @@ public class GroupServiceImpl implements GroupService{
 	
 	@Transactional
 	@Override
-	public void addGroup(GroupDTO dto) {
+	public void createGroup(GroupDTO dto) {
 		gDao.insertGroup(dto);
 		
 		GroupMemberDTO member = new GroupMemberDTO();
@@ -75,7 +75,6 @@ public class GroupServiceImpl implements GroupService{
 	
 	@Override
 	public void addGroupMember(GroupMemberDTO dto) {
-		
 		UserVO user = userMapper.getUserMailFromUserNo(String.valueOf(dto.getUser_no()));
 		if (user == null) {
 			throw new GroupException(GroupErrorCode.USER_NOT_FOUND);
@@ -86,10 +85,13 @@ public class GroupServiceImpl implements GroupService{
 	
 	@Override
 	public List<GroupDTO> getGroupAll(String userNo) {
-		if (userNo == null) {
-	        throw new CommonException(CommonErrorCode.MISSING_PARAMETER);
-	    }
-	    return gDao.selectGroup(userNo);
+		List<GroupDTO> list = new ArrayList<GroupDTO>();
+		try {
+			list = gDao.selectGroup(userNo);
+		} catch (Exception ex) {
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		}
+	    return list;
 	}
 	
 	@Override
@@ -98,7 +100,7 @@ public class GroupServiceImpl implements GroupService{
 		try {
 			list = gDao.selectGroupMemberAllByGroupNo(groupNo);
 		} catch (Exception ex) {
-			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
 		}
 		return list;
 	}

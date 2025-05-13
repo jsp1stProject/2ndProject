@@ -12,7 +12,7 @@ public interface GroupService {
 	public List<Map<String, Object>> selectGroupMemberStates(int user_no);
 	public Map<String, Object> getGroupListAndStates(int user_no);
 	public GroupDTO getGroupDetail(int group_no);
-	void addGroup(GroupDTO vo);
+	void createGroup(GroupDTO vo);
 	void addGroupMember(GroupMemberDTO vo);
 	List<GroupDTO> getGroupAll(String userId);
 	List<GroupMemberDTO> getGroupMemberAllByGroupNo(int groupNo);
