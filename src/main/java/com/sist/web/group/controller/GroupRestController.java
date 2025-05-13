@@ -55,9 +55,9 @@ public class GroupRestController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<GroupDTO>> createGroup(@Valid @RequestBody GroupDTO vo) {
+	public ResponseEntity<ApiResponse<GroupDTO>> addGroup(@Valid @RequestBody GroupDTO vo) {
 		try {
-			service.createGroup(vo);
+			service.addGroup(vo);
 		} catch (Exception ex) {
 			log.info("그룹 생성 실패: {}", ex.getMessage());
 			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
@@ -86,6 +86,12 @@ public class GroupRestController {
 		return ResponseEntity.ok(ApiResponse.success(list));
 	}
 	
+	@PostMapping("/members")
+	public ResponseEntity<ApiResponse<GroupMemberDTO>> addGroupMember(@Valid @RequestBody GroupMemberDTO dto) {
+		service.addGroupMember(dto);
+		return ResponseEntity.ok(ApiResponse.success(dto, "그룹 멤버 추가 성공"));
+	}
+	
 	@PostMapping("/{groupNo}/join")
 	public ResponseEntity<ApiResponse<Map<String, Object>>> joinGroupRequests(HttpServletRequest request, int group_no)
 	{
@@ -105,4 +111,5 @@ public class GroupRestController {
 		}
 		return ResponseEntity.ok(ApiResponse.success(map));
 	}
+	
 }

@@ -95,22 +95,25 @@
             <!-- 채팅 목록 -->
             <div class="group-main">
                 <div class="group-chat">
+
                     <div class="chat-body" id="chat-body" ref="scrollContainer">
-                    
-                        <div class="msg d-flex" v-for="msg in messages" :key="msg.message_no">
-                            <a href="#" class="user-profile">
-                                <img src="${pageContext.request.contextPath }/assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
-                            </a>
-                            <div class="msg-body d-flex flex-column">
-                                <div class="user-info">
-                                	<span><b>{{ msg.sender_nickname }}</b></span>
-                                	<span>{{ formatMessageTime(msg.sent_at) }}</span>
-                               	</div>
-                                <div class="msg-content">{{ msg.content }}</div>
+                        <div v-for="(msgList, date) in groupMessagesByDate(messages)" :key="date">
+                            <div class="date-divider">{{ date }}</div>
+                            <div class="msg d-flex" v-for="msg in msgList" :key="msg.message_no">
+                                <a href="#" class="user-profile">
+                                    <img src="${pageContext.request.contextPath }/assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
+                                </a>
+                                <div class="msg-body d-flex flex-column">
+                                    <div class="user-info">
+                                        <span><b>{{ msg.sender_nickname }}</b></span>
+                                        <span>{{ formatMessageTime(msg.sent_at) }}</span>
+                                    </div>
+                                    <div class="msg-content">{{ msg.content }}</div>
+                                </div>
                             </div>
                         </div>
-                        
                     </div>
+
                 </div>
                 <div class="chat-input-wrapper">
                     <div class="chat-input-box d-flex">

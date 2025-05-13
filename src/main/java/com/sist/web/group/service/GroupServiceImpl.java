@@ -16,12 +16,16 @@ import com.sist.web.group.dao.GroupDAO;
 import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.dto.GroupMemberDTO;
+import com.sist.web.user.mapper.UserMapper;
+import com.sist.web.user.vo.UserVO;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class GroupServiceImpl implements GroupService{
 	private final GroupDAO gDao;
+	private final UserMapper userMapper;
 
 	@Override
 	public List<GroupDTO> getGroupAllList() {
@@ -52,21 +56,32 @@ public class GroupServiceImpl implements GroupService{
 	
 	@Transactional
 	@Override
-	public void createGroup(GroupDTO vo) {
-		gDao.insertGroup(vo);
+	public void addGroup(GroupDTO dto) {
+		gDao.insertGroup(dto);
 		
 		GroupMemberDTO member = new GroupMemberDTO();
+		UserVO user = userMapper.getUserMailFromUserNo(String.valueOf(dto.getOwner()));
+		if (user == null) {
+			throw new GroupException(GroupErrorCode.USER_NOT_FOUND);
+		}
 		// group_no, user_no, nickname
-		member.setGroup_no(vo.getGroup_no());
-		member.setUser_no(vo.getOwner());
+		member.setGroup_no(dto.getGroup_no());
+		member.setUser_no(dto.getOwner());
 		member.setRole("OWNER");
+		member.setNickname(user.getNickname());
 		
 		gDao.insertGroupMember(member);
 	}
 	
 	@Override
-	public void addGroupMember(GroupMemberDTO vo) {
-		gDao.insertGroupMember(vo);
+	public void addGroupMember(GroupMemberDTO dto) {
+		
+		UserVO user = userMapper.getUserMailFromUserNo(String.valueOf(dto.getUser_no()));
+		if (user == null) {
+			throw new GroupException(GroupErrorCode.USER_NOT_FOUND);
+		}
+		dto.setNickname(user.getNickname());
+		gDao.insertGroupMember(dto);
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 ﻿const axios = window.axios;
 const Stomp = window.Stomp;
-
+dayjs.locale('ko');
+dayjs.extend(dayjs_plugin_advancedFormat);
 export function initGroupChat(contextPath, createApp) {
   createApp({
     data() {
@@ -246,14 +247,23 @@ export function initGroupChat(contextPath, createApp) {
         const now = dayjs();
         const msgTime = dayjs(datetime);
 
-        dayjs.locale('ko');
-        dayjs.extend(dayjs_plugin_advancedFormat);
-
         if (msgTime.isSame(now, 'day')) {
           return msgTime.format('A h:mm');
         } else {
           return msgTime.format('YYYY-MM-DD A h:mm');
         }
+      },
+      groupMessagesByDate(messages) {
+        const grouped = {};
+
+        messages.forEach(msg => {
+          const date = dayjs(msg.sent_at).format('YYYY년 M월 D일');
+          if (!grouped[date]) {
+            grouped[date] = [];
+          }
+          grouped[date].push(msg);
+        });
+        return grouped;
       }
     }
   }).mount('#app');
