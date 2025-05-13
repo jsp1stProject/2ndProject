@@ -14,4 +14,5 @@ public interface ScheduleService {
 	public Map scheduleInsertData(int group_no, ScheduleVO vo,long user_no);
 	public List<ScheduleVO> scheduleGroupList(int group_no);
 	public Map scheduleGroupListData(int group_no);
+	public List<ScheduleVO> scheduleUserTotalList(long user_no);
 }

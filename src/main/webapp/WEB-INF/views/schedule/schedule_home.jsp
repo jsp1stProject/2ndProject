@@ -5,8 +5,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -27,10 +28,10 @@
       </div>
 
       <div class="card">
-        <div class="card-header">📅 작은 달력</div>
+        <div class="card-header">📌 오늘의 일정</div>
         <div class="card-body">
-          <!-- 미니 달력 자리 -->
-          <input type="date" class="form-control" v-model="selectedDate">
+          <!-- <p v-for="d in ddayList" :key="d.title">✔ {{ d.title }} - D-{{ d.dday }}</p> -->
+          <p> 오늘의 일정 </p>
         </div>
       </div>
     </div>
@@ -38,7 +39,7 @@
     <!-- 중앙 FullCalendar -->
     <div class="col-md-9">
       <div class="card mb-3">
-        <div class="card-header">📆 전체 일정 보기</div>
+        <div class="card-header">📆 큰 달력 보기</div>
         <div class="card-body">
           <div id="calendar"></div>
         </div>
@@ -63,6 +64,33 @@
     </div>
   </div>
 </div>
+<script>
+ document.addEventListener('DOMContentLoaded', function() {
+	 
+	 const calendarEl = document.getElementById('calendar');
+	 
+	 //FullCalendar 옵션 설정
+	 const calendar = new FullCalendar.Calendar(calendarEl, {
+		 initialView: 'dayGridMonth',
+		 selectable:true,
+		 dayMaxEvents:true.
+		 select: function(info){
+			 $('#addEventModal').modal('show');
+		 },
+		 droppable:true;
+		 editable:true;
+		 events:[
+
+			 
+		 ]
+		 eventAdd:function(obj)
+	 });
+	 
+	 
+	 calendar.render();
+ })
+
+</script>
 <script type="module">
   import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
@@ -87,17 +115,20 @@
       }
     },
     mounted() {
+		/*
       const calendarEl = document.getElementById('calendar');
-      const calendar = new FullCalendar.Calendar(calendarEl, {
+      this.calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
         dateClick: this.handleDateClick,
+		eventClick: this.handleEventClick,
         events: this.scheduleList.map(e => ({
           title: e.title,
           start: e.date
         }))
       });
       calendar.render();
+      */
     },
     methods: {
       handleDateClick(info) {

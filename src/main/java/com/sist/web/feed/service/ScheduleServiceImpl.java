@@ -2,6 +2,9 @@ package com.sist.web.feed.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,6 +78,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 		return map;
 	}
 
+
 	@Override
 	public List<ScheduleVO> scheduleGroupList(int group_no) {
 		// TODO Auto-generated method stub
@@ -89,5 +93,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 		map.put("list", list);
 		return map;
 	}
+
+	@Override
+	public List<ScheduleVO> scheduleUserTotalList(long user_no) {
+		// TODO Auto-generated method stub
+		return dao.scheduleUserTotalList(user_no);
+	}
+	
 
 }
