@@ -2,10 +2,7 @@
 		 pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<style>
-	[v-cloak] { display: none; }
-</style>
-<header class="app-header" id="app" v-cloak="true">
+<header class="app-header">
 	<nav class="navbar navbar-light">
 		<ul class="navbar-nav">
 			<a href="${pageContext.request.contextPath}/main">
@@ -43,57 +40,65 @@
 						<i class="ti ti-menu-2"></i>
 					</a>
 				</li>
-				<li v-if="!isLogin" class="nav-item"> <%--로그인 버튼--%>
-					<a class="nav-link" href="${pageContext.request.contextPath}/login">
-						<iconify-icon icon="solar:user-circle-broken" class="fs-8"></iconify-icon>
-					</a>
-				</li>
-				<li v-if="isLogin" class="nav-item dropdown"> <%--알림--%>
-					<a class="nav-link " href="javascript:void(0)" id="drop1" data-bs-toggle="dropdown" aria-expanded="false">
-						<iconify-icon icon="solar:bell-linear" class="fs-7"></iconify-icon>
-						<div class="notification bg-primary rounded-circle"></div>
-					</a>
-					<div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop1">
-						<div class="message-body">
-							<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-								<iconify-icon icon="solar:mention-square-broken" class="fs-6"></iconify-icon>
-								<p class="mb-0 fs-3">[댓글 알림]에 댓글이 달렸습니다.</p>
+				<c:choose>
+					<c:when test="${empty usermail}">
+						<li class="nav-item"> <%--로그인 버튼--%>
+							<a class="nav-link" href="${pageContext.request.contextPath}/login">
+								<iconify-icon icon="solar:user-circle-broken" class="fs-8"></iconify-icon>
 							</a>
-							<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-								<iconify-icon icon="solar:cat-broken" class="fs-6"></iconify-icon>
-								<p class="mb-0 fs-3">돌봄 예약 신청이 도착했습니다.</p>
+						</li>
+					</c:when>
+					<c:otherwise>
+						<li class="nav-item dropdown"> <%--알림--%>
+							<a class="nav-link " href="javascript:void(0)" id="drop1" data-bs-toggle="dropdown" aria-expanded="false">
+								<iconify-icon icon="solar:bell-linear" class="fs-7"></iconify-icon>
+								<div class="notification bg-primary rounded-circle"></div>
 							</a>
-						</div>
-					</div>
-				</li>
-				<li v-if="isLogin" class="nav-item dropdown"> <%--마이페이지 메뉴--%>
-					<a class="nav-link " href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
-						<img src="${pageContext.request.contextPath}/assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
-					</a>
-					<div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
-						<div class="message-body">
-							<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-								<iconify-icon icon="solar:user-broken" class="fs-7"></iconify-icon>
-								<p class="mb-0 fs-3">내 프로필</p>
+							<div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop1">
+								<div class="message-body">
+									<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+										<iconify-icon icon="solar:mention-square-broken" class="fs-6"></iconify-icon>
+										<p class="mb-0 fs-3">[댓글 알림]에 댓글이 달렸습니다.</p>
+									</a>
+									<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+										<iconify-icon icon="solar:cat-broken" class="fs-6"></iconify-icon>
+										<p class="mb-0 fs-3">돌봄 예약 신청이 도착했습니다.</p>
+									</a>
+								</div>
+							</div>
+						</li>
+						<li class="nav-item dropdown"> <%--마이페이지 메뉴--%>
+							<a class="nav-link " href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+								<img src="${pageContext.request.contextPath}/assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
 							</a>
-							<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-								<iconify-icon icon="solar:paw-linear" class="fs-7"></iconify-icon>
-								<p class="mb-0 fs-3">내 반려동물</p>
-							</a>
-							<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-								<iconify-icon icon="solar:user-id-broken" class="fs-7"></iconify-icon>
-								<p class="mb-0 fs-3">펫시터 프로필</p>
-							</a>
-							<a v-if="isAdmin" href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-								<iconify-icon icon="solar:shield-user-bold" class="fs-7"></iconify-icon>
-								<p class="mb-0 fs-3">관리자 페이지</p>
-							</a>
-							<form action="${pageContext.request.contextPath }/logout" method="post" class="px-3 pt-2">
-								<input type="submit" class="btn btn-outline-primary w-100" value="로그아웃">
-							</form>
-						</div>
-					</div>
-				</li>
+							<div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+								<div class="message-body">
+									<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+										<iconify-icon icon="solar:user-broken" class="fs-7"></iconify-icon>
+										<p class="mb-0 fs-3">내 프로필</p>
+									</a>
+									<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+										<iconify-icon icon="solar:paw-linear" class="fs-7"></iconify-icon>
+										<p class="mb-0 fs-3">내 반려동물</p>
+									</a>
+									<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+										<iconify-icon icon="solar:user-id-broken" class="fs-7"></iconify-icon>
+										<p class="mb-0 fs-3">펫시터 프로필</p>
+									</a>
+									<c:if test="${role[0] eq 'ROLE_ADMIN'}">
+										<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+											<iconify-icon icon="solar:shield-user-bold" class="fs-7"></iconify-icon>
+											<p class="mb-0 fs-3">관리자 페이지</p>
+										</a>
+									</c:if>
+									<form action="${pageContext.request.contextPath }/logout" method="post" class="px-3 pt-2">
+										<input type="submit" class="btn btn-outline-primary w-100" value="로그아웃">
+									</form>
+								</div>
+							</div>
+						</li>
+					</c:otherwise>
+				</c:choose>
 			</ul>
 		</div>
 	</nav>
@@ -112,19 +117,6 @@
 		</li>
 	</ul>
 </header>
-<script type="module">
-	import { createApp, ref, computed } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
-
-	createApp({
-		setup() {
-			const isLogin=ref(${not empty usermail});
-			const isAdmin=computed(()=>ref('${role}').value.includes('ROLE_ADMIN'))
-			return {
-				isLogin, isAdmin
-			}
-		}
-	}).mount('#app')
-</script>
 <script>
 	function newmodal(content,name){
 		let html;
