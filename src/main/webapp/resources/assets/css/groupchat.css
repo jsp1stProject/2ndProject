@@ -8,32 +8,35 @@
 }
 
 .group-initial {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background-color: #6c757d; 
-  color: #ffffff;            
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 500;
-  font-size: 16px;
+  width: 52px;
+  height: 52px;
+  background: #ccc;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 40px;
+  white-space: nowrap;
+  overflow: hidden;
   text-transform: uppercase;
 }
 .chat-body {
     height: calc(100vh - 116px);
-    overflow: hidden;
+    overflow-y: hidden;
+    transition: overflow 0.2s ease;
 }
-.simplebar-content-wrapper {
-    height: 100% !important;
-    overflow-y: auto !important;
-    overflow: auto !important;
+
+.chat-body:hover {
+	overflow-y: auto;
 }
-.simplebar-track.simplebar-vertical {
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: 8px !important;
+
+.chat-body::-webkit-scrollbar {
+	width: 8px;
 }
-.simplebar-scrollbar::before {
-    background-color: rgba(0, 0, 0, 0.4);
+
+.chat-body::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 4px;
 }
+

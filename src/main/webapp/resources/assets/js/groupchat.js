@@ -24,6 +24,7 @@ export function initGroupChat(contextPath, createApp) {
         subscription: null,
         createCheck: false,
         group_name: '',
+        currentGroupName: '',
         group_description: '',
 
         scrollTarget: null
@@ -31,6 +32,14 @@ export function initGroupChat(contextPath, createApp) {
     },
     mounted() {
       this.initialize();
+      this.$nextTick(() => {
+        this.scrollTarget = this.$refs.scrollContainer;
+        if (this.scrollTarget) {
+          this.addEventListeners();
+        } else {
+          console.warn('scrollContainer ref를 찾지 못했습니다.');
+        }
+      });
     },
     beforeUnmount() {
       this.removeEventListeners();
@@ -71,6 +80,9 @@ export function initGroupChat(contextPath, createApp) {
         }
       },
       async joinGroup(groupNo) {
+        const seleted = this.availableGroups.find(g => g.group_no === groupNo);
+        this.currentGroupName = seleted?.group_name || '그룹';
+
         this.group_no = groupNo;
         this.messages = [];
         this.lastMessageNo = null;
@@ -78,6 +90,7 @@ export function initGroupChat(contextPath, createApp) {
 
         this.sendJoinMessage();
         await this.loadMessages();
+        this.scrollToBottom();
         await this.loadGroupMembers();
         await this.loadInitialOnlineUsers();
         this.subscribeGroupMessages();
@@ -91,9 +104,7 @@ export function initGroupChat(contextPath, createApp) {
         this.stompClient.send("/pub/user/join", {}, JSON.stringify(payload));
       },
       async loadMessages() {
-        await this.waitForScorllTarget();
         const container = this.scrollTarget;
-        
         let url = `${contextPath}/api/chats/groups/${this.group_no}/messages`;
         if (this.lastMessageNo) url += `?lastMessageNo=${this.lastMessageNo}`;
 
@@ -102,7 +113,7 @@ export function initGroupChat(contextPath, createApp) {
 
         this.isLoading = true;
         const res = await axios.get(url);
-        console.log('res:', res);
+        console.log(res);
         const newMessages = res.data.data;
 
         if (newMessages.length === 0) {
@@ -129,7 +140,6 @@ export function initGroupChat(contextPath, createApp) {
         }
 
         this.isLoading = false;
-        
       },
       async loadGroupMembers() {
         const res = await axios.get(`${contextPath}/api/groups/members`, {
@@ -167,7 +177,7 @@ export function initGroupChat(contextPath, createApp) {
       updateMemberOnlineStatus() {
         const set = new Set(this.onlineUserNos);
         this.members = this.members.map(m => ({
-          ...m,
+          ...m, 
           isOnline: set.has(Number(m.user_no))
         }));
       },
@@ -224,18 +234,25 @@ export function initGroupChat(contextPath, createApp) {
           await this.loadMessages();
         }
       },
-      async waitForScorllTarget(timeout = 2000) {
-        const start = Date.now();
-        while(!this.scrollTarget && Date.now() - start < timeout) {
-          await new Promise(resolve => setTimeout(resolve, 50));
-          const wrapper = this.$refs.scrollContainer?.querySelector('.simplebar-content-wrapper');
-          if (wrapper) {
-            this.scrollTarget = wrapper;
-            this.addEventListeners();
-          }
-        }
-        if (!this.scrollTarget) {
-          console.warn('scroll 설정 실패');
+      getGroupFontSize(name) {
+        const len = name.length;
+        const max = 19;
+        const min = 13;
+        const cal = max - (len - 2) * 2;
+        const size = Math.max(min, Math.min(max, cal));
+        return `font-size: ${size}px`
+      },
+      formatMessageTime(datetime) {
+        const now = dayjs();
+        const msgTime = dayjs(datetime);
+
+        dayjs.locale('ko');
+        dayjs.extend(dayjs_plugin_advancedFormat);
+
+        if (msgTime.isSame(now, 'day')) {
+          return msgTime.format('A h:mm');
+        } else {
+          return msgTime.format('YYYY-MM-DD A h:mm');
         }
       }
     }
