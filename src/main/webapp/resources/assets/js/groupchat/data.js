@@ -21,5 +21,16 @@ export const groupChatData = {
   currentGroupName: '',
   group_description: '',
 
-  scrollTarget: null
+  scrollTarget: null,
+  
+  groupDetail: {
+    group_no: '',
+    group_name: '',
+    description: '',
+    profile_img: null,
+    capacity: 0,
+    is_public: true,
+    owner: ''
+  },
+  groupEditMode: false
 };

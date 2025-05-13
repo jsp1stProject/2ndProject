@@ -11,10 +11,12 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -125,4 +127,26 @@ public class GroupRestController {
 		return ResponseEntity.ok(ApiResponse.success(map));
 	}
 	
+	@GetMapping("/{groupNo}/detail")
+	public ResponseEntity<ApiResponse<GroupDTO>> getGroupDetailByGroupNo(@PathVariable Integer groupNo) {
+		if (groupNo == null) {
+			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
+		}
+		return ResponseEntity.ok(ApiResponse.success(service.getGroupDetailByGroupNo(groupNo)));
+	}
+	
+	@PutMapping(value = "/{groupNo}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<ApiResponse<String>> updateGroupDetail(
+	    @PathVariable("groupNo") Long groupNo,
+	    @RequestPart("group_name") String groupName,
+	    @RequestPart("description") String description,
+	    @RequestPart(value = "profile_img", required = false) MultipartFile profileImg) {
+
+	    String savedPath = null;
+	    if (profileImg != null && !profileImg.isEmpty()) {
+	    	
+	    }
+
+	    return ResponseEntity.ok(ApiResponse.success("수정 완료"));
+	}
 }

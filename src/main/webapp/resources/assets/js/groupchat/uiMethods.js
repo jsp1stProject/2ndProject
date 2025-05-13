@@ -41,11 +41,22 @@ export const uiMethods = {
     }
   },
 
-  async onScroll() {
-    const c = this.scrollTarget;
-    if (c.scrollTop === 0 && !this.isLoading && !this.noMoreMessages) {
-      this.lastMessageNo = this.messages[0]?.message_no;
-      await this.loadMessages();
-    }
+  async openGroupSettingsModal() {
+    this.groupDetail = await this.fetchGroupDetail();
+    this.groupEditMode = false;
+
+    const modal = new bootstrap.Modal(document.getElementById('groupSettingsModal'));
+    modal.show();
+  },
+
+  toggleGroupEditMode() {
+    this.groupEditMode = true;
+  },
+
+  async saveGroupSettings() {
+    await this.updateGroupDetail();
+    alert('수정되었습니다.');
+    this.groupEditMode = false;
+    await this.loadGroups();
   }
 };

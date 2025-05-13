@@ -33,5 +33,19 @@ export const apiMethods = {
     const res = await axios.get(`${this.contextPath}/api/groups/${this.group_no}/online`);
     this.onlineUserNos = res.data.data.map(u => Number(u.userNo));
     this.updateMemberOnlineStatus();
+  },
+  
+  async fetchGroupDetail() {
+    const res = await axios.get(`${this.contextPath}/api/groups/${this.group_no}/detail`);
+    return res.data.data;
+  },
+
+  async updateGroupDetail() {
+    const payload = {
+      group_name: this.groupDetail.group_name,
+      description: this.groupDetail.description
+    };
+    const res = await axios.put(`${this.contextPath}/api/groups/${this.groupDetail.group_no}`, payload);
+    return res.data;
   }
 };

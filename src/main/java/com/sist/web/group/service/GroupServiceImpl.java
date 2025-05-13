@@ -50,8 +50,14 @@ public class GroupServiceImpl implements GroupService{
 		return map;
 	}
 	@Override
-	public GroupDTO getGroupDetail(int group_no) {
-		return gDao.selectGroupDetail(group_no);
+	public GroupDTO getGroupDetailByGroupNo(int group_no) {
+		GroupDTO dto = new GroupDTO();
+		try {
+			dto = gDao.selectGroupDetail(group_no);
+		} catch (Exception ex) {
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		}
+		return dto;
 	}
 	
 	@Transactional

@@ -26,5 +26,15 @@
 			<if test="nickname != null and nickname != ''">, #{nickname}</if>
 		)
 	</insert>
-	<!-- insertGroup 작성 예정 -->
+	<update id="updateGroupDetail" parameterType="com.sist.web.group.dto.GroupDTO">
+		UPDATE p_groups 
+		SET group_name = #{group_name}, 
+			description = #{description},
+			capacity = #{capacity},
+			is_public = #{is_public}
+			<if test="profile_img != null and profile_img != ''">
+				,profile_img = #{profile_img}
+			</if>
+		WHERE group_no = #{group_no}
+	</update>
 </mapper>
