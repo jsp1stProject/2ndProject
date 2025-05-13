@@ -1,5 +1,6 @@
 package com.sist.web.user.mapper;
 
+import com.sist.web.user.vo.UserDetailDTO;
 import com.sist.web.user.vo.UserVO;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,12 @@ import java.util.Map;
 public interface UserMapper {
     @Select("SELECT USER_NO from P_USERS where user_mail=#{user_mail} and ENABLED=1")
     public String getEnableUserNo(String user_mail);
+
+    @Select("SELECT ENABLED from P_USERS where USER_NO=#{userno}")
+    public int checkUserActive(String userno);
+
+    @Select("SELECT u.USER_NO,user_mail,SOCIAL_ID,PASSWORD,USER_NAME,NICKNAME,PHONE,BIRTHDAY,ENABLED,PROFILE,a.AUTHORITY FROM P_USERS u join P_AUTHORITIES a on u.user_no=a.user_no WHERE u.USER_NO=#{user_no}")
+    public UserDetailDTO getUserDtoFromUserNo(String user_no);
 
     @Select("SELECT P_USER_NO_SEQ.nextval from dual")
     public Long getNextUserNo();
