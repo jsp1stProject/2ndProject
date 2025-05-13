@@ -1,140 +1,149 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>펫시터 예약하기</title>
+  <title>펫시터 목록</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-<div id="app" class="container mt-4">
-  <h2 class="mb-4">펫시터 예약하기</h2>
+  <div class="container-fluid" id="app">
+    <h2 class="mb-4">펫시터 목록</h2>
 
-  <form @submit.prevent="submitReservation">
-    <div class="mb-3">
-      <label>예약 일자</label>
-      <input type="date" v-model="form.res_date" class="form-control" required>
-    </div>
-
-    <div class="row mb-3">
-      <div class="col">
-        <label>시작 시간</label>
-        <select v-model="form.start_time" class="form-select">
-          <option v-for="t in timeOptions" :key="t" :value="t">{{ t }}</option>
-        </select>
-      </div>
-      <div class="col">
-        <label>종료 시간</label>
-        <select v-model="form.end_time" class="form-select">
-          <option v-for="t in timeOptions" :key="t" :value="t">{{ t }}</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <label>만남 장소</label><br>
-      <div class="form-check form-check-inline" v-for="type in locationTypes" :key="type">
-        <input class="form-check-input" type="radio" :value="type" v-model="form.location_type">
-        <label class="form-check-label">{{ type }}</label>
-      </div>
-      <textarea v-if="form.location_type === '기타'" v-model="form.location_detail"
-                class="form-control mt-2" placeholder="기타 장소 설명 입력"></textarea>
-    </div>
-
-    <div class="mb-3">
-      <label>돌봄 받을 반려동물</label>
-      <div v-for="pet in petsList" :key="pet.pet_no" class="form-check">
-        <input class="form-check-input" type="checkbox" :value="pet.pet_no" v-model="form.pet_nos">
-        <label class="form-check-label">{{ pet.pet_name }} ({{ pet.pet_type }}/{{ pet.pet_subtype }})</label>
-      </div>
-    </div>
-
-    <div class="border p-3 bg-light mt-3">
-      <h5>예약 요약</h5>
-      날짜: {{ form.res_date || '-' }}<br>
-      시간: {{ summaryTime }}<br>
-      장소: {{ form.location_type }}<br>
-      선택한 반려동물 수: {{ form.pet_nos.length }}<br>
-      총 가격: {{ formattedPrice }} 원
-    </div>
-
-    <button type="submit" class="btn btn-primary mt-4">예약하기</button>
-  </form>
+<div class="d-flex justify-content-end mb-3">
+  <button class="btn btn-success" @click="goInsert">새 글 쓰기</button>
 </div>
+    <!-- 필터 영역 -->
+    <div class="mb-4">
+      <label for="fd">필터 기준:</label>
+      <select v-model="fd" id="fd" class="form-select w-auto d-inline-block">
+        <option value="care_loc">지역</option>
+        <option value="tag">태그</option>
+      </select>
 
-<script type="module">
-  import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
-  import axios from 'https://cdn.skypack.dev/axios';
+      <div class="form-check form-check-inline" v-for="option in filterOptions" :key="option">
+        <input class="form-check-input" type="checkbox" :value="option" v-model="ss">
+        <label class="form-check-label">{{ option }}</label>
+      </div>
 
-  const pet_first_price = ${petFirstPrice};
-  const petsList = JSON.parse('${petsJson}');
-  const sitter_no = ${sitterNo};
+      <button class="btn btn-secondary btn-sm ms-2" @click="dataRecv(1)">검색</button>
+      <button class="btn btn-outline-secondary btn-sm ms-2" @click="resetFilter">초기화</button>
+    </div>
 
-  const app = createApp({
-    data() {
-      return {
-        pet_first_price,
-        petsList,
-        locationTypes: ['신청자 집', '거리', '기타'],
-        timeOptions: [...Array(14).keys()].flatMap(h => {
-          const hour = h + 8;
-          return [`${hour}:00`, `${hour}:30`];
-        }),
-        form: {
-          res_date: '',
-          start_time: '',
-          end_time: '',
-          location_type: '신청자 집',
-          location_detail: '',
-          pet_nos: []
+    <!-- 펫시터 카드 목록 -->
+    <div v-if="list.length > 0">
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col" v-for="sitter in list" :key="sitter.sitter_no">
+          <div class="card h-100">
+            <img :src="sitter.sitter_pic" class="card-img-top" alt="sitter_pic">
+            <div class="card-body">
+              <h5 class="card-title">{{ sitter.user.nickname }} ({{ sitter.user.user_name }})</h5>
+              <p class="card-text">{{ sitter.content }}</p>
+              <ul class="list-unstyled">
+                <li><strong>태그:</strong> {{ sitter.tag }}</li>
+                <li><strong>돌봄 횟수:</strong> {{ sitter.carecount }}</li>
+                <li><strong>평점:</strong> {{ sitter.score }}</li>
+                <li><strong>지역:</strong> {{ sitter.care_loc }}</li>
+                <li><strong>시작가:</strong> {{ sitter.pet_first_price }}</li>
+              </ul>
+              <button class="btn btn-primary mt-2" @click="goDetail(sitter.sitter_no)">
+                상세보기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="text-muted">목록이 없습니다.</div>
+
+    <!-- 페이지네이션 -->
+    <nav class="mt-5">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" :class="{ disabled: curpage === 1 }">
+          <a class="page-link" href="#" @click.prevent="changePage(curpage - 1)">이전</a>
+        </li>
+
+        <li class="page-item" v-for="i in pageRange" :key="i" :class="{ active: curpage === i }">
+          <a class="page-link" href="#" @click.prevent="changePage(i)">{{ i }}</a>
+        </li>
+
+        <li class="page-item" :class="{ disabled: curpage === totalpage }">
+          <a class="page-link" href="#" @click.prevent="changePage(curpage + 1)">다음</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Vue + axios ESM -->
+  <script type="module">
+    import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+    import axios from 'https://cdn.skypack.dev/axios'
+
+    createApp({
+      data() {
+        return {
+          list: [],
+          curpage: 1,
+          totalpage: 1,
+          startPage: 1,
+          endPage: 1,
+          fd: 'care_loc',
+          ss: [],
+          filterOptions: ['서울', '경기', '인천', '고양이전문', '강아지전문']
+        }
+      },
+      computed: {
+        pageRange() {
+          const range = []
+          for (let i = this.startPage; i <= this.endPage; i++) {
+            range.push(i)
+          }
+          return range
+        }
+      },
+      mounted() {
+        this.dataRecv(1)
+      },
+      methods: {
+        async dataRecv(page) {
+          try {
+            const params = {
+              page: page,
+              fd: this.fd,
+              ss: this.ss.join(',')
+            }
+            const res = await axios.get('/web/sitter/list_vue', { params })
+            this.list = res.data.list
+            this.curpage = res.data.curpage
+            this.totalpage = res.data.totalpage
+            this.startPage = res.data.startPage
+            this.endPage = res.data.endPage
+          } catch (error) {
+            console.error('❌ 데이터 로드 오류:', error)
+          }
+        },
+        changePage(page) {
+          if (page >= 1 && page <= this.totalpage) {
+            this.dataRecv(page)
+          }
+        },
+        resetFilter() {
+          this.ss = []
+          this.dataRecv(1)
+        },
+  goInsert() {
+    location.href = `/web/sitter/insert`;
+  },
+        goDetail(sitter_no) {
+          if (!sitter_no) {
+            alert("⚠ sitter_no가 없습니다!")
+            return
+          }
+          location.href = `/web/sitter/detail?sitter_no=${sitter_no}`
         }
       }
-    },
-    computed: {
-      summaryTime() {
-        return this.form.start_time && this.form.end_time
-          ? this.form.start_time ~ this.form.end_time
-          : '-';
-      },
-      formattedPrice() {
-        const count = this.form.pet_nos.length;
-        const hours = this.calcHourDiff(this.form.start_time, this.form.end_time);
-        const total = hours * count * this.pet_first_price;
-        return isNaN(total) ? 0 : total.toLocaleString();
-      }
-    },
-    methods: {
-      calcHourDiff(start, end) {
-        if (!start || !end) return 0;
-        const [sh, sm] = start.split(':').map(Number);
-        const [eh, em] = end.split(':').map(Number);
-        const diff = (eh * 60 + em) - (sh * 60 + sm);
-        return diff <= 0 ? 0 : Math.ceil(diff / 60);
-      },
-      submitReservation() {
-        const payload = {
-          ...this.form,
-          sitter_no,
-          total_price: this.formattedPrice.replace(/,/g, '')
-        };
-
-        axios.post("/sitter/reserve_vue", payload)
-          .then(res => {
-            alert("예약이 완료되었습니다.");
-            location.href = "/sitter/resList";
-          })
-          .catch(err => {
-            alert("예약에 실패했습니다.");
-            console.error(err);
-          });
-      }
-    }
-  });
-
-  app.mount('#app');
-</script>
+    }).mount('#app')
+  </script>
 </body>
 </html>
