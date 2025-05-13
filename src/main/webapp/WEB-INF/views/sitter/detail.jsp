@@ -106,19 +106,19 @@
         if (!sitter_no) return
         this.sitter_no = sitter_no
         this.fetchReviews(sitter_no)
-        axios.get(`/web/sitter/detail_vue`, { params: { sitter_no } })
+        axios.get(`/web/sitter/detail_vue`, { params: { sitter_no:this.sitter_no } })
              .then(res => this.sitter = res.data)
       },
       methods: {
         goUpdate(sitter_no) {
-          location.href = `/web/sitter/update?sitter_no=${sitter_no}`
+          location.href ='/web/sitter/update?sitter_no='+sitter_no
         },
         async deletePost() {
           if (!confirm("정말 삭제하시겠습니까?")) return
           const res = await axios.delete('/web/sitter/delete', { params: { sitter_no: this.sitter_no } })
           if (res.data === 'success') {
             alert("삭제 완료")
-            location.href = "/web/sitter"
+            location.href = "/web/sitter/list"
           } else {
             alert("삭제 실패")
           }

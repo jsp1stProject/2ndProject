@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,18 +66,25 @@ public class SitterRestController {
 
 	    // 상세보기
 	    @GetMapping("/sitter/detail_vue")
-	    public ResponseEntity<SitterVO> sitter_detail(int sitter_no, HttpSession session) {
+	    public ResponseEntity<SitterVO> sitter_detail(int sitter_no) {
 	        try {
-	            String id = (String) session.getAttribute("user_id");
-	            System.out.println("세션 ID: " + id);
+	        	System.out.println("detail_vue============================");
+	            System.out.println("받은 sitter_no: " + sitter_no);
+
 	            SitterVO vo = service.sitterDetailData(sitter_no);
+	            if (vo == null) {
+	                System.out.println("sitterDetailData 리턴값이 null입니다.");
+	                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+	            }
+
 	            return new ResponseEntity<>(vo, HttpStatus.OK);
 	        } catch (Exception ex) {
-	            ex.printStackTrace(); 
+	            System.out.println("🔥 서버 오류 발생:");
+	            ex.printStackTrace(); // 로그 확인 필수
 	            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 	        }
 	    }
-	    
+
 	    // 새글
 	    @PostMapping("/sitter/insert")
 	    public ResponseEntity<String> sitter_insert(@RequestBody SitterVO vo, HttpSession session) {
@@ -106,23 +114,20 @@ public class SitterRestController {
 
 	    // 수정
 	    @PostMapping("/sitter/update")
-	    public ResponseEntity<String> sitter_update(@RequestBody SitterVO vo, HttpSession session) {
+	    public ResponseEntity<String> sitter_update(@RequestBody SitterVO vo) {
 	        try {
-	            int sessionUserNo = (int) session.getAttribute("user_no");
-	            vo.setUser_no(sessionUserNo);
 	            service.sitterUpdate(vo);
-	            return new ResponseEntity<>("수정 완료", HttpStatus.OK);
+	            return new ResponseEntity<>("success", HttpStatus.OK);
 	        } catch (Exception ex) {
 	            ex.printStackTrace();
-	            return new ResponseEntity<>("수정 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+	            return new ResponseEntity<>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
 	        }
 	    }
 
 	    // 삭제
 	    @DeleteMapping("/sitter/delete")
-	    public ResponseEntity<String> sitter_delete(@RequestParam int sitter_no, HttpSession session) {
+	    public ResponseEntity<String> sitter_delete(@RequestParam int sitter_no) {
 	        try {
-	            int sessionUserNo = (int) session.getAttribute("user_no");
 	            service.sitterDelete(sitter_no);
 	            return new ResponseEntity<>("success", HttpStatus.OK);
 	        } catch (Exception ex) {
@@ -146,11 +151,8 @@ public class SitterRestController {
 
 	    // 삽입
 	    @PostMapping("/sitter/review")
-	    public ResponseEntity<String> review_insert(@RequestBody SitterReviewVO vo, HttpSession session) {
+	    public ResponseEntity<String> review_insert(@RequestBody SitterReviewVO vo) {
 	        try {
-	            Integer user_no = (Integer) session.getAttribute("user_no"); // 테스트 시 null 허용해도 됨
-	            if (user_no == null) user_no = 1; // 테스트용 기본값
-	            vo.setUser_no(user_no);
 	            service.reviewInsert(vo);
 	            return new ResponseEntity<>("success", HttpStatus.OK);
 	        } catch (Exception e) {
@@ -163,9 +165,6 @@ public class SitterRestController {
 	    @PostMapping("/sitter/review/reply")
 	    public ResponseEntity<String> reply_insert(@RequestBody SitterReviewVO vo, HttpSession session) {
 	        try {
-	            Integer user_no = (Integer) session.getAttribute("user_no");
-	            if (user_no == null) user_no = 1;
-	            vo.setUser_no(user_no);
 	            service.replyInsert(vo);
 	            return new ResponseEntity<>("success", HttpStatus.OK);
 	        } catch (Exception e) {

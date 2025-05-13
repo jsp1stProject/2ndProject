@@ -21,11 +21,21 @@ public interface SitterMapper {
 		      + "FROM p_sitter ps JOIN p_users pu ON ps.user_no = pu.user_no "
 		      + "ORDER BY ps.sitter_no ASC)) "
 		      + "WHERE num BETWEEN #{start} AND #{end}")
-			@Results({
-		    @Result(property = "sitter_no", column = "sitter_no"),
-		    @Result(property = "user.nickname", column = "nickname"),
-		    @Result(property = "user.user_name", column = "user_name")
-			})
+	@Results({
+	    @Result(property = "sitter_no", column = "sitter_no"),
+	    @Result(property = "jjimcount", column = "jjimcount"),
+	    @Result(property = "carecount", column = "carecount"),
+	    @Result(property = "score", column = "score"),
+	    @Result(property = "tag", column = "tag"),
+	    @Result(property = "content", column = "content"),
+	    @Result(property = "sitter_pic", column = "sitter_pic"),
+	    @Result(property = "care_loc", column = "care_loc"),
+	    @Result(property = "pet_first_price", column = "pet_first_price"),
+
+	    @Result(property = "user.nickname", column = "nickname"),
+	    @Result(property = "user.user_name", column = "user_name")
+	})
+
 		public List<SitterVO> sitterListDataAll(Map map);
 
 	// 필터 포함
@@ -38,11 +48,21 @@ public interface SitterMapper {
 		      + "FROM dual CONNECT BY LEVEL <= LENGTH(REGEXP_REPLACE(#{st}, '[^,]', '')) + 1) "
 		      + "ORDER BY ps.sitter_no ASC)) "
 		      + "WHERE num BETWEEN #{start} AND #{end}")
-			@Results({
-		    @Result(property = "sitter_no", column = "sitter_no"),
-		    @Result(property = "user.nickname", column = "nickname"),
-		    @Result(property = "user.user_name", column = "user_name")
-			})
+	@Results({
+	    @Result(property = "sitter_no", column = "sitter_no"),
+	    @Result(property = "jjimcount", column = "jjimcount"),
+	    @Result(property = "carecount", column = "carecount"),
+	    @Result(property = "score", column = "score"),
+	    @Result(property = "tag", column = "tag"),
+	    @Result(property = "content", column = "content"),
+	    @Result(property = "sitter_pic", column = "sitter_pic"),
+	    @Result(property = "care_loc", column = "care_loc"),
+	    @Result(property = "pet_first_price", column = "pet_first_price"),
+
+	    @Result(property = "user.nickname", column = "nickname"),
+	    @Result(property = "user.user_name", column = "user_name")
+	})
+
 		public List<SitterVO> sitterListDataWithFilter(Map map);
 
 	// 페이지 수
@@ -120,13 +140,13 @@ public interface SitterMapper {
 
 	// 리뷰 작성
 	@Insert("INSERT INTO p_sitter_review(review_no, sitter_no, user_no, rev_score, rev_comment, group_id) " +
-	        "VALUES(p_sitrev_seq.NEXTVAL, #{sitter_no}, #{user_no}, #{rev_score}, #{rev_comment}, " +
+	        "VALUES(p_sitrev_no_seq.NEXTVAL, #{sitter_no}, #{user_no}, #{rev_score}, #{rev_comment}, " +
 	        "(SELECT NVL(MAX(group_id)+1, 1) FROM p_sitter_review))")
 	public void reviewInsert(SitterReviewVO vo);
 
 	// 대댓글
 	@Insert("INSERT INTO p_sitter_review(review_no, sitter_no, user_no, rev_score, rev_comment, group_id, group_step) " +
-	        "VALUES(p_sitrev_seq.NEXTVAL, #{sitter_no}, #{user_no}, NULL, #{rev_comment}, #{group_id}, #{group_step})")
+	        "VALUES(p_sitrev_no_seq.NEXTVAL, #{sitter_no}, #{user_no}, NULL, #{rev_comment}, #{group_id}, #{group_step})")
 	public void replyInsert(SitterReviewVO vo);
 
 	// 리뷰 수정
@@ -137,9 +157,6 @@ public interface SitterMapper {
 	// 리뷰 삭제
 	@Delete("DELETE FROM p_sitter_review WHERE review_no = #{review_no}")
 	public void reviewDelete(int review_no);
-
-	
-	// 예약
 	 
 	
 	

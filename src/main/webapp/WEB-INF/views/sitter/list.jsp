@@ -140,7 +140,7 @@
             alert("⚠ sitter_no가 없습니다!")
             return
           }
-          location.href = `/web/sitter/detail?sitter_no=${sitter_no}`
+          location.href = '/web/sitter/detail?sitter_no='+sitter_no
         }
       }
     }).mount('#app')
