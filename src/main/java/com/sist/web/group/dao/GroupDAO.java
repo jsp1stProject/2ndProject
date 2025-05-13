@@ -1,10 +1,12 @@
 package com.sist.web.group.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import com.sist.web.group.dto.GroupDTO;
+import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.mapper.GroupMapper;
 import com.sist.web.group.dto.GroupMemberDTO;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,10 @@ public class GroupDAO {
 		return mapper.selectGroupAllList();
 	}
 	
+	public List<Map<String, Object>> selectGroupMemberStates(int user_no)
+	{
+		return mapper.selectGroupMemberStates(user_no);
+	}
 	public GroupDTO selectGroupDetail(int group_no)
 	{
 		return mapper.selectGroupDetail(group_no);
@@ -38,6 +44,11 @@ public class GroupDAO {
 	/** 그룹원 추가 (필요 데이터: group_no, user_no) */
 	public void insertGroupMember(GroupMemberDTO vo) {
 		mapper.insertGroupMember(vo);
+	}
+	
+	/** 그룹가입 신청 (필요 데이터: group_no, user_no) */
+	public void insertJoinRequests(GroupJoinRequestsDTO dto) {
+		mapper.insertJoinRequests(dto);
 	}
 	
 	/** 해당 user_no 가 속한 모든 그룹 조회 */

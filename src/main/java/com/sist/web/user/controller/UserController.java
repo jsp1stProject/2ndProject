@@ -74,6 +74,20 @@ public class UserController {
         return "main/main";
     }
 
-    
+    @GetMapping("chat/test")
+    public String chat_test(Model model) {
+        return "groupchat/chat_style";
+    }
 
+    @GetMapping("grouplist/test")
+    public String grouplist_test(Model model) {
+        model.addAttribute("main_jsp", "../group/listtest.jsp");
+        return "main/main";
+    }
+
+    @GetMapping("groupdetail/test")
+    public String groupdetail_test(Model model) {
+        model.addAttribute("main_jsp", "../group/detailtest.jsp");
+        return "main/main";
+    }
 }

@@ -1,5 +1,7 @@
 package com.sist.web.group.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +20,7 @@ import com.sist.web.common.exception.code.CommonErrorCode;
 import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.common.response.ApiResponse;
 import com.sist.web.group.dto.GroupDTO;
+import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.service.GroupService;
 import com.sist.web.group.dto.GroupMemberDTO;
 
@@ -32,12 +35,15 @@ public class GroupRestController {
 	private final GroupService service;
 	
 	@GetMapping
-	public ResponseEntity<ApiResponse<Map<String, Object>>> group_groups()
+	public ResponseEntity<ApiResponse<Map<String, Object>>> group_groups(HttpServletRequest request)
 	{
 		Map<String, Object> map = new HashMap<>();
 		try {
-			List<GroupDTO> list = service.getGroupAllList();
-			map.put("list", list);
+			Long userNo = (Long)request.getAttribute("userno");
+			int user_no = userNo.intValue();
+			System.out.println(user_no);
+			map = service.getGroupListAndStates(user_no);
+			System.out.println(map);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -78,5 +84,25 @@ public class GroupRestController {
 	public ResponseEntity<ApiResponse<List<GroupMemberDTO>>> getGroupMember(Integer groupNo) {
 		List<GroupMemberDTO> list = service.getGroupMemberAllByGroupNo(groupNo);
 		return ResponseEntity.ok(ApiResponse.success(list));
+	}
+	
+	@PostMapping("/{groupNo}/join")
+	public ResponseEntity<ApiResponse<Map<String, Object>>> joinGroupRequests(HttpServletRequest request, int group_no)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+		GroupJoinRequestsDTO dto = new GroupJoinRequestsDTO();
+		try {
+			Long userNo = (Long)request.getAttribute("userno");
+			dto.setUser_no(userNo);
+			dto.setGroup_no(group_no);
+			service.insertJoinRequests(dto);
+			map.put("userNo", userNo);
+			map.put("groupNo", group_no);
+			
+		} catch (Exception e) {
+			log.info("가입 신청 실패: {}", e.getMessage());
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		}
+		return ResponseEntity.ok(ApiResponse.success(map));
 	}
 }
