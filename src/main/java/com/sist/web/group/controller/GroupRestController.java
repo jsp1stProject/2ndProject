@@ -108,17 +108,17 @@ public class GroupRestController {
 	}
 	
 	@PostMapping("/{groupNo}/join")
-	public ResponseEntity<ApiResponse<Map<String, Object>>> joinGroupRequests(HttpServletRequest request, int group_no)
+	public ResponseEntity<ApiResponse<Map<String, Object>>> joinGroupRequests(@PathVariable("groupNo") Integer groupNo, HttpServletRequest request)
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
 		GroupJoinRequestsDTO dto = new GroupJoinRequestsDTO();
 		try {
 			Long userNo = (Long)request.getAttribute("userno");
 			dto.setUser_no(userNo);
-			dto.setGroup_no(group_no);
+			dto.setGroup_no(groupNo);
 			service.insertJoinRequests(dto);
 			map.put("userNo", userNo);
-			map.put("groupNo", group_no);
+			map.put("groupNo", groupNo);
 			
 		} catch (Exception e) {
 			log.info("가입 신청 실패: {}", e.getMessage());

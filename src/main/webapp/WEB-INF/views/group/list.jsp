@@ -154,6 +154,7 @@
       data() {
         return {
           list: [],
+		  states_list:[],
 		  user_no : '',
           selectedFiles: [],
           newPost: {
@@ -178,9 +179,9 @@
 			 alert("로그인페이지로이동");
 			 location.href = '';
 		  }
-		  axios.post('../group/join',{
-				group_no : group_no,
-				user_no : this.user_no
+		  axios.post(`/api/groups/${group_no}/join`,{
+
+
 		  }).then(res => {
 			 alert("가입 신청 완료!!")
 			 this.dataRecv();
