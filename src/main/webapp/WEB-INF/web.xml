@@ -20,15 +20,15 @@
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
-<!--    <error-page>-->
-<!--        <error-code>404</error-code>-->
-<!--        <location>/WEB-INF/views/main/error.jsp</location>&lt;!&ndash; 404 Not Found 페이지 &ndash;&gt;-->
-<!--    </error-page>-->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error</location><!-- 404 Not Found 페이지 -->
+    </error-page>
 
-<!--    <error-page>-->
-<!--        <error-code>500</error-code>-->
-<!--        <location>/WEB-INF/views/main/error.jsp</location>&lt;!&ndash; 500 Internal Server Error 페이지 &ndash;&gt;-->
-<!--    </error-page>-->
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error</location><!-- 500 Internal Server Error 페이지 -->
+    </error-page>
     <!-- 한글 변환 -->
     <filter>
         <filter-name>encodingFilter</filter-name>
