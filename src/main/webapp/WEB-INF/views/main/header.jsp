@@ -73,7 +73,7 @@
 							</a>
 							<div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
 								<div class="message-body">
-									<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+									<a href="${pageContext.request.contextPath}/mypage/profile" class="d-flex align-items-center gap-2 dropdown-item">
 										<iconify-icon icon="solar:user-broken" class="fs-7"></iconify-icon>
 										<p class="mb-0 fs-3">내 프로필</p>
 									</a>
