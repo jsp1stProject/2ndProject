@@ -1,6 +1,11 @@
 package com.sist.web.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sist.web.common.exception.code.CommonErrorCode;
+import com.sist.web.common.exception.code.UserErrorCode;
+import com.sist.web.common.exception.domain.CommonException;
+import com.sist.web.common.exception.domain.UserException;
+import com.sist.web.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.C;
@@ -24,7 +29,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        log.error("Not Authenticated Request", authException);
+        log.error("Not Authenticated Request");
         log.error("Request URI: {}", request.getRequestURI());
         String uri = request.getRequestURI();
         String accept = request.getHeader("Accept");
@@ -35,20 +40,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                 (accept != null && accept.contains("application/json"));
         if (isAjax) {
             //api 요청이거나 json 응답 요청이면
+            response.setContentType("application/json;charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            Map<String, String> map = new HashMap<>();
-            map.put("error", "401");
-            map.put("message", "로그인이 필요합니다.");
-            response.getWriter().write(om.writeValueAsString(map));
-            response.getWriter().flush();
-            response.getWriter().close();
+            String json=om.writeValueAsString(ApiResponse.fail(CommonErrorCode.SC_UNAUTHORIZED.getCode(),CommonErrorCode.SC_UNAUTHORIZED.getMessage()));
+            response.getWriter().write(json);
         } else{
-            request.setAttribute("message", "로그인이 필요합니다.");
-            request.setAttribute("error", HttpServletResponse.SC_UNAUTHORIZED);
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/main/error.jsp");
-            rd.forward(request, response);
+            response.sendRedirect("/login");
         }
 
     }
