@@ -125,3 +125,27 @@
 		}
 	}).mount('#app')
 </script>
+<script>
+	function newmodal(content,name){
+		let html;
+		html = `
+		<div class="modal" id="`+name+`" tabindex="-1">
+		<div class="modal-dialog modal-sm modal-dialog-scrollable modal-dialog-centered">
+		<div class="modal-content">
+		<div class="modal-header">
+		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div class="modal-body">
+		<p>`+content+`</p>
+		</div>
+		<div class="modal-footer">
+		<button type="button" class="btn btn-outline-dark">취소</button>
+		<button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close">확인</button>
+		</div>
+		</div>
+		</div>
+		</div>`;
+		$('body').append(html);
+		return new bootstrap.Modal($('#'+name));
+	}
+</script>
