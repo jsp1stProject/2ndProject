@@ -14,9 +14,10 @@ public class GroupController {
 	}
 	
 	@GetMapping("/group/detail")
-	public String group_detail()
+	public String group_detail(Model model)
 	{
-		return "group/detail";
+		model.addAttribute("main_jsp", "../group/detail.jsp");
+		return "main/main";
 	}
 	
 	@GetMapping("/group/member_management")

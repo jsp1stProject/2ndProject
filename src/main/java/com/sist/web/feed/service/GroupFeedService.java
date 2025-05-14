@@ -15,7 +15,7 @@ public interface GroupFeedService {
 	public GroupVO groupDetailData(int group_no);
 	public List<FeedVO> feedListData(int group_no);
 	public List<FeedFileInfoVO> fileListData(int feed_no);
-	public List<GroupMemberVO> joined_groupmember(int group_no);
+	//public List<GroupMemberVO> joined_groupmember(int group_no);
 	public Map groupFeedData(int group_no);
 	public int feedInsertData(FeedVO vo);
 	public void feedFileInsert(FeedFileInfoVO vo);

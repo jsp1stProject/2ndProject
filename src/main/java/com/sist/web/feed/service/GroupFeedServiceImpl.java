@@ -17,12 +17,17 @@ import org.springframework.stereotype.Service;
 
 import com.sist.web.feed.dao.*;
 import com.sist.web.feed.vo.*;
+import com.sist.web.group.dao.GroupDAO;
+import com.sist.web.group.dto.GroupMemberDTO;
 
 @Service
 public class GroupFeedServiceImpl implements GroupFeedService{
 	
 	@Autowired
 	private GroupFeedDAO dao;
+	
+	@Autowired
+	private GroupDAO gdao;
 	
 	@Override
 	public List<GroupVO> groupListData() {
@@ -51,13 +56,13 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		
 		return dao.fileListData(no);
 	}
-
+/*
 	@Override
 	public List<GroupMemberVO> joined_groupmember(int group_no) {
 		// TODO Auto-generated method stub
 		return dao.joined_groupmember(group_no);
 	}
-	
+	*/
 	@Override
 	public Map groupFeedData(int group_no)
 	{
@@ -82,7 +87,7 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 			*/
 			//stream으로 하면 코드는 간편한데 아직 공부못한부분
 		}
-		List<GroupMemberVO> mvo = joined_groupmember(group_no);
+		List<GroupMemberDTO> mvo = gdao.selectGroupMemberAllByGroupNo(group_no);
 		System.out.println("mvo"+mvo);
 		map.put("mvo", mvo);
 		map.put("list", feedList);

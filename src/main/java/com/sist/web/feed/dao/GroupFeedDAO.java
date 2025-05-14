@@ -19,12 +19,12 @@ public class GroupFeedDAO {
 	{
 		return mapper.groupListData();
 	}
-	
+	/*
 	public List<GroupMemberVO> joined_groupmember(int group_no)
 	{
 		return mapper.joined_groupmember(group_no);
 	}
-	
+	*/
 	public GroupVO groupDetailData(int group_no)
 	{
 		return mapper.groupDetailData(group_no);
