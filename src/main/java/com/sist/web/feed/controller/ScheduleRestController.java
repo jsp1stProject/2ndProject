@@ -27,12 +27,12 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-//@RequestMapping("api/schedules")
+@RequestMapping("api/schedules")
 public class ScheduleRestController {
 	
 	private final ScheduleService service;
 	
-	@GetMapping("api/schedules")
+	@GetMapping()
 	public ResponseEntity<Map> schedule_group_list(int group_no, HttpServletRequest request)
 	{
 		Map map = new HashMap();
@@ -50,7 +50,7 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(map,HttpStatus.OK);
 	}
 	
-	@PostMapping("api/schedules")
+	@PostMapping("{group_no}")
 	public ResponseEntity<Map> schedule_insert(@ModelAttribute ScheduleVO vo,
 											@RequestParam("group_no") int group_no,
 											@RequestParam("participants") List<Long> participants,
@@ -71,6 +71,22 @@ public class ScheduleRestController {
 			// TODO: handle exception
 			System.out.println("오류발생");
 			e.printStackTrace();
+			return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+		}		
+		return new ResponseEntity<>(map,HttpStatus.OK);
+	}
+	
+	@GetMapping("/{user_no}")
+	public ResponseEntity<Map<String, Object>> user_schedule_list (HttpServletRequest request)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			long user_no = (long)request.getAttribute("userno");
+			List<ScheduleVO> list = service.scheduleUserTotalList(16);
+			map.put("list", list);
+		} catch (Exception e) {
+			// TODO: handle exception.
+			return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
 		}		
 		return new ResponseEntity<>(map,HttpStatus.OK);
 	}

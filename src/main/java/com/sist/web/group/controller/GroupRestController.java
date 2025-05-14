@@ -108,17 +108,18 @@ public class GroupRestController {
 	}
 	
 	@PostMapping("/{groupNo}/join")
-	public ResponseEntity<ApiResponse<Map<String, Object>>> joinGroupRequests(HttpServletRequest request, int group_no)
+	public ResponseEntity<ApiResponse<Map<String, Object>>> joinGroupRequests(@PathVariable("groupNo") Integer groupNo, HttpServletRequest request)
 	{
+		System.out.println("가입포스트매핑");
 		Map<String, Object> map = new HashMap<String, Object>();
 		GroupJoinRequestsDTO dto = new GroupJoinRequestsDTO();
 		try {
 			Long userNo = (Long)request.getAttribute("userno");
 			dto.setUser_no(userNo);
-			dto.setGroup_no(group_no);
+			dto.setGroup_no(groupNo);
 			service.insertJoinRequests(dto);
 			map.put("userNo", userNo);
-			map.put("groupNo", group_no);
+			map.put("groupNo", groupNo);
 			
 		} catch (Exception e) {
 			log.info("가입 신청 실패: {}", e.getMessage());
@@ -168,5 +169,36 @@ public class GroupRestController {
         service.updateGroupDetail(dto);
         return ResponseEntity.ok(ApiResponse.success("그룹 정보가 수정되었습니다."));
     }
+	
+	@GetMapping("/{userNo}/join_requests")
+	public ResponseEntity<ApiResponse<Map<String, Object>>> getGroupJoinRequests(@PathVariable Integer userNo)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (userNo == null) {
+			throw new GroupException(GroupErrorCode.USER_NOT_FOUND);
+		}
+		List<GroupJoinRequestsDTO> reqlist = service.selectGroupRequestsData(userNo);
+		map.put("reqlist", reqlist);
+		return ResponseEntity.ok(ApiResponse.success(map));
+		
+	}
+	
+	@PostMapping("/{requestNo}/join_requests_result")
+	public ResponseEntity<ApiResponse<String>> join_requests_result(@PathVariable Integer requestNo, @RequestBody GroupJoinRequestsDTO dto)
+	{
+		String status = dto.getStatus();
+		String nickname = dto.getUser_nickname();
+		int request_no = requestNo;
+		int group_no = dto.getGroup_no();
+		long user_no = dto.getUser_no();
+		System.out.println(status);
+		System.out.println(nickname);
+		System.out.println(request_no);
+		System.out.println(group_no);
+		System.out.println(user_no);
+		service.joinRequestResult(request_no, group_no, user_no, status, nickname);
+		
+		return ResponseEntity.ok(ApiResponse.success("심사후 멤버추가 완료"));
+	}
 	
 }

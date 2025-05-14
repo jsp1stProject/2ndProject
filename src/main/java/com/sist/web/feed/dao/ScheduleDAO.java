@@ -30,4 +30,8 @@ public class ScheduleDAO {
 		return mapper.scheduleGroupList(group_no);
 	}
 	
+	public List<ScheduleVO> scheduleUserTotalList(long user_no)
+	{
+		return mapper.scheduleUserTotalList(user_no);
+	}
 }

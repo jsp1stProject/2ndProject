@@ -47,8 +47,19 @@ public interface GroupMapper {
 		@Select("SELECT group_no, user_no, nickname FROM p_group_member WHERE group_no = #{group_no}")
 		public List<GroupMemberDTO> selectGroupMemberAllByGroupNo(@Param("group_no") int groupNo);
 		
-		@Insert("INSERT INTO p_group_joinrequest(request_no, group_no, user_no) VALUES(p_gjoin_req_seq.nextval(), #{group_no}, #{user_no} )")
+		@Insert("INSERT INTO p_group_joinrequests(request_no, group_no, user_no) VALUES(p_gjoin_req_seq.nextval, #{group_no}, #{user_no} )")
 		public void insertJoinRequests(GroupJoinRequestsDTO dto);
+		
+		@Select("SELECT r.request_no,r.group_no,r.user_no,r.status, TO_CHAR(r.request_date, 'YYYY-MM-DD HH24:MI:SS') as dbday,(SELECT nickname FROM p_users u WHERE r.user_no=u.user_no) as user_nickname "
+				+ "FROM p_group_joinrequests r "
+				+ "JOIN p_group u "
+				+ "ON r.group_no=u.group_no "
+				+ "WHERE u.owner=#{user_no} "
+				+ "ORDER BY r.request_date DESC")
+		public List<GroupJoinRequestsDTO> selectGroupRequestsData(int user_no);
+		
+		@Update("UPDATE p_group_joinrequests SET status=#{status} WHERE request_no=#{request_no}")
+		public void updateJoinRequestStatus(GroupJoinRequestsDTO dto);
 		
 		public void updateGroupDetail(GroupDTO dto);
 }

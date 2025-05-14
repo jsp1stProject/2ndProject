@@ -26,4 +26,12 @@ public interface ScheduleMapper {
 			+ "WHERE group_no=#{group_no} "
 			+ "ORDER BY sche_start ASC ")
 	public List<ScheduleVO> scheduleGroupList(int group_no);
+	
+	@Select("SELECT sche_no, user_no, type, sche_title,"
+			+ "      TO_CHAR(sche_start, 'YYYY-MM-DD HH24:MI:SS') as sche_start_str, TO_CHAR(sche_end, 'YYYY-MM-DD HH24:MI:SS') as sche_end_str"
+			+ "FROM p_schedule "
+			+ "WHERE user_no=#{user_no} ")
+	public List<ScheduleVO> scheduleUserTotalList(long user_no);
+	
+	
 }
