@@ -117,5 +117,8 @@ public class GroupServiceImpl implements GroupService{
 		
 	}
 
-
+	@Override
+	public void updateGroupDetail(GroupDTO dto) {
+		gDao.updateGroupDetail(dto);
+	}
 }

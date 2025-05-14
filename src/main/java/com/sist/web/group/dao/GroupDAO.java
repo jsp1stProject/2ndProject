@@ -60,4 +60,9 @@ public class GroupDAO {
 	public List<GroupMemberDTO> selectGroupMemberAllByGroupNo(@Param("group_no") int groupNo) {
 		return mapper.selectGroupMemberAllByGroupNo(groupNo);
 	}
+	
+	/** 그룹 상세 수정 */
+	public void updateGroupDetail(GroupDTO dto) {
+		mapper.updateGroupDetail(dto);
+	}
 }

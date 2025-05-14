@@ -17,4 +17,5 @@ public interface GroupService {
 	List<GroupDTO> getGroupAll(String userId);
 	List<GroupMemberDTO> getGroupMemberAllByGroupNo(int groupNo);
 	public void insertJoinRequests(GroupJoinRequestsDTO dto);
+	public void updateGroupDetail(GroupDTO dto);
 }

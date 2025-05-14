@@ -15,6 +15,7 @@ public class GroupDTO {
 	@NotNull(message = "그룹 이름은 필수값입니다")
 	private String group_name;
 	private String owner_name;
+	private String is_public;
 	//is_member, join_status => 그룹가입여부 확인을 위한 컬럼
 	private String is_member;
 	private String join_status; 

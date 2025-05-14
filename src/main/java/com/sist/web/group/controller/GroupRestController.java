@@ -136,17 +136,37 @@ public class GroupRestController {
 	}
 	
 	@PutMapping(value = "/{groupNo}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<ApiResponse<String>> updateGroupDetail(
-	    @PathVariable("groupNo") Long groupNo,
-	    @RequestPart("group_name") String groupName,
-	    @RequestPart("description") String description,
-	    @RequestPart(value = "profile_img", required = false) MultipartFile profileImg) {
+    public ResponseEntity<ApiResponse<String>> updateGroupDetail(
+        @PathVariable("groupNo") Integer groupNo,
+        @RequestPart("group_name") String groupName,
+        @RequestPart("description") String description,
+        @RequestPart("capacity") Integer capacity,
+        @RequestPart("is_public") String isPublic,
+        @RequestPart(value = "profile_img", required = false) MultipartFile profileImg) {
 
-	    String savedPath = null;
-	    if (profileImg != null && !profileImg.isEmpty()) {
-	    	
-	    }
+        String imagePath = null;
 
-	    return ResponseEntity.ok(ApiResponse.success("수정 완료"));
-	}
+        if (profileImg != null && !profileImg.isEmpty()) {
+            try {
+                String filename = UUID.randomUUID() + "_" + profileImg.getOriginalFilename();
+                File target = new File(uploadDir, filename);
+                profileImg.transferTo(target);
+                imagePath = filename; 
+            } catch (Exception e) {
+            	
+            }
+        }
+
+        GroupDTO dto = new GroupDTO();
+        dto.setGroup_no(groupNo);
+        dto.setGroup_name(groupName);
+        dto.setDescription(description);
+        dto.setCapacity(capacity);
+        dto.setIs_public(isPublic);
+        dto.setProfile_img(imagePath); // null이면 쿼리에서 제외됨
+
+        service.updateGroupDetail(dto);
+        return ResponseEntity.ok(ApiResponse.success("그룹 정보가 수정되었습니다."));
+    }
+	
 }
