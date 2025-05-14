@@ -150,4 +150,36 @@ public class GroupRestController {
 
 	    return ResponseEntity.ok(ApiResponse.success("수정 완료"));
 	}
+	
+	@GetMapping("/{userNo}/join_requests")
+	public ResponseEntity<ApiResponse<Map<String, Object>>> getGroupJoinRequests(@PathVariable Integer userNo)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (userNo == null) {
+			throw new GroupException(GroupErrorCode.USER_NOT_FOUND);
+		}
+		List<GroupJoinRequestsDTO> reqlist = service.selectGroupRequestsData(userNo);
+		map.put("reqlist", reqlist);
+		return ResponseEntity.ok(ApiResponse.success(map));
+		
+	}
+	
+	@PostMapping("/{requestNo}/join_requests_result")
+	public ResponseEntity<ApiResponse<String>> join_requests_result(@PathVariable Integer requestNo, @RequestBody GroupJoinRequestsDTO dto)
+	{
+		String status = dto.getStatus();
+		String nickname = dto.getUser_nickname();
+		int request_no = requestNo;
+		int group_no = dto.getGroup_no();
+		long user_no = dto.getUser_no();
+		System.out.println(status);
+		System.out.println(nickname);
+		System.out.println(request_no);
+		System.out.println(group_no);
+		System.out.println(user_no);
+		service.joinRequestResult(request_no, group_no, user_no, status, nickname);
+		
+		return ResponseEntity.ok(ApiResponse.success("심사후 멤버추가 완료"));
+	}
+	
 }

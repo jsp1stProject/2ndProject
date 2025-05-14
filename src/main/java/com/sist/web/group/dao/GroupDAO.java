@@ -16,15 +16,17 @@ import lombok.RequiredArgsConstructor;
 public class GroupDAO {
 	private final GroupMapper mapper;
 	
+	/** 그룹 전체 리스트 */
 	public List<GroupDTO> selectGroupAllList()
 	{
 		return mapper.selectGroupAllList();
 	}
-	
+	/** 로그인한 유저의 그룹가입 상태리스트 */
 	public List<Map<String, Object>> selectGroupMemberStates(int user_no)
 	{
 		return mapper.selectGroupMemberStates(user_no);
 	}
+	
 	public GroupDTO selectGroupDetail(int group_no)
 	{
 		return mapper.selectGroupDetail(group_no);
@@ -59,5 +61,16 @@ public class GroupDAO {
 	/** 그룹 번호 기준으로 해당 그룹의 모든 멤버 조회 */
 	public List<GroupMemberDTO> selectGroupMemberAllByGroupNo(@Param("group_no") int groupNo) {
 		return mapper.selectGroupMemberAllByGroupNo(groupNo);
+	}
+	
+	/** 생성한 모든 그룹에 대한 가입요청리스트 조회 */
+	public List<GroupJoinRequestsDTO> selectGroupRequestsData(int user_no)
+	{
+		return mapper.selectGroupRequestsData(user_no);
+	}
+	
+	/** 가입요청에 대한 상태 수정 */
+	public void updateJoinRequestStatus(GroupJoinRequestsDTO dto) {
+		mapper.updateJoinRequestStatus(dto);
 	}
 }

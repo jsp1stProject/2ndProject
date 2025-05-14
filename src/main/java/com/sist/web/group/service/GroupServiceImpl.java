@@ -110,10 +110,47 @@ public class GroupServiceImpl implements GroupService{
 		}
 		return list;
 	}
-
+	
+	
 	@Override
 	public void insertJoinRequests(GroupJoinRequestsDTO dto) {
 		gDao.insertJoinRequests(dto);
+		
+	}
+
+	@Override
+	public List<GroupJoinRequestsDTO> selectGroupRequestsData(int user_no) {
+		return gDao.selectGroupRequestsData(user_no);
+	}
+	
+	@Override
+	public void updateJoinRequestStatus(GroupJoinRequestsDTO dto) {
+		gDao.updateJoinRequestStatus(dto);
+	}
+	
+	@Transactional
+	@Override
+	public void joinRequestResult(int request_no, int group_no, long user_no,String status, String nickname) {
+		System.out.println("서비스임플진입");
+		GroupJoinRequestsDTO dto = new GroupJoinRequestsDTO();
+		dto.setRequest_no(request_no);
+		dto.setStatus(status);
+		gDao.updateJoinRequestStatus(dto);
+		System.out.println("상태업데이트");
+		if("APPROVED".equals(status))
+		{
+			//그룹멤버에 추가하기
+			GroupMemberDTO gmdto = new GroupMemberDTO();
+			gmdto.setGroup_no(group_no);
+			gmdto.setUser_no((int)user_no);
+			gmdto.setNickname(nickname);
+			gDao.insertGroupMember(gmdto);
+			System.out.println("멤버추가하기");
+			//닉네임을 받으려면 mapper를 추가해야할까
+			//내가 가지고 있는 데이터 -> group_no, user_no(수정해야할), status, 닉네임을 같이 넘겨받아야해 
+			
+		}
+		
 		
 	}
 

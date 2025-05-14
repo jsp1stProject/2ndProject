@@ -56,6 +56,10 @@
                         <iconify-icon icon="solar:users-group-rounded-broken" class="fs-6 align-middle"></iconify-icon>
                         새 그룹
                     </button>
+                    <button type="button" class="btn btn-primary mb-2 "  @click="group_member_management(user_no)" >
+                        <iconify-icon icon="solar:users-group-rounded-broken" class="fs-6 align-middle"></iconify-icon>
+                        내 그룹관리
+                    </button>
                 </div>
                 <!--  그룹 리스트 출력부분  -->
                 <div v-for="vo in list" :key="vo.group_no" class="card overflow-hidden mb-3">
@@ -86,9 +90,9 @@
                             </div>
                             <p class="mb-3">{{vo.description}}</p>
                             <div class="d-flex justify-content-end fs-3">
-                                <button v-if="stateMap[vo.group_no]?.is_member === 'Y'"  type="button" class="btn btn-outline-dark" @click="detail(vo.group_no)">입장하기</button>
-                                <button v-else-if="stateMap[vo.group_no]?.join_status === 'WAITING'" type="button" class="btn btn-outline-warning" disabled>가입 대기 중</button>
-                                <button v-else="vo.state === 'WAITING'" type="button" class="btn btn-outline-warning" @click="join(vo.group_no)">신청하기</button>
+                                <button v-if="stateMap[vo.group_no]?.IS_MEMBER === 'Y'"  type="button" class="btn btn-outline-dark" @click="detail(vo.group_no)">입장하기</button>
+                                <button v-else-if="stateMap[vo.group_no]?.JOIN_STATUS === 'WAITING'" type="button" class="btn btn-outline-warning" disabled>가입 대기 중</button>
+                                <button v-else type="button" class="btn btn-outline-warning" @click="join(vo.group_no)">신청하기</button>
                             </div>
                         </div>
                     </div>
@@ -176,6 +180,10 @@
         handleFileChange(event) {
           this.selectedFiles = Array.from(event.target.files);
         },
+		group_member_management(user_no){
+		  console.log("그룹멤버관리")
+		  location.href = '../group/member_management?user_no='+user_no;
+		},
 	    join(group_no) {
 		  console.log(group_no)
 		  if(!this.user_no)
