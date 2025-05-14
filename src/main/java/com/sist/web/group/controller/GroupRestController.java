@@ -1,29 +1,37 @@
 package com.sist.web.group.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.sist.web.common.exception.code.CommonErrorCode;
+import com.sist.web.common.exception.code.GroupErrorCode;
 import com.sist.web.common.exception.domain.CommonException;
+import com.sist.web.common.exception.domain.GroupException;
 import com.sist.web.common.response.ApiResponse;
 import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.service.GroupService;
 import com.sist.web.group.dto.GroupMemberDTO;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +41,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/groups")
 public class GroupRestController {
 	private final GroupService service;
+	@Value("${file.upload-dir}")
+	private String uploadDir;
 	
 	@GetMapping
 	public ResponseEntity<ApiResponse<Map<String, Object>>> group_groups(HttpServletRequest request)
@@ -55,35 +65,46 @@ public class GroupRestController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<GroupDTO>> createGroup(@Valid @RequestBody GroupDTO vo) {
+	public ResponseEntity<ApiResponse<GroupDTO>> createGroup(@Valid @RequestPart("group") GroupDTO dto, @RequestPart(value = "image", required = false) MultipartFile image) {
+		// 피드 이미지와 통일시켜야 할 수도 있음
 		try {
-			service.createGroup(vo);
-		} catch (Exception ex) {
-			log.info("그룹 생성 실패: {}", ex.getMessage());
-			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+			if (image != null && !image.isEmpty()) {
+				String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
+				File file = new File(uploadDir, filename);
+				image.transferTo(file);
+				
+				dto.setProfile_img("/images/group/" + filename);
+			}
+			service.createGroup(dto);
+			return ResponseEntity.ok(ApiResponse.success(dto));
+		} catch (IOException ex) {
+			throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
 		}
-		return ResponseEntity.ok(ApiResponse.success(vo));
 	}
 	
-	@GetMapping("/{users}") // 계층 이동함 수정 예정
+	@GetMapping("/{users}")
 	public ResponseEntity<ApiResponse<List<GroupDTO>>> getGroupAll(HttpServletRequest request, @PathVariable Integer users) {
 		Long userNo = (Long)request.getAttribute("userno");
-		List<GroupDTO> list = new ArrayList<GroupDTO>();
-		
-		try {
-			list = service.getGroupAll(String.valueOf(userNo));
-		} catch (Exception ex) {
-			log.info("그룹 조회 실패: {}", ex.getMessage());
-			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		if (userNo == null) {
+			throw new GroupException(GroupErrorCode.USER_NOT_FOUND);
 		}
-		
+		List<GroupDTO> list = service.getGroupAll(String.valueOf(userNo));
 		return ResponseEntity.ok(ApiResponse.success(list));
 	}
 	
 	@GetMapping("/members")
-	public ResponseEntity<ApiResponse<List<GroupMemberDTO>>> getGroupMember(Integer groupNo) {
+	public ResponseEntity<ApiResponse<List<GroupMemberDTO>>> getGroupMemberAllByGroupNo(Integer groupNo) {
+		if (groupNo == null) {
+			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
+		}
 		List<GroupMemberDTO> list = service.getGroupMemberAllByGroupNo(groupNo);
 		return ResponseEntity.ok(ApiResponse.success(list));
+	}
+	
+	@PostMapping("/members")
+	public ResponseEntity<ApiResponse<GroupMemberDTO>> addGroupMember(@Valid @RequestBody GroupMemberDTO dto) {
+		service.addGroupMember(dto);
+		return ResponseEntity.ok(ApiResponse.success(dto, "그룹 멤버 추가 성공"));
 	}
 	
 	@PostMapping("/{groupNo}/join")
@@ -104,5 +125,28 @@ public class GroupRestController {
 			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
 		}
 		return ResponseEntity.ok(ApiResponse.success(map));
+	}
+	
+	@GetMapping("/{groupNo}/detail")
+	public ResponseEntity<ApiResponse<GroupDTO>> getGroupDetailByGroupNo(@PathVariable Integer groupNo) {
+		if (groupNo == null) {
+			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
+		}
+		return ResponseEntity.ok(ApiResponse.success(service.getGroupDetailByGroupNo(groupNo)));
+	}
+	
+	@PutMapping(value = "/{groupNo}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<ApiResponse<String>> updateGroupDetail(
+	    @PathVariable("groupNo") Long groupNo,
+	    @RequestPart("group_name") String groupName,
+	    @RequestPart("description") String description,
+	    @RequestPart(value = "profile_img", required = false) MultipartFile profileImg) {
+
+	    String savedPath = null;
+	    if (profileImg != null && !profileImg.isEmpty()) {
+	    	
+	    }
+
+	    return ResponseEntity.ok(ApiResponse.success("수정 완료"));
 	}
 }

@@ -16,12 +16,16 @@ import com.sist.web.group.dao.GroupDAO;
 import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.dto.GroupMemberDTO;
+import com.sist.web.user.mapper.UserMapper;
+import com.sist.web.user.vo.UserVO;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class GroupServiceImpl implements GroupService{
 	private final GroupDAO gDao;
+	private final UserMapper userMapper;
 
 	@Override
 	public List<GroupDTO> getGroupAllList() {
@@ -46,35 +50,54 @@ public class GroupServiceImpl implements GroupService{
 		return map;
 	}
 	@Override
-	public GroupDTO getGroupDetail(int group_no) {
-		return gDao.selectGroupDetail(group_no);
+	public GroupDTO getGroupDetailByGroupNo(int group_no) {
+		GroupDTO dto = new GroupDTO();
+		try {
+			dto = gDao.selectGroupDetail(group_no);
+		} catch (Exception ex) {
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		}
+		return dto;
 	}
 	
 	@Transactional
 	@Override
-	public void createGroup(GroupDTO vo) {
-		gDao.insertGroup(vo);
+	public void createGroup(GroupDTO dto) {
+		gDao.insertGroup(dto);
 		
 		GroupMemberDTO member = new GroupMemberDTO();
+		UserVO user = userMapper.getUserMailFromUserNo(String.valueOf(dto.getOwner()));
+		if (user == null) {
+			throw new GroupException(GroupErrorCode.USER_NOT_FOUND);
+		}
 		// group_no, user_no, nickname
-		member.setGroup_no(vo.getGroup_no());
-		member.setUser_no(vo.getOwner());
+		member.setGroup_no(dto.getGroup_no());
+		member.setUser_no(dto.getOwner());
 		member.setRole("OWNER");
+		member.setNickname(user.getNickname());
 		
 		gDao.insertGroupMember(member);
 	}
 	
 	@Override
-	public void addGroupMember(GroupMemberDTO vo) {
-		gDao.insertGroupMember(vo);
+	public void addGroupMember(GroupMemberDTO dto) {
+		UserVO user = userMapper.getUserMailFromUserNo(String.valueOf(dto.getUser_no()));
+		if (user == null) {
+			throw new GroupException(GroupErrorCode.USER_NOT_FOUND);
+		}
+		dto.setNickname(user.getNickname());
+		gDao.insertGroupMember(dto);
 	}
 	
 	@Override
 	public List<GroupDTO> getGroupAll(String userNo) {
-		if (userNo == null) {
-	        throw new CommonException(CommonErrorCode.MISSING_PARAMETER);
-	    }
-	    return gDao.selectGroup(userNo);
+		List<GroupDTO> list = new ArrayList<GroupDTO>();
+		try {
+			list = gDao.selectGroup(userNo);
+		} catch (Exception ex) {
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		}
+	    return list;
 	}
 	
 	@Override
@@ -83,7 +106,7 @@ public class GroupServiceImpl implements GroupService{
 		try {
 			list = gDao.selectGroupMemberAllByGroupNo(groupNo);
 		} catch (Exception ex) {
-			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
 		}
 		return list;
 	}

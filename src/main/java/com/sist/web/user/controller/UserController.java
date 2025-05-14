@@ -90,5 +90,4 @@ public class UserController {
         model.addAttribute("main_jsp", "../group/detailtest.jsp");
         return "main/main";
     }
-
 }

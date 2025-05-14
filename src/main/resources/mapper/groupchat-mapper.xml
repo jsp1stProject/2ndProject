@@ -9,7 +9,7 @@
 		  AND message_no &lt; #{last_message_no}
 		</if>
 		ORDER BY message_no DESC
-		FETCH FIRST 30 ROWS ONLY
+		FETCH FIRST 35 ROWS ONLY
 	</select>
 	<!-- insertGroup 작성 예정 -->
 </mapper>

@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectKey;
+import org.apache.ibatis.annotations.Update;
+
 import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.dto.GroupMemberDTO;
@@ -23,8 +25,8 @@ public interface GroupMapper {
 		
 		public List<Map<String, Object>> selectGroupMemberStates(int user_no);
 		
-		@Select("SELECT * FROM p_group WHERE group_no=#{group_no}")
-		public GroupDTO selectGroupDetail(int group_no);
+		@Select("SELECT * FROM p_group WHERE group_no = #{group_no}")
+		public GroupDTO selectGroupDetail(@Param("group_no") int groupNo);
 		
 		// 동적 쿼리 작성 예정
 		public void groupInsertData(GroupDTO dto);
@@ -48,4 +50,5 @@ public interface GroupMapper {
 		@Insert("INSERT INTO p_group_joinrequest(request_no, group_no, user_no) VALUES(p_gjoin_req_seq.nextval(), #{group_no}, #{user_no} )")
 		public void insertJoinRequests(GroupJoinRequestsDTO dto);
 		
+		public void updateGroupDetail(GroupDTO dto);
 }

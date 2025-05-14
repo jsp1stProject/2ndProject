@@ -11,7 +11,7 @@ public interface GroupService {
 	public List<GroupDTO> getGroupAllList();
 	public List<Map<String, Object>> selectGroupMemberStates(int user_no);
 	public Map<String, Object> getGroupListAndStates(int user_no);
-	public GroupDTO getGroupDetail(int group_no);
+	public GroupDTO getGroupDetailByGroupNo(int group_no);
 	void createGroup(GroupDTO vo);
 	void addGroupMember(GroupMemberDTO vo);
 	List<GroupDTO> getGroupAll(String userId);

@@ -5,6 +5,7 @@ import java.security.Principal;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import com.sist.web.groupchat.dto.GroupChatDTO;
 import com.sist.web.groupchat.service.GroupChatService;
