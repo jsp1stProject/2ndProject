@@ -110,6 +110,7 @@ public class GroupRestController {
 	@PostMapping("/{groupNo}/join")
 	public ResponseEntity<ApiResponse<Map<String, Object>>> joinGroupRequests(@PathVariable("groupNo") Integer groupNo, HttpServletRequest request)
 	{
+		System.out.println("가입포스트매핑");
 		Map<String, Object> map = new HashMap<String, Object>();
 		GroupJoinRequestsDTO dto = new GroupJoinRequestsDTO();
 		try {

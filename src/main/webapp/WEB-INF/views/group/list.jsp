@@ -1,4 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <div class="container pt-header">
         <div class="row pt-3">
             <div class="col-lg-4">
@@ -174,12 +177,13 @@
           this.selectedFiles = Array.from(event.target.files);
         },
 	    join(group_no) {
+		  console.log(group_no)
 		  if(!this.user_no)
 		  {
 			 alert("로그인페이지로이동");
 			 location.href = '';
 		  }
-		  axios.post(`/api/groups/${group_no}/join`,{
+		  axios.post('../api/groups/'+group_no+'/join',{
 
 
 		  }).then(res => {
@@ -223,9 +227,11 @@
 		  this.state_list = res.data.data.states_list
 		  this.user_no = res.data.data.user_no;
 		  this.stateMap = {};
-		  this.states_list.forEach(state => {
+		  this.state_list.forEach(state => {
         	  this.stateMap[state.GROUP_NO] = state;
+			  
       	  });
+          console.log(this.stateMap)
         }
       }
     }).mount('.container');

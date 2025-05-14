@@ -47,7 +47,7 @@ public interface GroupMapper {
 		@Select("SELECT group_no, user_no, nickname FROM p_group_member WHERE group_no = #{group_no}")
 		public List<GroupMemberDTO> selectGroupMemberAllByGroupNo(@Param("group_no") int groupNo);
 		
-		@Insert("INSERT INTO p_group_joinrequest(request_no, group_no, user_no) VALUES(p_gjoin_req_seq.nextval(), #{group_no}, #{user_no} )")
+		@Insert("INSERT INTO p_group_joinrequests(request_no, group_no, user_no) VALUES(p_gjoin_req_seq.nextval, #{group_no}, #{user_no} )")
 		public void insertJoinRequests(GroupJoinRequestsDTO dto);
 		
 		public void updateGroupDetail(GroupDTO dto);
