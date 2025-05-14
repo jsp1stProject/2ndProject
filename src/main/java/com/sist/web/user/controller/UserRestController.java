@@ -27,7 +27,7 @@ public class UserRestController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/auth/kakao/join")
-    public ResponseEntity kakaoJoin(@RequestBody Map<String, String> data, HttpServletResponse res, HttpServletRequest request) {
+    public ResponseEntity<Void> kakaoJoin(@RequestBody Map<String, String> data, HttpServletResponse res, HttpServletRequest request) {
         StringBuffer fullUrl = request.getRequestURL();
         String uri = request.getRequestURI();
         String baseUrl = fullUrl.substring(0, fullUrl.length() - uri.length());
@@ -38,7 +38,7 @@ public class UserRestController {
     }
 
     @PostMapping("/auth/join")
-    public ResponseEntity join_ok(@ModelAttribute UserVO vo, Model model) {
+    public ResponseEntity<String> join_ok(@ModelAttribute UserVO vo, Model model) {
         log.info(vo.toString());
         vo.setPassword(passwordEncoder.encode(vo.getPassword()));
         userTransactionalService.insertDefaultUser(vo);
@@ -49,7 +49,7 @@ public class UserRestController {
     }
 
     @PostMapping("/users/{userno}")
-    public ResponseEntity getUserDetail(@PathVariable("userno") String userno, Model model) {
+    public ResponseEntity<ApiResponse<UserDetailDTO>> getUserDetail(@PathVariable("userno") String userno, Model model) {
         UserDetailDTO dto=userService.GetActiveUserDetail(userno);
         return ResponseEntity.ok(ApiResponse.success(dto));
     }
