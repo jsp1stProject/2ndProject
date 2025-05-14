@@ -14,7 +14,7 @@ public interface UserMapper {
     @Select("SELECT ENABLED from P_USERS where USER_NO=#{userno}")
     public int checkUserActive(String userno);
 
-    @Select("SELECT u.USER_NO,user_mail,SOCIAL_ID,PASSWORD,USER_NAME,NICKNAME,PHONE,BIRTHDAY,ENABLED,PROFILE,a.AUTHORITY FROM P_USERS u join P_AUTHORITIES a on u.user_no=a.user_no WHERE u.USER_NO=#{user_no}")
+    @Select("SELECT u.USER_NO,user_mail,SOCIAL_ID,PASSWORD,USER_NAME,NICKNAME,PHONE,TO_CHAR(BIRTHDAY,'YYYY-MM-DD') as DB_BIRTHDAY,ENABLED,PROFILE,a.AUTHORITY FROM P_USERS u join P_AUTHORITIES a on u.user_no=a.user_no WHERE u.USER_NO=#{user_no}")
     public UserDetailDTO getUserDtoFromUserNo(String user_no);
 
     @Select("SELECT P_USER_NO_SEQ.nextval from dual")
@@ -45,6 +45,9 @@ public interface UserMapper {
 
     @Select("Select USER_NO, USER_MAIL, NICKNAME FROM P_USERS where USER_NO=#{user_no}")
     public UserVO getUserMailFromUserNo(String user_no);
+
+    @Update("UPDATE P_USERS set USER_MAIL=#{user_mail}, USER_NAME=#{user_name}, NICKNAME=#{nickname}, PASSWORD=#{password,jdbcType=VARCHAR}, BIRTHDAY=#{birthday,jdbcType=DATE}, PHONE=#{phone,jdbcType=VARCHAR}, ADDR=#{addr,jdbcType=VARCHAR} where USER_NO=#{user_no}")
+    public void updateUser(UserVO vo);
 
 //  카카오 로그인 시
 //  소셜연동된 계정인지 확인

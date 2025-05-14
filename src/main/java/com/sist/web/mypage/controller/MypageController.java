@@ -1,6 +1,7 @@
 package com.sist.web.mypage.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +13,20 @@ import org.springframework.web.bind.annotation.*;
 public class MypageController {
 
     @GetMapping("")
-    public String user_info(Model model){
+    @PreAuthorize("hasRole('USER')")
+    public String mypage(Model model){
+        return "redirect:/mypage/profile";
+    }
+
+    @GetMapping("/profile")
+    @PreAuthorize("hasRole('USER')")
+    public String profiles(Model model){
         model.addAttribute("main_jsp", "../mypage/info.jsp");
         return "main/main";
     }
 
     @GetMapping("/pets")
+    @PreAuthorize("hasRole('USER')")
     public String pets(Model model){
         model.addAttribute("main_jsp", "../mypage/pets.jsp");
         return "main/main";
