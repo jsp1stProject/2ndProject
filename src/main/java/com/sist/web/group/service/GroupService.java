@@ -17,11 +17,8 @@ public interface GroupService {
 	List<GroupDTO> getGroupAll(String userId);
 	List<GroupMemberDTO> getGroupMemberAllByGroupNo(int groupNo);
 	public void insertJoinRequests(GroupJoinRequestsDTO dto);
-<<<<<<< HEAD
 	public void updateGroupDetail(GroupDTO dto);
-=======
 	public List<GroupJoinRequestsDTO> selectGroupRequestsData(int user_no);
 	public void updateJoinRequestStatus(GroupJoinRequestsDTO dto);
 	public void joinRequestResult(int request_no, int group_no, long user_no, String status, String nickname);
->>>>>>> feature/schedule
 }
