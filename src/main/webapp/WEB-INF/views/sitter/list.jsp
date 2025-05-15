@@ -11,9 +11,10 @@
   <div class="container-fluid" id="app">
     <h2 class="mb-4">펫시터 목록</h2>
 
-<div class="d-flex justify-content-end mb-3">
-  <button class="btn btn-success" @click="goInsert">새 글 쓰기</button>
-</div>
+    <div class="d-flex justify-content-end mb-3">
+      <button class="btn btn-success" @click="goInsert">새 글 쓰기</button>
+    </div>
+
     <!-- 필터 영역 -->
     <div class="mb-4">
       <label for="fd">필터 기준:</label>
@@ -23,7 +24,7 @@
       </select>
 
       <div class="form-check form-check-inline" v-for="option in filterOptions" :key="option">
-        <input class="form-check-input" type="checkbox" :value="option" v-model="ss">
+        <input class="form-check-input" type="checkbox" :value="option" v-model="st">
         <label class="form-check-label">{{ option }}</label>
       </div>
 
@@ -46,6 +47,12 @@
                 <li><strong>평점:</strong> {{ sitter.score }}</li>
                 <li><strong>지역:</strong> {{ sitter.care_loc }}</li>
                 <li><strong>시작가:</strong> {{ sitter.pet_first_price }}</li>
+                <li v-if="sitter.sitterApp">
+                  <strong>자격증:</strong> {{ sitter.sitterApp.license }}
+                </li>
+                <li v-if="sitter.sitterApp">
+                  <strong>경력:</strong> {{ sitter.sitterApp.history }}
+                </li>
               </ul>
               <button class="btn btn-primary mt-2" @click="goDetail(sitter.sitter_no)">
                 상세보기
@@ -89,7 +96,7 @@
           startPage: 1,
           endPage: 1,
           fd: 'care_loc',
-          ss: [],
+          st: [],
           filterOptions: ['서울', '경기', '인천', '고양이전문', '강아지전문']
         }
       },
@@ -111,7 +118,7 @@
             const params = {
               page: page,
               fd: this.fd,
-              ss: this.ss.join(',')
+              st: this.st.join(',')
             }
             const res = await axios.get('/web/sitter/list_vue', { params })
             this.list = res.data.list
@@ -129,18 +136,18 @@
           }
         },
         resetFilter() {
-          this.ss = []
+          this.st = []
           this.dataRecv(1)
         },
-  goInsert() {
-    location.href = `/web/sitter/insert`;
-  },
+        goInsert() {
+          location.href = `/web/sitter/insert`
+        },
         goDetail(sitter_no) {
           if (!sitter_no) {
             alert("⚠ sitter_no가 없습니다!")
             return
           }
-          location.href = '/web/sitter/detail?sitter_no='+sitter_no
+          location.href = '/web/sitter/detail?sitter_no=' + sitter_no
         }
       }
     }).mount('#app')

@@ -99,4 +99,10 @@ public class SitterServiceImpl implements SitterService{
 		sDao.reviewDelete(review_no);
 	}
 
+	@Override
+	public void deleteSitterReviewWithPost(int sitter_no) {
+		// TODO Auto-generated method stub
+		sDao.deleteSitterReviewWithPost(sitter_no);
+	}
+
 }

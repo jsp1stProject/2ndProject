@@ -1,4 +1,6 @@
 package com.sist.web.sitter.vo;
+import java.util.Date;
+
 import com.sist.web.sitter.vo.*;
 import com.sist.web.user.vo.*;
 import lombok.Data;
@@ -18,7 +20,7 @@ public class SitterReviewVO {
 	private int review_no,care_no,sitter_no,user_no,group_id,group_step;
 	private Double rev_score;
 	private String rev_comment;
-	
+	private Date rev_date;
 	private UserVO user; // p_users
 	private SitterCareVO care; // p_sitter_care
 }

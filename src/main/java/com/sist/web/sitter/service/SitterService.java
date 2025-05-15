@@ -22,4 +22,5 @@ public interface SitterService {
 	public void replyInsert(SitterReviewVO vo);
 	public void reviewUpdate(SitterReviewVO vo);
 	public void reviewDelete(int review_no);
+	public void deleteSitterReviewWithPost(int sitter_no);
 }

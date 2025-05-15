@@ -72,4 +72,8 @@ public class SitterDAO {
 	{
 		mapper.reviewDelete(review_no);
 	}
+	public void deleteSitterReviewWithPost(int sitter_no)
+	{
+		mapper.deleteSitterReviewWithPost(sitter_no);
+	}
 }

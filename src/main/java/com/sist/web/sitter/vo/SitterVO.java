@@ -20,6 +20,6 @@ public class SitterVO {
 	private Double score;
 	private String tag,content,sitter_pic,care_loc,pet_first_price;
 	
-	private UserVO user; // p_users
-	private SitterAppVO sitterApp; // p_sitter_app
+	private UserVO user = new UserVO(); // p_users
+	private SitterAppVO sitterApp = new SitterAppVO(); // p_sitter_app
 }

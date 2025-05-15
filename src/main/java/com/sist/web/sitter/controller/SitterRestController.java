@@ -1,8 +1,10 @@
 package com.sist.web.sitter.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 
 import javax.servlet.http.HttpSession;
 
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.sist.web.sitter.vo.*;
 import com.sist.web.sitter.service.*;
 @RestController
@@ -24,111 +28,129 @@ public class SitterRestController {
 	@Autowired
 	private SitterService service;
 		// 목록
-	    @GetMapping("/sitter/list_vue")
-	    public ResponseEntity<Map> sitter_list(
-	        @RequestParam(defaultValue = "1") int page,
-	        @RequestParam(defaultValue = "care_loc") String fd,
-	        @RequestParam(required = false) String ss
-	    ) {
-	        Map<String, Object> queryMap = new HashMap<>();
-	        Map<String, Object> result = new HashMap<>();
+	@GetMapping("/sitter/list_vue")
+	public ResponseEntity<Map<String, Object>> sitter_list(
+	    @RequestParam(defaultValue = "1") int page,
+	    @RequestParam(defaultValue = "care_loc") String fd,
+	    @RequestParam(required = false) String st
+	) {
+	    Map<String, Object> queryMap = new HashMap<>();
+	    Map<String, Object> result = new HashMap<>();
 
-	        int rowSize = 8;
-	        int start = (page - 1) * rowSize + 1;
-	        int end = page * rowSize;
+	    // ✅ 페이징 계산
+	    int rowSize = 8;
+	    int start = (page - 1) * rowSize + 1;
+	    int end = page * rowSize;
 
-	        queryMap.put("start", start);
-	        queryMap.put("end", end);
+	    queryMap.put("start", start);
+	    queryMap.put("end", end);
 
-	        List<SitterVO> list;
-	        if (ss == null || ss.trim().isEmpty()) {
-	            list = service.sitterListDataAll(queryMap);
-	        } else {
-	            queryMap.put("fd", fd);
-	            queryMap.put("st", ss);
-	            list = service.sitterListDataWithFilter(queryMap);
-	        }
+	    List<SitterVO> list;
 
-	        int totalpage = service.sitterTotalPage();
-	        int BLOCK = 10;
-	        int startPage = ((page - 1) / BLOCK * BLOCK) + 1;
-	        int endPage = startPage + BLOCK - 1;
-	        if (endPage > totalpage) endPage = totalpage;
-
-	        result.put("list", list);
-	        result.put("curpage", page);
-	        result.put("totalpage", totalpage);
-	        result.put("startPage", startPage);
-	        result.put("endPage", endPage);
-
-	        return new ResponseEntity<>(result, HttpStatus.OK);
+	    // ✅ 필터링 조건 여부 확인
+	    if (st == null || st.trim().isEmpty()) {
+	        list = service.sitterListDataAll(queryMap);
+	    } else {
+	        queryMap.put("fd", fd);
+	        queryMap.put("st", st);
+	        list = service.sitterListDataWithFilter(queryMap);
 	    }
 
-	    // 상세보기
-	    @GetMapping("/sitter/detail_vue")
-	    public ResponseEntity<SitterVO> sitter_detail(int sitter_no) {
-	        try {
-	        	System.out.println("detail_vue============================");
-	            System.out.println("받은 sitter_no: " + sitter_no);
+	    // ✅ 전체 페이지 수 계산
+	    int totalpage = service.sitterTotalPage();
+	    int BLOCK = 10;
+	    int startPage = ((page - 1) / BLOCK) * BLOCK + 1;
+	    int endPage = startPage + BLOCK - 1;
+	    if (endPage > totalpage) endPage = totalpage;
 
-	            SitterVO vo = service.sitterDetailData(sitter_no);
-	            if (vo == null) {
-	                System.out.println("sitterDetailData 리턴값이 null입니다.");
-	                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-	            }
+	    // ✅ 결과 구성
+	    result.put("list", list);        
+	    result.put("curpage", page);
+	    result.put("totalpage", totalpage);
+	    result.put("startPage", startPage);
+	    result.put("endPage", endPage);
 
-	            return new ResponseEntity<>(vo, HttpStatus.OK);
-	        } catch (Exception ex) {
-	            System.out.println("🔥 서버 오류 발생:");
-	            ex.printStackTrace(); // 로그 확인 필수
-	            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-	        }
-	    }
+	    return new ResponseEntity<>(result, HttpStatus.OK);
+	}
 
-	    // 새글
-	    @PostMapping("/sitter/insert")
-	    public ResponseEntity<String> sitter_insert(@RequestBody SitterVO vo, HttpSession session) {
-	        try {
-	            int user_no = (int) session.getAttribute("user_no");
 
-	            // 펫시터 자격 확인
-	            if (!service.isSitter(user_no)) {
-	                return new ResponseEntity<>("sitter XX", HttpStatus.FORBIDDEN);
-	            }
+	// ✅ 상세보기 (SitterAppVO 정보 포함됨)
+    @GetMapping("/sitter/detail_vue")
+    public ResponseEntity<SitterVO> sitter_detail(@RequestParam("sitter_no") int sitter_no) {
+        try {
+            SitterVO vo = service.sitterDetailData(sitter_no);
 
-	            // 게시글 중복 확인
-	            if (service.hasSitterPost(user_no)) {
-	                return new ResponseEntity<>("이미 등록되어있습니다", HttpStatus.CONFLICT);
-	            }
+            if (vo == null) {
+                System.out.println("sitterDetailData 리턴값이 null입니다.");
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
 
-	            // 등록 처리
-	            vo.setUser_no(user_no);
-	            service.sitterInsert(vo);
-	            return new ResponseEntity<>("입력 완료", HttpStatus.OK);
+            // sitterApp 정보 확인용 로그
+            if (vo.getSitterApp() != null) {
+                System.out.println("license: " + vo.getSitterApp().getLicense());
+            }
 
-	        } catch (Exception ex) {
-	            ex.printStackTrace();
-	            return new ResponseEntity<>("입력 실패", HttpStatus.INTERNAL_SERVER_ERROR);
-	        }
-	    }
+            return new ResponseEntity<>(vo, HttpStatus.OK);
+        } catch (Exception ex) {
+            System.out.println("🔥 서버 오류 발생:");
+            ex.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-	    // 수정
-	    @PostMapping("/sitter/update")
-	    public ResponseEntity<String> sitter_update(@RequestBody SitterVO vo) {
-	        try {
-	            service.sitterUpdate(vo);
-	            return new ResponseEntity<>("success", HttpStatus.OK);
-	        } catch (Exception ex) {
-	            ex.printStackTrace();
-	            return new ResponseEntity<>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
-	        }
-	    }
+    // ✅ 새글 등록
+    @PostMapping("/sitter/insert")
+    public ResponseEntity<String> sitter_insert(
+            @RequestParam("upload") MultipartFile file,
+            @RequestParam("tag") String tag,
+            @RequestParam("content") String content,
+            @RequestParam("carecount") int carecount,
+            @RequestParam("care_loc") String care_loc,
+            @RequestParam("pet_first_price") String pet_first_price,
+            HttpSession session) {
+        try {
+            // 파일 저장
+            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path savePath = Paths.get("C:/upload/" + fileName);
+            Files.copy(file.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // VO 구성
+            SitterVO vo = new SitterVO();
+            vo.setTag(tag);
+            vo.setContent(content);
+            vo.setCarecount(carecount);
+            vo.setCare_loc(care_loc);
+            vo.setPet_first_price(pet_first_price);
+            vo.setSitter_pic("/upload/" + fileName);
+
+            service.sitterInsert(vo);
+            return new ResponseEntity<>("success", HttpStatus.OK);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // ✅ 수정
+    @PostMapping("/sitter/update")
+    public ResponseEntity<String> sitter_update(@RequestBody SitterVO vo) {
+        try {
+            service.sitterUpdate(vo);
+            return new ResponseEntity<>("success", HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 	    // 삭제
 	    @DeleteMapping("/sitter/delete")
 	    public ResponseEntity<String> sitter_delete(@RequestParam int sitter_no) {
 	        try {
+	        	service.deleteSitterReviewWithPost(sitter_no);
 	            service.sitterDelete(sitter_no);
+	            
 	            return new ResponseEntity<>("success", HttpStatus.OK);
 	        } catch (Exception ex) {
 	            ex.printStackTrace();
