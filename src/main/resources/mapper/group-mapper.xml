@@ -27,7 +27,7 @@
 		)
 	</insert>
 	<update id="updateGroupDetail" parameterType="com.sist.web.group.dto.GroupDTO">
-		UPDATE p_groups 
+		UPDATE p_group 
 		SET group_name = #{group_name}, 
 			description = #{description},
 			capacity = #{capacity},

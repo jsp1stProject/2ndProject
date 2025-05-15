@@ -41,12 +41,41 @@ export const uiMethods = {
     }
   },
 
-  async openGroupSettingsModal() {
-    this.groupDetail = await this.fetchGroupDetail();
-    this.groupEditMode = false;
+  onScroll() {
+    const c = this.scrollTarget;
+    if (!c || this.isLoading || this.noMoreMessages) return;
 
-    const modal = new bootstrap.Modal(document.getElementById('groupSettingsModal'));
-    modal.show();
+    if (c.scrollTop <= 10) {
+      this.loadMessages();
+    }
+  },
+
+  async openGroupSettingsModal() {
+    const data = await this.fetchGroupDetail();
+
+    this.groupDetail.group_no = data.group_no;
+    this.groupDetail.group_name = data.group_name;
+    this.groupDetail.description = data.description;
+    this.groupDetail.capacity = data.capacity;
+    this.groupDetail.is_public = data.is_public === 'Y';
+    this.groupDetail.owner = data.owner;
+    this.groupDetail.profile_img = data.profile_img;
+
+
+    Object.assign(this.groupDetail, {
+    ...data,
+    is_public: data.is_public === 'Y' ? 'Y' : 'N'  
+    });
+
+    this.groupEditMode = String(this.sender_no) === String(this.groupDetail.owner);
+
+    await this.$nextTick(() => {
+      const modalEl = document.getElementById('groupSettingsModal');
+      modalEl.removeAttribute('aria-hidden');
+      if (modalEl) {
+        new bootstrap.Modal(modalEl).show();
+      }
+    });
   },
 
   toggleGroupEditMode() {
@@ -56,7 +85,14 @@ export const uiMethods = {
   async saveGroupSettings() {
     await this.updateGroupDetail();
     alert('수정되었습니다.');
-    this.groupEditMode = false;
+    //this.groupEditMode = false;
     await this.loadGroups();
+
+    const updated = await this.fetchGroupDetail();
+
+    Object.assign(this.groupDetail, {
+      ...updated,
+      is_public: ['Y', 'N'].includes(updated.is_public) ? updated.is_public : 'N'
+    });
   }
 };

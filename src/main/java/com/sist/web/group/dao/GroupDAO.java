@@ -63,6 +63,10 @@ public class GroupDAO {
 		return mapper.selectGroupMemberAllByGroupNo(groupNo);
 	}
 	
+	/** 그룹 상세 수정 */
+	public void updateGroupDetail(GroupDTO dto) {
+		mapper.updateGroupDetail(dto);
+	}
 	/** 생성한 모든 그룹에 대한 가입요청리스트 조회 */
 	public List<GroupJoinRequestsDTO> selectGroupRequestsData(int user_no)
 	{

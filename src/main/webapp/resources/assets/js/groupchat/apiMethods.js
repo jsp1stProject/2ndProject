@@ -37,15 +37,33 @@ export const apiMethods = {
   
   async fetchGroupDetail() {
     const res = await axios.get(`${this.contextPath}/api/groups/${this.group_no}/detail`);
+    console.log('res: ', res);
     return res.data.data;
   },
 
   async updateGroupDetail() {
-    const payload = {
-      group_name: this.groupDetail.group_name,
-      description: this.groupDetail.description
+    const dto = {
+      ...this.groupDetail,
     };
-    const res = await axios.put(`${this.contextPath}/api/groups/${this.groupDetail.group_no}`, payload);
+    
+    console.log('dto: ', dto);
+    const formData = new FormData();
+    formData.append(
+      'groupDetail',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    );
+
+    const fileInput = this.$refs.profileImgInput;
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      formData.append('profileImg', fileInput.files[0]);
+    }
+
+    const res = await axios.put(
+      `${this.contextPath}/api/groups/${this.groupDetail.group_no}`,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+
     return res.data;
   }
 };

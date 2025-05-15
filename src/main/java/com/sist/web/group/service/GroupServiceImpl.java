@@ -1,12 +1,16 @@
 package com.sist.web.group.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sist.web.common.exception.code.CommonErrorCode;
 import com.sist.web.common.exception.code.GroupErrorCode;
@@ -26,6 +30,10 @@ import lombok.RequiredArgsConstructor;
 public class GroupServiceImpl implements GroupService{
 	private final GroupDAO gDao;
 	private final UserMapper userMapper;
+	@Value("${file.upload-dir}")
+	private String uploadDir;
+	private static final String ROLE_OWNER = "OWNER";
+	private static final String GROUP_IMAGE_PATH_PREFIX = "/images/group/";
 
 	@Override
 	public List<GroupDTO> getGroupAllList() {
@@ -62,7 +70,17 @@ public class GroupServiceImpl implements GroupService{
 	
 	@Transactional
 	@Override
-	public void createGroup(GroupDTO dto) {
+	public void createGroup(GroupDTO dto, MultipartFile profileImg) {
+		if (profileImg != null && !profileImg.isEmpty()) {
+			try {
+				String filename = UUID.randomUUID() + "_" + profileImg.getOriginalFilename();
+				File file = new File(uploadDir, filename);
+				profileImg.transferTo(file);
+				dto.setProfile_img(GROUP_IMAGE_PATH_PREFIX + filename);
+			} catch (Exception ex) {
+				throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
+			}
+		}
 		gDao.insertGroup(dto);
 		
 		GroupMemberDTO member = new GroupMemberDTO();
@@ -73,7 +91,7 @@ public class GroupServiceImpl implements GroupService{
 		// group_no, user_no, nickname
 		member.setGroup_no(dto.getGroup_no());
 		member.setUser_no(dto.getOwner());
-		member.setRole("OWNER");
+		member.setRole(ROLE_OWNER);
 		member.setNickname(user.getNickname());
 		
 		gDao.insertGroupMember(member);
@@ -119,6 +137,20 @@ public class GroupServiceImpl implements GroupService{
 	}
 
 	@Override
+	public void updateGroupDetail(GroupDTO dto, MultipartFile profileImg) {
+		System.out.println("service dto: " + dto.toString());
+		if (profileImg != null && !profileImg.isEmpty()) {
+			try {
+				String filename = UUID.randomUUID() + "_" + profileImg.getOriginalFilename();
+				File file = new File(uploadDir, filename);
+				profileImg.transferTo(file);
+				dto.setProfile_img(GROUP_IMAGE_PATH_PREFIX + filename);
+			} catch (Exception ex) {
+				throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
+			}
+		}
+		gDao.updateGroupDetail(dto);
+	}
 	public List<GroupJoinRequestsDTO> selectGroupRequestsData(int user_no) {
 		return gDao.selectGroupRequestsData(user_no);
 	}
