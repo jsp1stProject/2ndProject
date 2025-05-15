@@ -104,7 +104,7 @@
             </div>
             <div class="group-main">
                 <div class="group-chat">
-                    <div class="chat-body" data-simplebar="init">
+                    <div class="chat-body" id="chat-body" data-simplebar="init">
                         <div class="msg d-flex">
                             <a href="#" class="user-profile">
                                 <img src="/assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">

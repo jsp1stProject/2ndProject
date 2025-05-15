@@ -7,14 +7,14 @@
 	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-<div class="container">
-	<a href="${pageContext.request.contextPath }/login">로그인</a>
+<div class="container pt-header">
+	<a class="btn btn-primary" href="${pageContext.request.contextPath }/login">로그인</a>
 	<form action="${pageContext.request.contextPath }/api/auth/logout" method="post">
-		<input type="submit" value="로그아웃">
+		<input type="submit" class="btn btn-danger" value="로그아웃">
 	</form>
-	<a href="${pageContext.request.contextPath }/users/test">user 권한 테스트 페이지</a>
-	<a href="${pageContext.request.contextPath }/admin">admin 권한 테스트 페이지</a>
-	<p>로그인 시 자동으로 setAttribute되는 목록</p>
+	<a href="${pageContext.request.contextPath }/users/test" class="btn btn-outline-primary">user 권한 테스트 페이지</a>
+	<a href="${pageContext.request.contextPath }/admin" class="btn btn-outline-success">admin 권한 테스트 페이지</a>
+	<h5 class="mt-2">로그인 시 자동으로 setAttribute되는 목록</h5>
 	<style>
 		tr:not(:last-child) td{border-bottom:1px solid #dddddd}
 		th{background-color: #eaeaea; padding: 0 5px;}
@@ -42,18 +42,29 @@
 		</tr>
 	</table>
 	<c:if test="${usermail ne null}">
-		<p>${nickname} 님, 환영합니다.</p>
-		<p>이메일: ${usermail}</p>
-		<p>권한:
+		<p>${nickname} 님, 환영합니다.<br>
+			이메일: ${usermail}<br>
+			권한:
 			<c:forEach var="r" items="${role}">
 				<span>${r} </span>
 			</c:forEach>
 		</p>
 	</c:if>
+	<p>
+		단순 확인용 모달 :<br>
+		const m1=newmodal('내용','ID');<br>
+		m1.show();<br>
+		<button type="button" class="btn  btn-dark" onclick="m1.show()">모달 보기</button>
+	</p>
+	<p>
+		toast 메시지 :<br>
+		toast('내용');<br>
+		<button type="button" class="btn btn-warning" onclick="toast('!!!')">토스트 확인</button>
+	</p>
 </div>
 
 <script>
-
+	const m1=newmodal('<b>test</b> test','m1');
 </script>
 </body>
 </html>
