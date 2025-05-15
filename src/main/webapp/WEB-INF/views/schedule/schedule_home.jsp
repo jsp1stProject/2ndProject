@@ -1,61 +1,42 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> -->
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<style type="text/css">
-.fc-event {
-  border-radius: 6px !important;
-  padding: 2px 5px;
-  font-size: 14px;
-}
-.fc-daygrid-event-dot {
-  display: none;
-}
-</style>
-</head>
-<body>
+
 <!-- 전체 페이지 템플릿 구조 -->
-<div class="container-fluid mt-4" id="app">
+<div class="container pt-header mt-4" id="app">
   <div class="row">
     <!-- 왼쪽 패널 -->
     <div class="col-md-3">
-      <div class="card mb-3">
-        <div class="card-header bg-primary text-white">📌 D-Day</div>
+      <div class="card shadow-sm mb-3">
+        <div class="card-header fw-bold">📌 D-Day</div>
         <div class="card-body">
-          <!-- <p v-for="d in ddayList" :key="d.title" class="mb-1" >✔ {{ d.title }} - D-{{ d.dday }}</p> -->
-          <p class="mb-1"> 디데이출력부분 </p>
+          <!-- <p v-if="ddayList.length === 0" class="text-muted">등록된 D-Day 일정이 없습니다.</p>
+            <p v-for="d in ddayList" :key="d.title"> -->
+            <p class="mb-1"> 디데이출력부분 </p>
+            <i class="bi bi-calendar-check"></i>
+             병원 - 
+             <span class="text-danger">D-5</span>
+<%--             <i class="bi bi-calendar-check"></i> {{ d.title }} - <span :class="d.dday <= 3 ? 'text-danger' : (d.dday <= 7 ? 'text-warning' : '')">D-{{ d.dday }}</span> --%>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-header bg-success text-white">📌 오늘의 일정</div>
+      <div class="card shadow-sm">
+        <div class="card-header fw-bold">📌 오늘의 일정</div>
         <div class="card-body p-2">
           <ul class="list-group list-group-flush">
-            <!-- <li class="list-group-item" v-for="event in filteredSchedule" :key="event.title"> -->
-            <li class="list-group-item">
-              <!-- 🗓️ {{ event.time }} - {{ event.title }} <span class="badge bg-info">{{ event.type }}</span> -->
-              🗓️ 2025-05-18 - 산책가는날 <span class="badge bg-info">산책</span>
-            </li>
-            <li class="list-group-item">
-              <!-- 🗓️ {{ event.time }} - {{ event.title }} <span class="badge bg-info">{{ event.type }}</span> -->
-              🗓️ 2025-05-28 - 병원 <span class="badge bg-info">병원 예약 3시</span>
-            </li>
-            <li class="list-group-item">
-              <!-- 🗓️ {{ event.time }} - {{ event.title }} <span class="badge bg-info">{{ event.type }}</span> -->
-              🗓️ 2025-06-18 - 예방접종 <span class="badge bg-info">주사맞아야하는 날 </span>
-            </li>
-            <!-- <li v-if="filteredSchedule.length === 0" class="list-group-item text-muted">일정이 없습니다.</li> -->
-            <li class="list-group-item text-muted">일정이 없습니다.</li>
+            <p>
+              🕒 2025-05-18 - 산책가는날 <span class="badge bg-secondary">산책</span>
+            </p>
+            <p>
+              🕒 2025-05-18 - 산책가는날 <span class="badge bg-secondary">산책</span>
+            </p>
+            <p>
+              🕒 2025-05-18 - 산책가는날 <span class="badge bg-secondary">산책</span>
+            </p>
+            
           </ul>
         </div>
       </div>
@@ -63,24 +44,35 @@
 
     <!-- 중앙 FullCalendar -->
     <div class="col-md-9">
-      <div class="card mb-3 shadow-sm">
-        <div class="card-header bg-light fw-bold">📆 큰 달력 보기</div>
-        <div class="card-body">
-          <div id="calendar"></div>
+      <!-- 모바일 전용 toggle 버튼 -->
+      <button class="btn btn-secondary d-md-none mb-2" data-bs-toggle="collapse" data-bs-target="#calendarWrap">
+          📅 큰 달력 보기
+        </button>
+      <div id="calendarWrap" class="collapse show d-md-block">
+          <div class="card shadow-sm mb-3">
+            <div class="card-header fw-bold">📆 큰 달력 보기</div>
+            <div class="card-body">
+              <div id="calendar"></div>
+            </div>
+          </div>
         </div>
-      </div>
 
       <!-- 선택된 날짜 일정 요약 -->
       <div class="card shadow-sm">
-        <div class="card-header bg-secondary text-white">📋 선택한 날짜 일정</div>
-        <div class="card-body p-0">
-          <ul class="list-group list-group-flush">
+        <div class="card-header fw-bold"><i class="bi bi-list-task"></i>📋 선택한 날짜 일정</div>
+        <div class="card-body">
+         <div class="text-end mt-2">
+		  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+		    ➕ 일정 추가
+		  </button>
+		 </div>
+          <ul class="list-group">
             <!-- 
             <li class="list-group-item" v-for="event in filteredSchedule" :key="event.title">
               {{ event.time }} - {{ event.title }} ({{ event.type }})
             </li>
              -->
-             <li class="list-group-item">
+             <li class="list-group-item d-flex justify-content-between align-items-center" >
              🗓️ 2025-05-28 - 병원 <span class="badge bg-info">병원 예약 3시</span>
              </li>
              <!-- <li
@@ -89,13 +81,46 @@
 		        >
 		          📭 선택된 일정이 없습니다.
 		        </li> -->
-		      <li
-		          class="list-group-item text-muted"
-		        >
-		          📭 선택된 일정이 없습니다.
-		        </li>  
+		     
           </ul>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="addScheduleModal" tabindex="-1" aria-labelledby="addScheduleLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addScheduleLabel">📅 새 일정 등록</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form @submit.prevent="submitSchedule">
+          <div class="mb-3">
+            <label class="form-label">제목</label>
+            <input type="text" class="form-control" v-model="newSchedule.title" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">내용</label>
+            <textarea class="form-control" rows="3" v-model="newSchedule.content"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">시작 시간</label>
+            <input type="datetime-local" class="form-control" v-model="newSchedule.start" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">종료 시간</label>
+            <input type="datetime-local" class="form-control" v-model="newSchedule.end" required>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" v-model="newSchedule.is_important" id="importantCheck">
+            <label class="form-check-label" for="importantCheck">⭐️ 중요 일정</label>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-success">등록하기</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -144,7 +169,5 @@
         this.selectedDate = info.dateStr;
       }
     }
-  }).mount('#app')
+  }).mount('.container')
 </script>
-</body>
-</html>
