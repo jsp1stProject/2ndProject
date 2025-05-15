@@ -32,7 +32,7 @@ public class ScheduleRestController {
 	
 	private final ScheduleService service;
 	
-	@GetMapping()
+	@GetMapping("/{group_no}")
 	public ResponseEntity<Map> schedule_group_list(int group_no, HttpServletRequest request)
 	{
 		Map map = new HashMap();
@@ -76,7 +76,7 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(map,HttpStatus.OK);
 	}
 	
-	@GetMapping("/{user_no}")
+	@GetMapping("")
 	public ResponseEntity<Map<String, Object>> user_schedule_list (HttpServletRequest request)
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
