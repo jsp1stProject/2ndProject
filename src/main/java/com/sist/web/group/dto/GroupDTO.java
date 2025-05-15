@@ -27,6 +27,7 @@ public class GroupDTO {
 	private String join_status; 
 	private Integer current_member_count;
 	private String description;
+	@ToString.Exclude
 	private String profile_img;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private Timestamp created_at;

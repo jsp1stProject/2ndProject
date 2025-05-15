@@ -1,7 +1,9 @@
 package com.sist.web.group.service;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,9 +75,29 @@ public class GroupServiceImpl implements GroupService{
 	public void createGroup(GroupDTO dto, MultipartFile profileImg) {
 		if (profileImg != null && !profileImg.isEmpty()) {
 			try {
-				String filename = UUID.randomUUID() + "_" + profileImg.getOriginalFilename();
-				File file = new File(uploadDir, filename);
+				File uploadPath = new File(uploadDir);
+	            if (!uploadPath.exists()) {
+	                uploadPath.mkdirs(); // 디렉토리 없으면 생성
+	            }
+				
+	            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
+	            String extension = "";
+				
+				
+	            String originalFilename = profileImg.getOriginalFilename();
+	            int lastDot = originalFilename.lastIndexOf(".");
+	            if (lastDot != -1) {
+	                extension = originalFilename.substring(lastDot); // 예: .jpg
+	            }
+				
+	            String filename = timestamp + "_" + (int)(Math.random() * 1000) + extension;
+	            
+	            File file = new File(uploadPath, filename);
+	            profileImg.transferTo(file);
+	            
+	            
 				profileImg.transferTo(file);
+				
 				dto.setProfile_img(GROUP_IMAGE_PATH_PREFIX + filename);
 			} catch (Exception ex) {
 				throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
@@ -141,11 +163,29 @@ public class GroupServiceImpl implements GroupService{
 		System.out.println("service dto: " + dto.toString());
 		if (profileImg != null && !profileImg.isEmpty()) {
 			try {
-				String filename = UUID.randomUUID() + "_" + profileImg.getOriginalFilename();
-				File file = new File(uploadDir, filename);
-				profileImg.transferTo(file);
+				
+				File uploadPath = new File(uploadDir);
+	            if (!uploadPath.exists()) {
+	                uploadPath.mkdirs(); 
+	            }
+
+	            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
+	            String extension = "";
+
+	            String originalFilename = profileImg.getOriginalFilename();
+	            int lastDot = originalFilename.lastIndexOf(".");
+	            if (lastDot != -1) {
+	                extension = originalFilename.substring(lastDot); // 예: .jpg
+	            }
+
+	            String filename = timestamp + "_" + (int)(Math.random() * 1000) + extension;
+
+	            File file = new File(uploadPath, filename);
+	            profileImg.transferTo(file);
+
 				dto.setProfile_img(GROUP_IMAGE_PATH_PREFIX + filename);
 			} catch (Exception ex) {
+				ex.printStackTrace();
 				throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
 			}
 		}
