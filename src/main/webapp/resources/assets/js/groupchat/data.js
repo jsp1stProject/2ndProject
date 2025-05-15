@@ -29,7 +29,7 @@ export const groupChatData = {
     description: '',
     profile_img: null,
     capacity: 0,
-    is_public: true,
+    is_public: '',
     owner: ''
   },
   groupEditMode: false

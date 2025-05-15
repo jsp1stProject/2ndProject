@@ -83,6 +83,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGeneralException(Exception ex) {
         ErrorInfo info = CommonErrorCode.INTERNAL_SERVER_ERROR;
+        ex.printStackTrace();
         return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
     }
 }

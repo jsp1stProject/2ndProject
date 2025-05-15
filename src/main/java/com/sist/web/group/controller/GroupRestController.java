@@ -65,21 +65,11 @@ public class GroupRestController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<ApiResponse<GroupDTO>> createGroup(@Valid @RequestPart("group") GroupDTO dto, @RequestPart(value = "image", required = false) MultipartFile image) {
-		// 피드 이미지와 통일시켜야 할 수도 있음
-		try {
-			if (image != null && !image.isEmpty()) {
-				String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
-				File file = new File(uploadDir, filename);
-				image.transferTo(file);
-				
-				dto.setProfile_img("/images/group/" + filename);
-			}
-			service.createGroup(dto);
-			return ResponseEntity.ok(ApiResponse.success(dto));
-		} catch (IOException ex) {
-			throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
-		}
+	public ResponseEntity<ApiResponse<GroupDTO>> createGroup(
+			@Valid @RequestPart("groupDetail") GroupDTO dto, 
+			@RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
+		service.createGroup(dto, profileImg);
+		return ResponseEntity.ok(ApiResponse.success(dto));
 	}
 	
 	@GetMapping("/{users}")
@@ -133,41 +123,20 @@ public class GroupRestController {
 		if (groupNo == null) {
 			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
 		}
+		System.out.println(service.getGroupDetailByGroupNo(groupNo).toString());
 		return ResponseEntity.ok(ApiResponse.success(service.getGroupDetailByGroupNo(groupNo)));
 	}
 	
 	@PutMapping(value = "/{groupNo}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<String>> updateGroupDetail(
-        @PathVariable("groupNo") Integer groupNo,
-        @RequestPart("group_name") String groupName,
-        @RequestPart("description") String description,
-        @RequestPart("capacity") Integer capacity,
-        @RequestPart("is_public") String isPublic,
-        @RequestPart(value = "profile_img", required = false) MultipartFile profileImg) {
-
-        String imagePath = null;
-
-        if (profileImg != null && !profileImg.isEmpty()) {
-            try {
-                String filename = UUID.randomUUID() + "_" + profileImg.getOriginalFilename();
-                File target = new File(uploadDir, filename);
-                profileImg.transferTo(target);
-                imagePath = filename; 
-            } catch (Exception e) {
-            	
-            }
-        }
-
-        GroupDTO dto = new GroupDTO();
-        dto.setGroup_no(groupNo);
-        dto.setGroup_name(groupName);
-        dto.setDescription(description);
-        dto.setCapacity(capacity);
-        dto.setIs_public(isPublic);
-        dto.setProfile_img(imagePath); // null이면 쿼리에서 제외됨
-
-        service.updateGroupDetail(dto);
-        return ResponseEntity.ok(ApiResponse.success("그룹 정보가 수정되었습니다."));
+    		@PathVariable("groupNo") Integer groupNo,
+    		@RequestPart("groupDetail") GroupDTO dto,
+    		@RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
+		System.out.println("controller dto: " + dto);
+		System.out.println("dto: " + dto.toString());
+		dto.setGroup_no(groupNo);
+        service.updateGroupDetail(dto, profileImg);
+		return ResponseEntity.ok(ApiResponse.success("그룹 정보가 수정되었습니다."));
     }
 	
 	@GetMapping("/{userNo}/join_requests")

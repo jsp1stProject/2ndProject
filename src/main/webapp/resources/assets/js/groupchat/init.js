@@ -101,10 +101,17 @@ export function initGroupChat(contextPath, createApp) {
         this.stompClient.send(`/pub/chats/groups/${this.group_no}`, {}, JSON.stringify(msg));
         this.message = '';
       },
-
-      groupOpen() {
-        this.createCheck = !this.createCheck;
+      handleProfileImgChange(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = e => {
+            this.groupDetail.profile_img = e.target.result; 
+          };
+          reader.readAsDataURL(file);
+        }
       }
+
     }
   }).mount('#app');
 }

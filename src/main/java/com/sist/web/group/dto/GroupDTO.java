@@ -3,10 +3,16 @@ package com.sist.web.group.dto;
 import java.sql.Timestamp;
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter @Setter
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter @Setter @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class GroupDTO {
 	private Integer group_no;
 	private Integer capacity;

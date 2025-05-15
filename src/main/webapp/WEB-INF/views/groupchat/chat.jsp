@@ -74,8 +74,9 @@
                         <iconify-icon icon="solar:menu-dots-circle-line-duotone" class="fs-14"></iconify-icon>
                     </button>
                     <div class="dropdown-menu" aria-labelledby="groupdrop">
+                        <button type="button" class="dropdown-item" @click="openGroupSettingsModal">그룹 프로필</button>
                         <button type="button" class="dropdown-item">그룹 설정</button>
-                        <button type="button" class="dropdown-item">그룹 프로필</button>
+                        <button type="button" class="dropdown-item">그룹 추가</button>
                     </div>
                 </div>
             </div>
@@ -178,6 +179,73 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="groupSettingsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">그룹 설정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+            </div>
+            <div class="modal-body">
+                <form @submit.prevent="groupEditMode ? updateGroupDetail() : null" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">그룹명</label>
+                    <input type="text" class="form-control"
+                        v-model="groupDetail.group_name"
+                        :readonly="!groupEditMode" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">설명</label>
+                    <textarea class="form-control" rows="3"
+                            v-model="groupDetail.description"
+                            :readonly="!groupEditMode"></textarea>
+                </div>
+
+                <div class="mb-3 d-flex gap-3">
+                    <div class="flex-grow-1">
+                    <label class="form-label">정원</label>
+                    <input type="number" class="form-control"
+                            v-model.number="groupDetail.capacity"
+                            :readonly="!groupEditMode" />
+                    </div>
+
+                    <div class="flex-grow-1">
+                    <label class="form-label">공개 여부</label>
+                    <select class="form-select"
+                            v-model="groupDetail.is_public"
+                            :disabled="!groupEditMode">
+                        <option value="Y">공개</option>
+                        <option value="N">비공개</option>
+                    </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">프로필 이미지</label><br/>
+                    <img :src="groupDetail.profile_img" alt="Group Image"
+                        v-if="groupDetail.profile_img"
+                        style="max-height: 150px; display: block; margin-bottom: 10px;" />
+                    <input type="file" ref="profileImgInput"
+                        class="form-control"
+                        v-if="groupEditMode"
+                        @change="handleProfileImgChange" />
+                </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button v-if="groupEditMode"
+                        type="button"
+                        class="btn btn-primary"
+                        @click="saveGroupSettings">
+                저장
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
             </div>
         </div>
     </div>
