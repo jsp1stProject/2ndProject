@@ -105,4 +105,17 @@ public class SitterServiceImpl implements SitterService{
 		sDao.deleteSitterReviewWithPost(sitter_no);
 	}
 
+	@Override
+	public List<SitterVO> jjimSitterList(int user_no) {
+		// TODO Auto-generated method stub
+		return sDao.jjimSitterList(user_no);
+	}
+
+	@Override
+	public boolean toggleJjim(int user_no, int sitter_no) {
+		// TODO Auto-generated method stub
+		return sDao.toggleJjim(user_no, sitter_no);
+	}
+
+
 }

@@ -36,7 +36,7 @@
 
   <!-- 리뷰 -->
   <div class="card p-3 my-4">
-    <h5>리뷰 작성</h5>
+    <h5>리뷰</h5>
     <textarea v-model="newReview.rev_comment" class="form-control mb-2" placeholder="리뷰를 입력하세요"></textarea>
     <div class="d-flex">
       <input type="number" v-model="newReview.rev_score" min="1" max="5" class="form-control w-25 me-2">

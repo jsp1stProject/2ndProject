@@ -8,149 +8,188 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-  <div class="container-fluid" id="app">
-    <h2 class="mb-4">펫시터 목록</h2>
+<div class="container-fluid" id="app">
+  <h2 class="mb-4">펫시터 목록</h2>
+  <div class="row">
+    <!-- 왼쪽 필터 영역 -->
+    <div class="col-md-3">
+      <div class="mb-4">
+        <label for="fd">필터 기준:</label>
+        <select v-model="fd" id="fd" class="form-select">
+          <option value="care_loc">지역</option>
+          <option value="tag">태그</option>
+        </select>
 
-    <div class="d-flex justify-content-end mb-3">
-      <button class="btn btn-success" @click="goInsert">새 글 쓰기</button>
-    </div>
+        <div class="form-check mt-3" v-for="option in filterOptions" :key="option">
+          <input class="form-check-input" type="checkbox" :value="option" v-model="st">
+          <label class="form-check-label">{{ option }}</label>
+        </div>
 
-    <!-- 필터 영역 -->
-    <div class="mb-4">
-      <label for="fd">필터 기준:</label>
-      <select v-model="fd" id="fd" class="form-select w-auto d-inline-block">
-        <option value="care_loc">지역</option>
-        <option value="tag">태그</option>
-      </select>
-
-      <div class="form-check form-check-inline" v-for="option in filterOptions" :key="option">
-        <input class="form-check-input" type="checkbox" :value="option" v-model="st">
-        <label class="form-check-label">{{ option }}</label>
+        <button class="btn btn-secondary btn-sm mt-3" @click="dataRecv(1)">검색</button>
+        <button class="btn btn-outline-secondary btn-sm mt-2" @click="resetFilter">초기화</button>
       </div>
-
-      <button class="btn btn-secondary btn-sm ms-2" @click="dataRecv(1)">검색</button>
-      <button class="btn btn-outline-secondary btn-sm ms-2" @click="resetFilter">초기화</button>
     </div>
 
-    <!-- 펫시터 카드 목록 -->
-    <div v-if="list.length > 0">
-      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <div class="col" v-for="sitter in list" :key="sitter.sitter_no">
-          <div class="card h-100">
-            <img :src="sitter.sitter_pic" class="card-img-top" alt="sitter_pic">
-            <div class="card-body">
-              <h5 class="card-title">{{ sitter.user.nickname }} ({{ sitter.user.user_name }})</h5>
-              <p class="card-text">{{ sitter.content }}</p>
-              <ul class="list-unstyled">
-                <li><strong>태그:</strong> {{ sitter.tag }}</li>
-                <li><strong>돌봄 횟수:</strong> {{ sitter.carecount }}</li>
-                <li><strong>평점:</strong> {{ sitter.score }}</li>
-                <li><strong>지역:</strong> {{ sitter.care_loc }}</li>
-                <li><strong>시작가:</strong> {{ sitter.pet_first_price }}</li>
-                <li v-if="sitter.sitterApp">
-                  <strong>자격증:</strong> {{ sitter.sitterApp.license }}
-                </li>
-                <li v-if="sitter.sitterApp">
-                  <strong>경력:</strong> {{ sitter.sitterApp.history }}
-                </li>
-              </ul>
-              <button class="btn btn-primary mt-2" @click="goDetail(sitter.sitter_no)">
-                상세보기
-              </button>
+    <!-- 오른쪽 콘텐츠 영역 -->
+    <div class="col-md-9">
+      <!-- 찜한 펫시터 목록 -->
+      <div class="mb-5">
+        <h4 class="mb-3">♥ 내가 찜한 펫시터</h4>
+        <div v-if="jjimList.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          <div class="col" v-for="sitter in jjimList" :key="'jjim-' + sitter.sitter_no">
+            <div class="card h-100">
+              <img :src="sitter.sitter_pic" class="card-img-top">
+              <div class="card-body">
+                <h5 class="card-title">{{ sitter.user.nickname }}</h5>
+                <p class="card-text">{{ sitter.content }}</p>
+                <button class="btn btn-outline-danger btn-sm" @click="toggleJjim(sitter.sitter_no)">♥ 찜 해제</button>
+              </div>
             </div>
           </div>
         </div>
+        <div v-else class="text-muted">찜한 펫시터가 없습니다.</div>
       </div>
+
+      <!-- 전체 펫시터 목록 -->
+      <div>
+        <h4 class="mb-3">전체 펫시터 목록</h4>
+        <div v-if="list.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          <div class="col" v-for="sitter in list" :key="sitter.sitter_no">
+            <div class="card h-100">
+              <img :src="sitter.sitter_pic" class="card-img-top" alt="sitter_pic">
+              <div class="card-body">
+                <h5 class="card-title">{{ sitter.user.nickname }} ({{ sitter.user.user_name }})</h5>
+                <p class="card-text">{{ sitter.content }}</p>
+                <ul class="list-unstyled">
+                  <li><strong>태그:</strong> {{ sitter.tag }}</li>
+                  <li><strong>돌봄 횟수:</strong> {{ sitter.carecount }}</li>
+                  <li><strong>평점:</strong> {{ sitter.score }}</li>
+                  <li><strong>지역:</strong> {{ sitter.care_loc }}</li>
+                  <li><strong>시작가:</strong> {{ sitter.pet_first_price }}</li>
+                  <li v-if="sitter.sitterApp"><strong>자격증:</strong> {{ sitter.sitterApp.license }}</li>
+                  <li v-if="sitter.sitterApp"><strong>경력:</strong> {{ sitter.sitterApp.history }}</li>
+                </ul>
+                <button class="btn btn-outline-danger btn-sm me-2" @click="toggleJjim(sitter.sitter_no)">
+                  {{ sitter.jjimCheck ? '♥' : '♡' }}
+                </button>
+                <button class="btn btn-primary btn-sm" @click="goDetail(sitter.sitter_no)">상세보기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else class="text-muted">목록이 없습니다.</div>
+      </div>
+
+      <!-- 페이지네이션 -->
+      <nav class="mt-5">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" :class="{ disabled: curpage === 1 }">
+            <a class="page-link" href="#" @click.prevent="changePage(curpage - 1)">이전</a>
+          </li>
+          <li class="page-item" v-for="i in pageRange" :key="i" :class="{ active: curpage === i }">
+            <a class="page-link" href="#" @click.prevent="changePage(i)">{{ i }}</a>
+          </li>
+          <li class="page-item" :class="{ disabled: curpage === totalpage }">
+            <a class="page-link" href="#" @click.prevent="changePage(curpage + 1)">다음</a>
+          </li>
+        </ul>
+      </nav>
     </div>
-    <div v-else class="text-muted">목록이 없습니다.</div>
-
-    <!-- 페이지네이션 -->
-    <nav class="mt-5">
-      <ul class="pagination justify-content-center">
-        <li class="page-item" :class="{ disabled: curpage === 1 }">
-          <a class="page-link" href="#" @click.prevent="changePage(curpage - 1)">이전</a>
-        </li>
-
-        <li class="page-item" v-for="i in pageRange" :key="i" :class="{ active: curpage === i }">
-          <a class="page-link" href="#" @click.prevent="changePage(i)">{{ i }}</a>
-        </li>
-
-        <li class="page-item" :class="{ disabled: curpage === totalpage }">
-          <a class="page-link" href="#" @click.prevent="changePage(curpage + 1)">다음</a>
-        </li>
-      </ul>
-    </nav>
   </div>
+</div>
 
-  <!-- Vue + axios ESM -->
-  <script type="module">
-    import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
-    import axios from 'https://cdn.skypack.dev/axios'
+<script type="module">
+  import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+  import axios from 'https://cdn.skypack.dev/axios'
 
-    createApp({
-      data() {
-        return {
-          list: [],
-          curpage: 1,
-          totalpage: 1,
-          startPage: 1,
-          endPage: 1,
-          fd: 'care_loc',
-          st: [],
-          filterOptions: ['서울', '경기', '인천', '고양이전문', '강아지전문']
+  createApp({
+    data() {
+      return {
+        list: [],
+        jjimList: [],
+        curpage: 1,
+        totalpage: 1,
+        startPage: 1,
+        endPage: 1,
+        fd: 'care_loc',
+        st: [],
+        filterOptions: ['서울', '경기', '인천', '고양이전문', '강아지전문'],
+        token: localStorage.getItem("token") || ""
+      }
+    },
+    computed: {
+      pageRange() {
+        const range = []
+        for (let i = this.startPage; i <= this.endPage; i++) {
+          range.push(i)
         }
-      },
-      computed: {
-        pageRange() {
-          const range = []
-          for (let i = this.startPage; i <= this.endPage; i++) {
-            range.push(i)
+        return range
+      }
+    },
+    mounted() {
+      this.dataRecv(1)
+      this.loadJjimList()
+    },
+    methods: {
+      async dataRecv(page) {
+        try {
+          const params = {
+            page: page,
+            fd: this.fd,
+            st: this.st.join(',')
           }
-          return range
+          const res = await axios.get('/web/sitter/list_vue', { params })
+          this.list = res.data.list
+          this.curpage = res.data.curpage
+          this.totalpage = res.data.totalpage
+          this.startPage = res.data.startPage
+          this.endPage = res.data.endPage
+        } catch (error) {
+          console.error('❌ 데이터 로드 오류:', error)
         }
       },
-      mounted() {
+      async loadJjimList() {
+        try {
+          const res = await axios.get('/web/sitter/jjim/list', {
+            headers: { Authorization: `Bearer ` + this.token }
+          })
+          this.jjimList = res.data
+        } catch (e) {
+          console.error('찜 목록 로딩 실패:', e)
+        }
+      },
+      async toggleJjim(sitter_no) {
+        try {
+          await axios.post('/web/sitter/jjim/toggle', { sitter_no }, {
+            headers: { Authorization: `Bearer ` + this.token }
+          })
+          this.loadJjimList()
+          this.dataRecv(this.curpage)
+        } catch (e) {
+          alert("찜 처리 실패")
+        }
+      },
+      changePage(page) {
+        if (page >= 1 && page <= this.totalpage) {
+          this.dataRecv(page)
+        }
+      },
+      resetFilter() {
+        this.st = []
         this.dataRecv(1)
       },
-      methods: {
-        async dataRecv(page) {
-          try {
-            const params = {
-              page: page,
-              fd: this.fd,
-              st: this.st.join(',')
-            }
-            const res = await axios.get('/web/sitter/list_vue', { params })
-            this.list = res.data.list
-            this.curpage = res.data.curpage
-            this.totalpage = res.data.totalpage
-            this.startPage = res.data.startPage
-            this.endPage = res.data.endPage
-          } catch (error) {
-            console.error('❌ 데이터 로드 오류:', error)
-          }
-        },
-        changePage(page) {
-          if (page >= 1 && page <= this.totalpage) {
-            this.dataRecv(page)
-          }
-        },
-        resetFilter() {
-          this.st = []
-          this.dataRecv(1)
-        },
-        goInsert() {
-          location.href = `/web/sitter/insert`
-        },
-        goDetail(sitter_no) {
-          if (!sitter_no) {
-            alert("⚠ sitter_no가 없습니다!")
-            return
-          }
-          location.href = '/web/sitter/detail?sitter_no=' + sitter_no
+      goInsert() {
+        location.href = `/web/sitter/insert`
+      },
+      goDetail(sitter_no) {
+        if (!sitter_no) {
+          alert("⚠ sitter_no가 없습니다!")
+          return
         }
+        location.href = '/web/sitter/detail?sitter_no=' + sitter_no
       }
-    }).mount('#app')
-  </script>
+    }
+  }).mount('#app')
+</script>
 </body>
 </html>

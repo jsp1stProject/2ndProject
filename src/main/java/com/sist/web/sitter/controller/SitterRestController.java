@@ -1,5 +1,5 @@
 package com.sist.web.sitter.controller;
-
+import com.sist.web.security.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +28,9 @@ import com.sist.web.sitter.service.*;
 public class SitterRestController {
 	@Autowired
 	private SitterService service;
-		// 목록
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
+	// 목록
 	@GetMapping("/sitter/list_vue")
 	public ResponseEntity<Map<String, Object>> sitter_list(
 	    @RequestParam(defaultValue = "1") int page,
@@ -37,7 +40,6 @@ public class SitterRestController {
 	    Map<String, Object> queryMap = new HashMap<>();
 	    Map<String, Object> result = new HashMap<>();
 
-	    // ✅ 페이징 계산
 	    int rowSize = 8;
 	    int start = (page - 1) * rowSize + 1;
 	    int end = page * rowSize;
@@ -47,7 +49,7 @@ public class SitterRestController {
 
 	    List<SitterVO> list;
 
-	    // ✅ 필터링 조건 여부 확인
+	    // 필터
 	    if (st == null || st.trim().isEmpty()) {
 	        list = service.sitterListDataAll(queryMap);
 	    } else {
@@ -56,14 +58,12 @@ public class SitterRestController {
 	        list = service.sitterListDataWithFilter(queryMap);
 	    }
 
-	    // ✅ 전체 페이지 수 계산
 	    int totalpage = service.sitterTotalPage();
 	    int BLOCK = 10;
 	    int startPage = ((page - 1) / BLOCK) * BLOCK + 1;
 	    int endPage = startPage + BLOCK - 1;
 	    if (endPage > totalpage) endPage = totalpage;
 
-	    // ✅ 결과 구성
 	    result.put("list", list);        
 	    result.put("curpage", page);
 	    result.put("totalpage", totalpage);
@@ -74,7 +74,7 @@ public class SitterRestController {
 	}
 
 
-	// ✅ 상세보기 (SitterAppVO 정보 포함됨)
+	// 상세보기 
     @GetMapping("/sitter/detail_vue")
     public ResponseEntity<SitterVO> sitter_detail(@RequestParam("sitter_no") int sitter_no) {
         try {
@@ -97,8 +97,26 @@ public class SitterRestController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    // 찜하기
+    @PostMapping("/sitter/jjim/toggle")
+    public ResponseEntity<String> toggleJjim(@RequestHeader("Authorization") String authHeader,
+                                             @RequestBody Map<String, Integer> data) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            int user_no = Integer.parseInt(jwtTokenProvider.getUserNoFromToken(token)); 
 
-    // ✅ 새글 등록
+            int sitter_no = data.get("sitter_no");
+            boolean result = service.toggleJjim(user_no, sitter_no);
+            return new ResponseEntity<>(result ? "찜 추가됨" : "찜 취소됨", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("인증 실패", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+
+    //새글
     @PostMapping("/sitter/insert")
     public ResponseEntity<String> sitter_insert(
             @RequestParam("upload") MultipartFile file,
@@ -132,17 +150,17 @@ public class SitterRestController {
         }
     }
 
-    // ✅ 수정
-    @PostMapping("/sitter/update")
-    public ResponseEntity<String> sitter_update(@RequestBody SitterVO vo) {
-        try {
-            service.sitterUpdate(vo);
-            return new ResponseEntity<>("success", HttpStatus.OK);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ResponseEntity<>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+	    // 수정
+	    @PostMapping("/sitter/update")
+	    public ResponseEntity<String> sitter_update(@RequestBody SitterVO vo) {
+	        try {
+	            service.sitterUpdate(vo);
+	            return new ResponseEntity<>("success", HttpStatus.OK);
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	            return new ResponseEntity<>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
+	    }
 
 	    // 삭제
 	    @DeleteMapping("/sitter/delete")

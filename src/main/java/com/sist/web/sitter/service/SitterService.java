@@ -3,10 +3,13 @@ package com.sist.web.sitter.service;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.sist.web.sitter.vo.SitterReviewVO;
 import com.sist.web.sitter.vo.SitterVO;
 
 public interface SitterService {
+	// 목록, 상세보기
 	public List<SitterVO> sitterListDataAll(Map map);
     public List<SitterVO> sitterListDataWithFilter(Map map);
     public int sitterTotalPage();
@@ -16,7 +19,10 @@ public interface SitterService {
 	public void sitterDelete(int sitter_no);
 	public boolean isSitter(int user_no);
 	public boolean hasSitterPost(int user_no);
-	
+	// 찜
+	List<SitterVO> jjimSitterList(int user_no);
+    boolean toggleJjim(int user_no, int sitter_no);
+	// 리뷰
 	public List<SitterReviewVO> reviewListData(int sitter_no);
 	public void reviewInsert(SitterReviewVO vo);
 	public void replyInsert(SitterReviewVO vo);

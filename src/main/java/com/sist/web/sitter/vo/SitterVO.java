@@ -19,6 +19,7 @@ public class SitterVO {
 	private int sitter_no,app_no,user_no,jjimcount,carecount;
 	private Double score;
 	private String tag,content,sitter_pic,care_loc,pet_first_price;
+	private boolean jjimCheck; // 현재 로그인한 유저가 이 펫시터를 찜했는지 여부
 	
 	private UserVO user = new UserVO(); // p_users
 	private SitterAppVO sitterApp = new SitterAppVO(); // p_sitter_app

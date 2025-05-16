@@ -53,7 +53,7 @@ public interface SitterMapper {
           + "ps.care_loc, ps.pet_first_price, pu.nickname, pu.user_name, spa.history, spa.license, spa.info "
           + "FROM p_sitter ps "
           + "JOIN p_users pu ON ps.user_no = pu.user_no "
-          //+ "JOIN p_sitter_app spa ON ps.app_no = spa.app_no "
+          + "JOIN p_sitter_app spa ON ps.app_no = spa.app_no "
           + "WHERE ${fd} IN (SELECT REGEXP_SUBSTR(#{st}, '[^,]+', 1, LEVEL) "
           + "FROM dual CONNECT BY LEVEL <= LENGTH(REGEXP_REPLACE(#{st}, '[^,]', '')) + 1) "
           + "ORDER BY ps.sitter_no ASC)) "
@@ -112,6 +112,7 @@ public interface SitterMapper {
         @Result(property = "sitterApp.info", column = "a_info")
     })
     public SitterVO sitterDetailData(int sitter_no);
+    
 	// 펫시터 여부 (p_sitter_app)
 	@Select("SELECT COUNT(*) FROM p_sitter_app WHERE user_no = #{user_no}")
 	public int isSitter(int user_no);
@@ -179,7 +180,30 @@ public interface SitterMapper {
 	// 게시물 삭제에 따른 리뷰 전체 삭제
 	@Delete("DELETE FROM p_sitter_review WHERE sitter_no = #{sitter_no}")
 	public void deleteSitterReviewWithPost(int sitter_no);
-	 
+	
+	// 찜하기
+	@Select("SELECT ps.sitter_no, ps.app_no, ps.user_no, ps.jjimcount, ps.carecount, "
+			+ "CASE WHEN EXISTS ( "
+			+  "  SELECT 1 FROM p_jjim "
+			+  "  WHERE user_no = #{user_no} AND sitter_no = ps.sitter_no "
+			+  ") THEN 1 ELSE 0 END AS jjimCheck "
+			+  "FROM p_sitter ps "
+			+  "ORDER BY ps.sitter_no DESC")
+	public List<SitterVO> jjimSitterList(@Param("user_no") int user_no);
+	
+	@Select("SELECT COUNT(*) FROM p_jjim WHERE user_no = #{user_no} AND sitter_no = #{sitter_no}")
+	public int checkJjim(@Param("user_no") int user_no, @Param("sitter_no") int sitter_no);
+
+	@Insert("INSERT INTO p_jjim(jjim_no, user_no, sitter_no) VALUES (jjim_seq.NEXTVAL, #{user_no}, #{sitter_no})")
+	public void insertJjim(@Param("user_no") int user_no, @Param("sitter_no") int sitter_no);
+
+	@Delete("DELETE FROM p_jjim WHERE user_no = #{user_no} AND sitter_no = #{sitter_no}")
+	public void deleteJjim(@Param("user_no") int user_no, @Param("sitter_no") int sitter_no);
+
+	@Update("UPDATE p_sitter SET jjimcount = jjimcount + #{amount} WHERE sitter_no = #{sitter_no}")
+	public void updateJjimCount(@Param("sitter_no") int sitter_no, @Param("amount") int amount);
+
+
 	
 	
 	

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -27,6 +28,23 @@ public class SitterDAO {
 	public int sitterTotalPage()
 	{
 		return mapper.sitterTotalPage();
+	}
+	
+	// 찜하기
+	public List<SitterVO> jjimSitterList(int user_no)
+	{
+		return mapper.jjimSitterList(user_no);
+	}
+	public boolean toggleJjim(int user_no, int sitter_no) {
+	    if (mapper.checkJjim(user_no, sitter_no) > 0) {
+	        mapper.deleteJjim(user_no, sitter_no);
+	        mapper.updateJjimCount(sitter_no, -1);
+	        return false;
+	    } else {
+	        mapper.insertJjim(user_no, sitter_no);
+	        mapper.updateJjimCount(sitter_no, 1);
+	        return true;
+	    }
 	}
 	
 	// 상세보기
