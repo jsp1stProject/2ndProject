@@ -79,6 +79,10 @@
   height: 8px;
 }
 
+#profile-pic {
+  object-fit: cover;
+}
+
 @include media-breakpoint-down(lg) {
   .app-header {
     .navbar {

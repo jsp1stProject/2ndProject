@@ -68,8 +68,8 @@
 							</div>
 						</li>
 						<li class="nav-item dropdown"> <%--마이페이지 메뉴--%>
-							<a class="nav-link " href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
-								<img src="${pageContext.request.contextPath}/assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
+							<a id="profile-wrap" class="nav-link " href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+<%--								<img id="profile-pic" src="${pageContext.request.contextPath}/assets/images/profile/default_pf.png" alt="" width="35" height="35" class="rounded-circle">--%>
 							</a>
 							<div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
 								<div class="message-body">
@@ -118,6 +118,36 @@
 	</ul>
 </header>
 <script>
+	getHeader()
+	async function getHeader(){
+		try{
+			const res = await axios({
+				method:'get',
+				url:'${pageContext.request.contextPath}/api/header',
+				withCredentials:true
+			});
+			let profile="";
+			console.log(res.data)
+			if(res.data.data!=null){
+				profile = res.data.message + res.data.data.profile;
+			}else{
+				profile = "${pageContext.request.contextPath}/assets/images/profile/default_pf.png"
+			}
+
+			$("#profile-wrap").html('<img id="profile-pic" src="'+profile+'" alt="" width="35" height="35" class="rounded-circle">');
+			// $("#profile-pic").attr("src",profile);
+		}catch (e) {
+			const status = e.response?.status;
+			if (status === 409) {
+				console.error("실패:", e.response?.data || e);
+				alert(e.response.data.message);
+			} else {
+				console.error("실패:", e.response?.data || e);
+				alert(e.response.data.message);
+			}
+		}
+	}
+
 	function newmodal(content,name){
 		let html;
 		html = `

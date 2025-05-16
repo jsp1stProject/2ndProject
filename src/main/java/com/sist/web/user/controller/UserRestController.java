@@ -7,7 +7,6 @@ import com.sist.web.user.vo.UserDetailDTO;
 import com.sist.web.user.vo.UserVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
@@ -32,8 +31,8 @@ public class UserRestController {
         String uri = request.getRequestURI();
         String baseUrl = fullUrl.substring(0, fullUrl.length() - uri.length());
 
-        String kakaoAccessToken = userService.GetKakaoAccessToken(data.get("code"),baseUrl);
-        userService.InsertOrLoginKakaoUser(kakaoAccessToken, res);
+        String kakaoAccessToken = userService.getKakaoAccessToken(data.get("code"),baseUrl);
+        userService.insertOrLoginKakaoUser(kakaoAccessToken, res);
         return ResponseEntity.ok().build();
     }
 
@@ -50,7 +49,14 @@ public class UserRestController {
 
     @PostMapping("/users/{userno}")
     public ResponseEntity<ApiResponse<UserDetailDTO>> getUserDetail(@PathVariable("userno") String userno, Model model) {
-        UserDetailDTO dto=userService.GetActiveUserDetail(userno);
+        UserDetailDTO dto=userService.getActiveUserDetail(userno);
         return ResponseEntity.ok(ApiResponse.success(dto));
+    }
+
+    @GetMapping("/header")
+    public ResponseEntity<ApiResponse<UserDetailDTO>> getHeaderDetail(
+            @CookieValue(value="accessToken", required = false) String token) {
+        UserDetailDTO dto = userService.getHeaderDetail(token);
+        return ResponseEntity.ok(ApiResponse.success(dto,"https://pet4u.s3.ap-northeast-2.amazonaws.com/"));
     }
 }

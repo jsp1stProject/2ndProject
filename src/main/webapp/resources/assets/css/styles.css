@@ -12926,6 +12926,9 @@ textarea.form-control-lg {
   width: 8px;
   height: 8px; }
 
+#profile-pic {
+  object-fit: cover; }
+
 @media (max-width: 991.98px) {
   .app-header .navbar {
     flex-wrap: nowrap; }
@@ -13061,7 +13064,7 @@ ul {
     white-space: nowrap; }
   .login_wrap input {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     border: none;
     background-color: #ffffff; }
     .login_wrap input[readonly] {
@@ -13105,7 +13108,7 @@ ul {
       .login_wrap .find_wrap a:hover {
         color: var(--primary); }
   .login_wrap .btn {
-    border-radius: 14px;
+    border-radius: 50px;
     margin-bottom: 4px; }
 
 /*mypage*/

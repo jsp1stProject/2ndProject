@@ -33,7 +33,7 @@ public class MypageRestController {
     private final UserMapper userMapper;
     private final MypageService mypageService;
 
-    @PostMapping("/profile")
+    @GetMapping("/profile")
     public ResponseEntity<ApiResponse<UserDetailDTO>> GetMyinfo(@CookieValue(value="accessToken", required = false) String token) {
         UserDetailDTO dto = mypageService.getMyinfo(token);
         return ResponseEntity.ok(ApiResponse.success(dto));
@@ -42,10 +42,11 @@ public class MypageRestController {
     @PutMapping("/profile")
     public ResponseEntity<Void> UpdateMyinfo(
             @ModelAttribute UserDetailDTO dto,
-            @RequestParam(value="profile", required = false)MultipartFile profile,
+            @RequestParam(value="profile", required = false)MultipartFile file,
+            @RequestParam(value="profileChange")int isChange,
             @CookieValue(value="accessToken", required = false) String token) {
         log.debug(dto.toString());
-        mypageService.updateMyinfo(token,dto);
+        mypageService.updateMyinfo(token,dto,file,isChange);
         return ResponseEntity.ok().build();
     }
 

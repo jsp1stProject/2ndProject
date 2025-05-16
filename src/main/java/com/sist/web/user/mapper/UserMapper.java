@@ -14,7 +14,7 @@ public interface UserMapper {
     @Select("SELECT ENABLED from P_USERS where USER_NO=#{userno}")
     public int checkUserActive(String userno);
 
-    @Select("SELECT u.USER_NO,user_mail,SOCIAL_ID,PASSWORD,USER_NAME,NICKNAME,PHONE,TO_CHAR(BIRTHDAY,'YYYY-MM-DD') as DB_BIRTHDAY,ENABLED,PROFILE,a.AUTHORITY FROM P_USERS u join P_AUTHORITIES a on u.user_no=a.user_no WHERE u.USER_NO=#{user_no}")
+    @Select("SELECT u.USER_NO,user_mail,SOCIAL_ID,PASSWORD,USER_NAME,NICKNAME,PHONE,TO_CHAR(BIRTHDAY,'YYYY-MM-DD') as DB_BIRTHDAY,ENABLED,PROFILE,ADDR,a.AUTHORITY FROM P_USERS u join P_AUTHORITIES a on u.user_no=a.user_no WHERE u.USER_NO=#{user_no}")
     public UserDetailDTO getUserDtoFromUserNo(String user_no);
 
     @Select("SELECT P_USER_NO_SEQ.nextval from dual")
@@ -40,13 +40,12 @@ public interface UserMapper {
     @Delete("DELETE FROM P_AUTHORITIES where user_no=#{user_no}")
     public void deleteUserAuthority(String user_mail);
 
-    @Update("UPDATE p_users set ENABLED=0, USER_MAIL='', SOCIAL_ID='', PASSWORD='', USER_NAME='', NICKNAME='탈퇴한 회원', PHONE='', BIRTHDAY='' where USER_MAIL=#{user_mail} and ENABLED=1")
+    @Update("UPDATE p_users set ENABLED=0, USER_MAIL='', SOCIAL_ID='', PASSWORD='', USER_NAME='', NICKNAME='탈퇴한 회원', PHONE='', BIRTHDAY='', PROFILE='' where USER_MAIL=#{user_mail} and ENABLED=1")
     public void enableUser(String user_mail);
 
     @Select("Select USER_NO, USER_MAIL, NICKNAME FROM P_USERS where USER_NO=#{user_no}")
     public UserVO getUserMailFromUserNo(String user_no);
 
-    @Update("UPDATE P_USERS set USER_MAIL=#{user_mail}, USER_NAME=#{user_name}, NICKNAME=#{nickname}, PASSWORD=#{password,jdbcType=VARCHAR}, BIRTHDAY=#{birthday,jdbcType=DATE}, PHONE=#{phone,jdbcType=VARCHAR}, ADDR=#{addr,jdbcType=VARCHAR} where USER_NO=#{user_no}")
     public void updateUser(UserVO vo);
 
 //  카카오 로그인 시
@@ -57,4 +56,8 @@ public interface UserMapper {
 //  소셜연동됐다면 로그인
     @Select("select u.USER_NO, USER_MAIL, a.AUTHORITY, NICKNAME from P_USERS u join P_AUTHORITIES a on u.user_no=a.user_no where SOCIAL_ID=#{social_id}")
     public UserVO getUserVOFromSocialId(String user_mail);
+
+//  헤더 정보(새글 알림 정보는 추후 join으로 추가)
+    @Select("select profile from P_USERS where USER_NO=#{userno}")
+    public UserDetailDTO getHeaderDetailFromUserNo(String userno);
 }

@@ -10,11 +10,12 @@
 <div class="container pt-header" id="app">
     <div class="login_wrap d-flex justify-content-center">
         <div class="login_inner">
-            <input type="file" id="profile" name="profile" accept="image/*" @change="setThumbnail"/>
-            <div id="profilewrap" @click="profileupload">
-                <div></div>
-            </div>
             <form @submit.prevent="updateUser" method="post" name="uploadForm" id="uploadForm" ref="uploadForm">
+                <input type="file" id="profile" name="profile" accept="image/*" @change="checkProfile(this, $event)"/>
+                <div id="profilewrap" @click="profileupload">
+                    <div :style="user.profile ? { backgroundImage: 'url(https://pet4u.s3.ap-northeast-2.amazonaws.com/'+user.profile+')' } : {}"></div>
+                </div>
+                <input type="hidden" id="profileChange" name="profileChange" value="0">
                 <button type="button" class="btn btn-sm btn-outline-danger d-block mx-auto mb-3" @click="deleteProfile">기본 이미지 적용</button>
                 <div class="input_group">
                     <div class="input_wrap">
@@ -47,15 +48,15 @@
                 <div class="input_group">
                     <div class="input_wrap">
                         <label>생일</label>
-                        <input v-model="user.db_birthday" type="date" id="birthday" name="birthday" placeholder="" value="${vo.birthday}">
+                        <input v-model="user.db_birthday" type="date" id="birthday" name="birthday" placeholder="">
                     </div>
                     <div class="input_wrap">
                         <label>휴대폰</label>
-                        <input v-model="user.phone" type="text" id="phone" name="phone" placeholder="010-0000-0000" value="${vo.addr1}">
+                        <input v-model="user.phone" type="text" id="phone" name="phone" placeholder="010-0000-0000">
                     </div>
                     <div class="input_wrap">
                         <label>내 동네</label>
-                        <input type="text" id="addr" name="addr" placeholder="서울 마포구" value="${vo.addr1}" @click="postApi" readonly>
+                        <input v-model="user.addr" type="text" id="addr" name="addr" placeholder="서울 마포구" @click="postApi" readonly>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary" id="submit">수정하기</button>
@@ -66,41 +67,40 @@
     </div>
 </div>
 <script type="module">
-    import { createApp, ref, computed, nextTick } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+    import { createApp, ref, nextTick } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
-    createApp({
+    const App = createApp({
         setup() {
             const user=ref([]);
             const formData=ref(null);
             const uploadForm = ref(null)
+
             //회원 정보 조회
             async function getUser(){
                 try{
                     let res=await axios({
-                        method:'post',
+                        method:'get',
                         url:'${pageContext.request.contextPath}/api/mypage/profile',
                         headers:{
                             "Content-Type":"application/json"
                         },
                         withCredentials: true
                     });
-                    if(res.status === 404){
-                        console.log(res.data.message);
-                    }else{
-                        console.log(res.data.data);
-                        user.value=res.data.data;
-                        $("input[type='password']").val('');
-                    }
+
+                    user.value=res.data.data;
+                    $("input[type='password']").val('');
+
                     await nextTick()
                     formData.value=new FormData(uploadForm.value)
                     if(res.data.data.social_id!=null ){
                         $("#orig_pwd").prop('required',false);
+                        $("#user_mail").prop('disabled',true);
                     }
-
+                    $("#profileChange").val(0);
                 }catch (e) {
-                    console.log(e)
+                    console.log(e);
+                    toast(e.response.data.message);
                 }
-
             }
 
             //수정
@@ -128,7 +128,23 @@
                 }
             }
 
-            //프로필 사진 변경
+            //프로필 사진 OnChange
+            function checkProfile(obj, event){
+                const fileNm = obj.value;
+                const maxSize = 10485769; //10mb
+                let fileSize = 0;
+                if(fileNm !== ''){
+                    fileSize=document.getElementById("profile").files[0].size;
+                    toast(fileSize);
+                    if(fileSize > maxSize){
+                        toast('이미지는 10MB 이하만 등록할 수 있습니다.')
+                        $("#profile").val("")
+                        return;
+                    }
+                    setThumbnail(event);
+                }
+            }
+            //썸네일 설정
             function setThumbnail(event) {
                 var reader = new FileReader();
                 reader.onload = function(event) {
@@ -139,15 +155,19 @@
                     document.querySelector("div#profilewrap").appendChild(img);
                 };
                 reader.readAsDataURL(event.target.files[0]);
-                console.log('onchange')
+                $("#profileChange").val(1); //변경처리
             }
+            //프로필 사진 input 실행
             function profileupload(){
                 var ele=document.getElementById('profile');
                 ele.click();
                 console.log('test');
             }
+            //기본 이미지로 변경
             const deleteProfile=()=>{
                 $(document.querySelector("#profilewrap>div")).attr("style","");
+                $("#profile").val("")
+                $("#profileChange").val(1); //변경처리
             }
 
             //주소 api
@@ -157,13 +177,13 @@
                     oncomplete: function(data) {
                         let sido=data.sido;
                         let sigungu=data.sigungu;
-                        $('#addr').val(sido+" "+sigungu);
+                        user.value.addr = sido + " " + sigungu;
                     }
                 }).open();
             }
 
             return {
-                user,formData,uploadForm,getUser,updateUser,setThumbnail,profileupload,deleteProfile,postApi
+                user,formData,uploadForm,getUser,updateUser,setThumbnail,checkProfile,profileupload,deleteProfile,postApi
             }
         },
         mounted(){
@@ -196,5 +216,7 @@
                 }
             });
         }
-    }).mount('#app')
+    });
+    App.config.compilerOptions.delimiters = ['[[', ']]'];
+    App.mount('#app');
 </script>

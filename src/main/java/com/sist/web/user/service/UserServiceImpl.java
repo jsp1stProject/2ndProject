@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String GetKakaoAccessToken(String code,String url) {
+    public String getKakaoAccessToken(String code, String url) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public void InsertOrLoginKakaoUser(String kakaoAccessToken, HttpServletResponse res) {
+    public void insertOrLoginKakaoUser(String kakaoAccessToken, HttpServletResponse res) {
         //kakao 유저 정보 가져오기 api
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void CheckActiveUser(String userno) {
+    public void checkActiveUser(String userno) {
         int isActive=userMapper.checkUserActive(userno);
         if(!Integer.valueOf(1).equals(isActive)) {
             throw new UserException(UserErrorCode.NOT_FOUND);
@@ -170,14 +170,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetailDTO GetUserDetail(String userno) {
+    public UserDetailDTO getUserDetail(String userno) {
         return userMapper.getUserDtoFromUserNo(userno);
     }
 
     @Override
-    public UserDetailDTO GetActiveUserDetail(String userno) {
-        CheckActiveUser(userno);
-        return GetUserDetail(userno);
+    public UserDetailDTO getActiveUserDetail(String userno) {
+        checkActiveUser(userno);
+        return getUserDetail(userno);
+    }
+
+    @Override
+    public UserDetailDTO getHeaderDetail(String token) {
+        String userno=getValidUserNo(token);
+        return userMapper.getHeaderDetailFromUserNo(userno);
+    }
+
+    public String getValidUserNo(String token) {
+        if(token!=null){
+            String userno=jwtTokenProvider.getUserNoFromToken(token);
+            return userno;
+        }
+        return "";
     }
 
     Cookie addCk(String name, String token, int expire) {

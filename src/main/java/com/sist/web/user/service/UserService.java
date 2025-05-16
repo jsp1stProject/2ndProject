@@ -8,9 +8,10 @@ import java.util.Map;
 
 public interface UserService {
     public Map<String, Object> loginUser(UserVO vo);
-    public String GetKakaoAccessToken(String code, String url);
-    public void InsertOrLoginKakaoUser(String kakaoAccessToken,  HttpServletResponse res);
-    public void CheckActiveUser(String userno);
-    public UserDetailDTO GetUserDetail(String userno);
-    public UserDetailDTO GetActiveUserDetail(String userno);
+    public String getKakaoAccessToken(String code, String url);
+    public void insertOrLoginKakaoUser(String kakaoAccessToken, HttpServletResponse res);
+    public void checkActiveUser(String userno);
+    public UserDetailDTO getUserDetail(String userno);
+    public UserDetailDTO getActiveUserDetail(String userno);
+    public UserDetailDTO getHeaderDetail(String token);
 }

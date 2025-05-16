@@ -38,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
-    public static final String[] AUTH_WHITELIST = {"/images/**","/assets/**","/login/**","/**/join/**","/main/**","/main.do", "/index.jsp"};
+    public static final String[] AUTH_WHITELIST = {"/images/**","/assets/**","/login/**","/**/join/**","/main/**","/main.do", "/index.jsp", "/api/header"};
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
