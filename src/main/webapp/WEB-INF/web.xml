@@ -15,6 +15,10 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
         <async-supported>true</async-supported>
+        <multipart-config>
+            <max-file-size>31457280</max-file-size>
+            <max-request-size>1004857600</max-request-size>
+        </multipart-config>
     </servlet>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
@@ -22,12 +26,12 @@
     </servlet-mapping>
     <error-page>
         <error-code>404</error-code>
-        <location>/WEB-INF/views/main/error.jsp</location><!-- 404 Not Found 페이지 -->
+        <location>/error</location><!-- 404 Not Found 페이지 -->
     </error-page>
 
     <error-page>
         <error-code>500</error-code>
-        <location>/WEB-INF/views/main/error.jsp</location><!-- 500 Internal Server Error 페이지 -->
+        <location>/error</location><!-- 500 Internal Server Error 페이지 -->
     </error-page>
     <!-- 한글 변환 -->
     <filter>
