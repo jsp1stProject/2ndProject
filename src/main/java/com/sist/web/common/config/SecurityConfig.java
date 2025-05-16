@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import javax.sql.DataSource;
 
@@ -37,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
-    public static final String[] AUTH_WHITELIST = {"/images/**","/assets/**","/login/**","/**/join/**","/main/**","/main.do", "/index.jsp"};
+    public static final String[] AUTH_WHITELIST = {"/images/**","/assets/**","/login/**","/**/join/**","/main/**","/main.do", "/index.jsp", "/api/header"};
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

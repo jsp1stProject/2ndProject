@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.user.mapper.UserMapper">
+	<update id="updateUser" parameterType="com.sist.web.user.vo.UserVO">
+		UPDATE P_USERS
+		SET USER_MAIL = #{user_mail},
+		USER_NAME = #{user_name},
+		NICKNAME = #{nickname},
+		PASSWORD = #{password, jdbcType=VARCHAR},
+		BIRTHDAY = #{birthday, jdbcType=DATE},
+		PHONE = #{phone, jdbcType=VARCHAR},
+		ADDR = #{addr, jdbcType=VARCHAR}
+		<if test="profile != null">
+			, PROFILE = #{profile, jdbcType=VARCHAR}
+		</if>
+		WHERE USER_NO = #{user_no}
+	</update>
+</mapper>
