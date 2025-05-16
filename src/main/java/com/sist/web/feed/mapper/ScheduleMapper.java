@@ -11,9 +11,9 @@ import com.sist.web.feed.vo.ScheduleVO;
 
 public interface ScheduleMapper {
 	@Insert("INSERT INTO p_schedule(sche_no, group_no, user_no, type, sche_title, sche_content, "
-			+ "sche_start,sche_end, regdate, is_public) " +
+			+ "sche_start,sche_end, is_public) " +
 	        "VALUES (p_sche_no_seq.nextval, #{group_no}, #{user_no}, #{type}, #{sche_title},"
-	        + " #{sche_content}, #{sche_start}, #{sche_end}, SYSDATE, #{is_public})")
+	        + " #{sche_content}, #{sche_start}, #{sche_end}, #{is_public})")
 	@SelectKey(statement = "SELECT p_sche_no_seq.currval FROM dual", keyProperty = "sche_no", before = false, resultType = int.class )
 	public void scheduleInsert(ScheduleVO vo);
 	
@@ -32,6 +32,11 @@ public interface ScheduleMapper {
 			+ "FROM p_schedule "
 			+ "WHERE user_no=#{user_no} ")
 	public List<ScheduleVO> scheduleUserTotalList(long user_no);
-	
+	/*
+	 * @Insert("INSERT INTO p_schedule(sche_no, user_no, sche_title, sche_content, sche_start, sche_end, is_important, alarm ) "
+	 * +
+	 * "VALUES(p_sche_no_seq.nextval, #{user_no}, #{sche_title}, #{sche_content}, #{sche_start}, #{sche_end}, "
+	 * + "#{is_important}, #{alarm})")
+	 */
 	
 }
