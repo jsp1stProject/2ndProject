@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -76,7 +77,8 @@ public class SitterRestController {
 
 	// 상세보기 
     @GetMapping("/sitter/detail_vue")
-    public ResponseEntity<SitterVO> sitter_detail(@RequestParam("sitter_no") int sitter_no) {
+    public ResponseEntity<SitterVO> sitter_detail(
+    		@RequestParam("sitter_no") int sitter_no) {
         try {
             SitterVO vo = service.sitterDetailData(sitter_no);
 
@@ -99,21 +101,51 @@ public class SitterRestController {
     }
     
     // 찜하기
-    @PostMapping("/sitter/jjim/toggle")
-    public ResponseEntity<String> toggleJjim(@RequestHeader("Authorization") String authHeader,
-                                             @RequestBody Map<String, Integer> data) {
+    // 목록
+    @GetMapping("/sitter/jjim/list")
+    public ResponseEntity<List<SitterVO>> jjimList(
+            @RequestHeader(value = "Authorization", required = false) String token) {
         try {
-            String token = authHeader.replace("Bearer ", "");
-            int user_no = Integer.parseInt(jwtTokenProvider.getUserNoFromToken(token)); 
+        	System.out.println("jjimlist==================");
+            // 유효성 검사
+            if (token == null || token.trim().isEmpty() || !token.contains(".")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
 
-            int sitter_no = data.get("sitter_no");
-            boolean result = service.toggleJjim(user_no, sitter_no);
-            return new ResponseEntity<>(result ? "찜 추가됨" : "찜 취소됨", HttpStatus.OK);
+            int user_no = Integer.parseInt(jwtTokenProvider.getUserNoFromToken(token));
+            List<SitterVO> list = service.jjimSitterList(user_no);
+            return ResponseEntity.ok(list);
+
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>("인증 실패", HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
+    // insert/delete
+    @PostMapping("/sitter/jjim/toggle")
+    public ResponseEntity<String> toggleJjim(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestBody Map<String, Integer> data) {
+        try {
+        	System.out.println("jjimtoggle==================");
+            // 유효성 검사
+            if (token == null || token.trim().isEmpty() || !token.contains(".")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰 없음 또는 잘못된 형식");
+            }
+
+            int user_no = Integer.parseInt(jwtTokenProvider.getUserNoFromToken(token));
+            int sitter_no = data.get("sitter_no");
+
+            boolean result = service.toggleJjim(user_no, sitter_no);
+            return ResponseEntity.ok(result ? "찜 추가됨" : "찜 취소됨");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰 오류");
+        }
+    }
+
 
 
     //새글

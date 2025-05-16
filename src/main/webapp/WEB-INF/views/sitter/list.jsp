@@ -151,9 +151,12 @@
       async loadJjimList() {
         try {
           const res = await axios.get('/web/sitter/jjim/list', {
-            headers: { Authorization: `Bearer ` + this.token }
-          })
-          this.jjimList = res.data
+           headers:{
+                            "Content-Type":"application/json"
+                        },
+                        withCredentials: true
+                    });
+          this.jjimList = res.data 
         } catch (e) {
           console.error('찜 목록 로딩 실패:', e)
         }
