@@ -44,6 +44,7 @@ export const apiMethods = {
   async updateGroupDetail() {
     const dto = {
       ...this.groupDetail,
+      tags: this.selectedTags,
     };
     
     console.log('dto: ', dto);
@@ -59,9 +60,7 @@ export const apiMethods = {
     }
 
     const res = await axios.put(
-      `${this.contextPath}/api/groups/${this.groupDetail.group_no}`,
-      formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } }
+      `${this.contextPath}/api/groups/${this.groupDetail.group_no}`, formData
     );
 
     return res.data;

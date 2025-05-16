@@ -32,5 +32,11 @@ export const groupChatData = {
     is_public: '',
     owner: ''
   },
+  allTags: [
+    '산책', '사료공유', '훈련정보', '미용', 
+    '병원정보', '입양', '사진공유', '소형견', 
+    '대형견', '고양이', '중성화', '혼종사랑'
+  ],
+  selectedTags: [],
   groupEditMode: false
 };

@@ -37,4 +37,8 @@
 			</if>
 		WHERE group_no = #{group_no}
 	</update>
+	<insert id="insertGroupTags" parameterType="hashmap">
+		INSERT INTO p_group_tag (tag_id, group_no, tag) 
+		VALUES (p_gtag_no_seq.NEXTVAl, #{group_no}, #{tag})
+	</insert>
 </mapper>

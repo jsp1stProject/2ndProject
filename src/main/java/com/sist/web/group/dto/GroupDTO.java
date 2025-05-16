@@ -1,6 +1,8 @@
 package com.sist.web.group.dto;
 
 import java.sql.Timestamp;
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -31,4 +33,5 @@ public class GroupDTO {
 	private String profile_img;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private Timestamp created_at;
+	private List<String> tags;
 }

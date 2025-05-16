@@ -52,6 +52,7 @@ export const uiMethods = {
 
   async openGroupSettingsModal() {
     const data = await this.fetchGroupDetail();
+    this.selectedTags = data.tags || [];
 
     this.groupDetail.group_no = data.group_no;
     this.groupDetail.group_name = data.group_name;
@@ -94,5 +95,14 @@ export const uiMethods = {
       ...updated,
       is_public: ['Y', 'N'].includes(updated.is_public) ? updated.is_public : 'N'
     });
+  },
+
+  toggleTag(tag) {
+    const idx = this.selectedTags.indexOf(tag);
+    if (idx > -1) {
+      this.selectedTags.splice(idx, 1);
+    } else {
+      this.selectedTags.push(tag);
+    }
   }
 };

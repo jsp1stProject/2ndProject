@@ -224,6 +224,17 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label>태그 선택</label>
+                    <div class="d-flex flex-wrap gap-2" id="tag-buttons">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" v-for="tag in allTags"
+                                :key="tag" :class="{ active: selectedTags.includes(tag) }"
+                                @click="toggleTag(tag)">
+                        {{ tag }}
+                        </button>
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label class="form-label">프로필 이미지</label><br/>
                     <img :src="groupDetail.profile_img" alt="Group Image"

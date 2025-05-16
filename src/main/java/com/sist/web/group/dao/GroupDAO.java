@@ -77,4 +77,14 @@ public class GroupDAO {
 	public void updateJoinRequestStatus(GroupJoinRequestsDTO dto) {
 		mapper.updateJoinRequestStatus(dto);
 	}
+	
+	/** 그룹 태그 삽입 */
+	public void insertGroupTags(Map<String, Object> map) {
+		mapper.insertGroupTags(map);
+	}
+	
+	/** 그룹 태그 수정 전 태그 모두 삭제 */
+	public void deleteGroupTags(int groupNo) {
+		mapper.deleteGroupTags(groupNo);
+	}
 }

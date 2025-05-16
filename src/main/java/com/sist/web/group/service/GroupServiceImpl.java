@@ -3,6 +3,7 @@ package com.sist.web.group.service;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -95,9 +96,6 @@ public class GroupServiceImpl implements GroupService{
 	            File file = new File(uploadPath, filename);
 	            profileImg.transferTo(file);
 	            
-	            
-				profileImg.transferTo(file);
-				
 				dto.setProfile_img(GROUP_IMAGE_PATH_PREFIX + filename);
 			} catch (Exception ex) {
 				throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
@@ -159,8 +157,9 @@ public class GroupServiceImpl implements GroupService{
 	}
 
 	@Override
-	public void updateGroupDetail(GroupDTO dto, MultipartFile profileImg) {
+	public void updateGroupDetail(GroupDTO dto, MultipartFile profileImg, List<String> tags) {
 		System.out.println("service dto: " + dto.toString());
+		System.out.println("tags: " + Arrays.asList(tags));
 		if (profileImg != null && !profileImg.isEmpty()) {
 			try {
 				
@@ -190,6 +189,19 @@ public class GroupServiceImpl implements GroupService{
 			}
 		}
 		gDao.updateGroupDetail(dto);
+		
+		gDao.deleteGroupTags(dto.getGroup_no());
+		
+		if (tags != null && !tags.isEmpty()) {
+			for (String tag : tags) {
+				Map<String, Object> param = new HashMap<String, Object>();
+				param.put("group_no", dto.getGroup_no());
+				param.put("tag", tag);
+				
+				gDao.insertGroupTags(param);
+			}
+		}
+		
 	}
 	public List<GroupJoinRequestsDTO> selectGroupRequestsData(int user_no) {
 		return gDao.selectGroupRequestsData(user_no);

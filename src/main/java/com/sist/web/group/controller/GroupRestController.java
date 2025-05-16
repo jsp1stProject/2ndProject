@@ -132,10 +132,8 @@ public class GroupRestController {
     		@PathVariable("groupNo") Integer groupNo,
     		@RequestPart("groupDetail") GroupDTO dto,
     		@RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
-		System.out.println("controller dto: " + dto);
-		System.out.println("dto: " + dto.toString());
 		dto.setGroup_no(groupNo);
-        service.updateGroupDetail(dto, profileImg);
+        service.updateGroupDetail(dto, profileImg, dto.getTags());
 		return ResponseEntity.ok(ApiResponse.success("그룹 정보가 수정되었습니다."));
     }
 	

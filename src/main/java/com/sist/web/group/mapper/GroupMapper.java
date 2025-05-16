@@ -3,6 +3,7 @@ package com.sist.web.group.mapper;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -62,4 +63,9 @@ public interface GroupMapper {
 		public void updateJoinRequestStatus(GroupJoinRequestsDTO dto);
 		
 		public void updateGroupDetail(GroupDTO dto);
+		
+		public void insertGroupTags(Map<String, Object> tags);
+		
+		@Delete("DELETE p_group_tag WHERE group_no = #{group_no}")
+		public void deleteGroupTags(@Param("group_no") int groupno);
 }
