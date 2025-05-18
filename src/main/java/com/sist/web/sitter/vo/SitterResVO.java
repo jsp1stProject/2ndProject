@@ -8,18 +8,9 @@ import lombok.Data;
 @Data
 public class SitterResVO {
     // 예약 기본 정보
-    private int res_no;
-    private int user_no;
-    private int sitter_no;
-    private Date res_date;
-    private String start_time;
-    private String end_time;
-    private String location_type;      // '신청자 집', '거리', '기타'
-    private String location_detail;
-    private int total_price;
-    private String pay_status;         // '미결제', '결제완료'
-    private String res_status;         // '대기중', '승인', '거절'
-    private Date created_at;
+    private int res_no, user_no, sitter_no, total_price;
+    private Date res_date, created_at;
+    private String start_time, end_time, location_type, location_detail, res_status, pay_status, imp_uid;
     private List<Integer> pet_nos; // 예약 시 선택된 반려동물 번호 목록
     
     private UserVO userVO;

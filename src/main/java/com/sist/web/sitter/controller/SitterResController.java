@@ -15,9 +15,9 @@ import com.sist.web.sitter.vo.*;
 public class SitterResController {
     @Autowired
 	private SitterService sService;
-
+    
     @Autowired
-    private SitterResService rService;
+    private SitterResPetService pService;
     
 	@GetMapping("/sitter/resList")
 	public String sitter_resList()
@@ -32,21 +32,21 @@ public class SitterResController {
 	
 	@GetMapping("/sitter/reserve")
     public String sitter_reserve(int sitter_no, int user_no, Model model) {
-        // 1. 펫시터 정보 (가격)
+        // 펫시터 정보 (가격)
         SitterVO sitterVO = sService.sitterDetailData(sitter_no);
         int petFirstPrice = Integer.parseInt(
         	    sitterVO.getPet_first_price().replaceAll("[^0-9]", "")
         	);
         
 
-        // 2. 신청자의 반려동물 리스트
-        List<PetsVO> petsList = rService.getPetsByUserNo(user_no);
-        String petsJson = new Gson().toJson(petsList); // JSON 문자열로 변환
+        // 신청자의 반려동물 리스트
+        List<PetsVO> petsList = pService.getPetsByUserNo(user_no);
+        String petsJson = new Gson().toJson(petsList); 
 
         model.addAttribute("petFirstPrice", petFirstPrice);
         model.addAttribute("petsJson", petsJson);
         model.addAttribute("sitterNo", sitter_no);
 
-        return "sitter/reserve"; // /WEB-INF/views/sitter/reserve.jsp
+        return "sitter/reserve";
     }
 }

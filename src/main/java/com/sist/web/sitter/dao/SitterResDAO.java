@@ -25,8 +25,20 @@ public class SitterResDAO {
 	{
 		mapper.insertSitterRes(vo);
 	}
-	public List<PetsVO> getPetsByUserNo(int user_no)
+	public void updatePayStatus(int res_no, String status, String imp_uid)
 	{
-		return mapper.getPetsByUserNo(user_no);
+		mapper.updatePayStatus(res_no, status, imp_uid);
+	}
+	public int checkReservationConflict(int sitter_no, Date res_date,String start_time, String end_time)
+	{
+		return mapper.checkReservationConflict(sitter_no, res_date, start_time, end_time);
+	}
+	public void cancelReservationBySitter(int res_no)
+	{
+		mapper.cancelReservationBySitter(res_no);
+	}
+	public List<Map<String, String>> getReservedTimeRanges(int sitter_no, Date res_date)
+	{
+		return mapper.getReservedTimeRanges(sitter_no, res_date);
 	}
 }

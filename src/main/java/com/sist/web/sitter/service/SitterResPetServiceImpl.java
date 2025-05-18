@@ -24,4 +24,10 @@ public class SitterResPetServiceImpl implements SitterResPetService{
 		return pDao.getPetsByResNo(res_no);
 	}
 
+	@Override
+	public List<PetsVO> getPetsByUserNo(int user_no) {
+		// TODO Auto-generated method stub
+		return pDao.getPetsByUserNo(user_no);
+	}
+
 }

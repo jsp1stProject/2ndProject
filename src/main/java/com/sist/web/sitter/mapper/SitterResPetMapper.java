@@ -37,4 +37,8 @@ public interface SitterResPetMapper {
         @Result(property = "user.nickname", column = "user_nickname")
     })
     public List<PetsVO> getPetsByResNo(@Param("res_no") int res_no);
+    
+    // 펫 목록
+    @Select("SELECT * FROM p_pets WHERE user_no = #{user_no}")
+    public List<PetsVO> getPetsByUserNo(@Param("user_no") int user_no);
 } 

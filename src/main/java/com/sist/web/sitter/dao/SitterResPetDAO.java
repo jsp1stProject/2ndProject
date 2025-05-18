@@ -2,6 +2,7 @@ package com.sist.web.sitter.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -18,5 +19,9 @@ public class SitterResPetDAO {
 	public List<PetsVO> getPetsByResNo(int res_no)
 	{
 		return mapper.getPetsByResNo(res_no);
+	}
+	public List<PetsVO> getPetsByUserNo(int user_no)
+	{
+		return mapper.getPetsByResNo(user_no);
 	}
 }

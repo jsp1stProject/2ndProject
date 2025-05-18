@@ -1,141 +1,189 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <title>펫시터 예약하기</title>
+  <script type="module" src="https://unpkg.com/vue@3/dist/vue.esm-browser.js"></script>
+  <script type="module" src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    .time-btn.active {
+      background-color: #0d6efd;
+      color: white;
+    }
+  </style>
 </head>
 <body>
 <div id="app" class="container mt-4">
   <h2 class="mb-4">펫시터 예약하기</h2>
 
   <form @submit.prevent="submitReservation">
+    <!-- 반려동물 선택 -->
     <div class="mb-3">
-      <label>예약 일자</label>
-      <input type="date" v-model="form.res_date" class="form-control" required>
-    </div>
-
-    <div class="row mb-3">
-      <div class="col">
-        <label>시작 시간</label>
-        <select v-model="form.start_time" class="form-select">
-          <option v-for="t in timeOptions" :key="t" :value="t">{{ t }}</option>
-        </select>
-      </div>
-      <div class="col">
-        <label>종료 시간</label>
-        <select v-model="form.end_time" class="form-select">
-          <option v-for="t in timeOptions" :key="t" :value="t">{{ t }}</option>
-        </select>
+      <label class="form-label">돌봄 아이</label>
+      <div class="d-flex flex-wrap gap-2">
+        <div v-for="pet in petsList" :key="pet.pet_no" class="form-check">
+          <input class="form-check-input" type="checkbox" :id="'pet_' + pet.pet_no"
+                 :value="pet.pet_no" v-model="form.pet_nos">
+          <label class="form-check-label" :for="'pet_' + pet.pet_no">
+            <img :src="pet.pet_profilepic" width="50" height="50" class="me-1 rounded-circle">
+            {{ pet.pet_name }}
+          </label>
+        </div>
       </div>
     </div>
 
+    <!-- 방문지 -->
     <div class="mb-3">
-      <label>만남 장소</label><br>
-      <div class="form-check form-check-inline" v-for="type in locationTypes" :key="type">
-        <input class="form-check-input" type="radio" :value="type" v-model="form.location_type">
-        <label class="form-check-label">{{ type }}</label>
-      </div>
-      <textarea v-if="form.location_type === '기타'" v-model="form.location_detail"
-                class="form-control mt-2" placeholder="기타 장소 설명 입력"></textarea>
+      <label class="form-label">방문지 주소</label>
+      <input type="text" v-model="form.location_detail" class="form-control" required>
     </div>
 
+    <!-- 출입 방법 -->
     <div class="mb-3">
-      <label>돌봄 받을 반려동물</label>
-      <div v-for="pet in petsList" :key="pet.pet_no" class="form-check">
-        <input class="form-check-input" type="checkbox" :value="pet.pet_no" v-model="form.pet_nos">
-        <label class="form-check-label">{{ pet.pet_name }} ({{ pet.pet_type }}/{{ pet.pet_subtype }})</label>
+      <label class="form-label">출입 방법</label>
+      <select v-model="form.location_type" class="form-select" required>
+        <option disabled value="">선택하세요</option>
+        <option>공동 현관 비밀번호 있음</option>
+        <option>경비실 호출</option>
+        <option>문 열어둠</option>
+        <option>기타</option>
+      </select>
+    </div>
+
+    <!-- 돌봄 일자 -->
+    <div class="mb-3">
+      <label class="form-label">돌봄 일자</label>
+      <input type="date" v-model="form.res_date" class="form-control" @change="fetchDisabledHours" required>
+    </div>
+
+    <!-- 시간대 선택 -->
+    <div class="mb-3">
+      <label class="form-label">시간대 선택</label>
+      <div class="d-flex flex-wrap gap-1">
+        <button v-for="hour in 24" type="button" class="btn btn-outline-primary time-btn"
+                :class="{ active: form.selectedTimes.includes(hour) }"
+                :disabled="disabledHours.includes(hour)"
+                @click="toggleTime(hour)">
+          {{ hour.toString().padStart(2, '0') }}:00
+        </button>
       </div>
     </div>
 
-    <div class="border p-3 bg-light mt-3">
-      <h5>예약 요약</h5>
-      날짜: {{ form.res_date || '-' }}<br>
-      시간: {{ summaryTime }}<br>
-      장소: {{ form.location_type }}<br>
-      선택한 반려동물 수: {{ form.pet_nos.length }}<br>
-      예상 총 가격: {{ formattedPrice }} 원
+    <!-- 남길 말 -->
+    <div class="mb-3">
+      <label class="form-label">펫시터에게 남길 말</label>
+      <textarea class="form-control" rows="3" v-model="form.memo"></textarea>
     </div>
 
-    <button type="submit" class="btn btn-primary mt-4">예약하기</button>
+    <!-- 실시간 요약 -->
+    <div class="border p-3 rounded bg-light">
+      <h5>신청 요약</h5>
+      <p><strong>선택한 아이:</strong> {{ selectedPetNames.join(', ') }}</p>
+      <p><strong>돌봄 일자:</strong> {{ form.res_date }}</p>
+      <p><strong>시간:</strong> {{ startTime }} ~ {{ endTime }}</p>
+      <p><strong>총 시간:</strong> {{ timeCount }}시간</p>
+      <p><strong>총 금액:</strong> {{ totalPrice.toLocaleString() }}원</p>
+    </div>
+
+    <div class="text-end mt-3">
+      <button type="submit" class="btn btn-success">예약 신청</button>
+    </div>
   </form>
 </div>
 
 <script type="module">
   import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
-  import axios from 'https://cdn.skypack.dev/axios';
+  import axios from 'https://unpkg.com/axios/dist/axios.min.js';
 
-  const pet_first_price = ${petFirstPrice};
-  const petsList = JSON.parse('${petsJson}');
-  const sitter_no = ${sitterNo};
-
-  const app = createApp({
+  createApp({
     data() {
       return {
-        pet_first_price,
-        petsList,
-        locationTypes: ['신청자 집', '거리', '기타'],
-        timeOptions: [...Array(14).keys()].flatMap(h => {
-          const hour = h + 8;
-          const hStr = hour < 10 ? '0' + hour : hour.toString();
-          return [`${hStr}:00`, `${hStr}:30`];
-        }),
+        sitterNo: parseInt('<%= request.getAttribute("sitterNo") %>'),
+        petFirstPrice: parseInt('<%= request.getAttribute("petFirstPrice") %>'),
+        petsList: JSON.parse('<%= ((String)request.getAttribute("petsJson")).replaceAll("\"", "\\\\\"") %>'),
+        disabledHours: [],
         form: {
-          res_date: '',
-          start_time: '',
-          end_time: '',
-          location_type: '신청자 집',
+          pet_nos: [],
           location_detail: '',
-          pet_nos: []
+          location_type: '',
+          res_date: '',
+          selectedTimes: [],
+          memo: ''
         }
-      }
+      };
     },
     computed: {
-      summaryTime() {
-        return this.form.start_time && this.form.end_time
-          ? this.form.start_time + ' ~ ' + this.form.end_time
-          : '-';
+      timeCount() {
+        return this.form.selectedTimes.length;
       },
-      formattedPrice() {
-        const count = this.form.pet_nos.length;
-        const hours = this.calcHourDiff(this.form.start_time, this.form.end_time);
-        const total = hours * count * this.pet_first_price;
-        return isNaN(total) ? 0 : total.toLocaleString();
+      startTime() {
+        if (this.form.selectedTimes.length === 0) return '';
+        return this.form.selectedTimes[0].toString().padStart(2, '0') + ":00";
+      },
+      endTime() {
+        if (this.form.selectedTimes.length === 0) return '';
+        const last = this.form.selectedTimes[this.form.selectedTimes.length - 1] + 1;
+        return (last % 24).toString().padStart(2, '0') + ":00";
+      },
+      selectedPetNames() {
+        return this.petsList
+          .filter(p => this.form.pet_nos.includes(p.pet_no))
+          .map(p => p.pet_name);
+      },
+      totalPrice() {
+        return this.form.pet_nos.length * this.timeCount * this.petFirstPrice;
       }
     },
     methods: {
-      calcHourDiff(start, end) {
-        if (!start || !end) return 0;
-        const [sh, sm] = start.split(':').map(Number);
-        const [eh, em] = end.split(':').map(Number);
-        const diff = (eh * 60 + em) - (sh * 60 + sm);
-        return diff <= 0 ? 0 : Math.ceil(diff / 60);
+      toggleTime(hour) {
+        const idx = this.form.selectedTimes.indexOf(hour);
+        if (idx === -1) this.form.selectedTimes.push(hour);
+        else this.form.selectedTimes.splice(idx, 1);
+        this.form.selectedTimes.sort((a, b) => a - b);
       },
-      submitReservation() {
-        const payload = {
-          ...this.form,
-          sitter_no,
-          total_price: this.formattedPrice.replace(/,/g, '')
-        };
-
-        axios.post("/sitter/reserve_vue", payload)
-          .then(res => {
-            alert("예약이 완료되었습니다.");
-            location.href = "/sitter/resList";
-          })
-          .catch(err => {
-            alert("예약에 실패했습니다.");
-            console.error(err);
+      async fetchDisabledHours() {
+        if (!this.form.res_date) return;
+        try {
+          const res = await axios.get("/sitter/res/disabled_hours", {
+            params: {
+              sitter_no: this.sitterNo,
+              res_date: this.form.res_date
+            }
           });
+          this.disabledHours = res.data.disabledHours;
+        } catch (err) {
+          console.error("시간대 로딩 실패");
+        }
+      },
+      async submitReservation() {
+        const payload = {
+          sitter_no: this.sitterNo,
+          pet_nos: this.form.pet_nos,
+          res_date: this.form.res_date,
+          start_time: this.startTime,
+          end_time: this.endTime,
+          location_type: this.form.location_type,
+          location_detail: this.form.location_detail,
+          total_price: this.totalPrice,
+          pay_status: "미결제",
+          res_status: "요청",
+        };
+        try {
+          const res = await axios.post("/sitter/reserve_vue", payload);
+          if (res.data === "success") {
+            alert("예약 신청이 완료되었습니다!");
+            location.href = "/sitter/resList";
+          } else {
+            alert("예약 신청에 실패했습니다.");
+          }
+        } catch (err) {
+          alert("오류가 발생했습니다.");
+        }
       }
     }
-  });
-
-  app.mount('#app');
+  }).mount("#app");
 </script>
 </body>
 </html>

@@ -28,6 +28,7 @@
           <strong>경력:</strong> {{ sitter.sitterApp.history }}
         </li>
       </ul>
+      <a href="/sitter/reserve?sitter_no=${vo.sitter_no}&user_no=${user_no}" class="btn btn-primary">예약하기</a>
       <button v-if="sitter.user_no === myUserNo" class="btn btn-warning mt-3" @click="goUpdate(sitter.sitter_no)">수정하기</button>
       <button v-if="sitter.user_no === myUserNo" class="btn btn-danger mt-3" @click="deletePost">삭제하기</button>
     </div>
