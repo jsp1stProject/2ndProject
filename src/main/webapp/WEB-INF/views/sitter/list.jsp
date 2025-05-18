@@ -11,7 +11,7 @@
 <div class="container-fluid" id="app">
   <h2 class="mb-4">펫시터 목록</h2>
   <div class="row">
-    <!-- 왼쪽 필터 영역 -->
+    <!-- 필터 영역 -->
     <div class="col-md-3">
       <div class="mb-4">
         <label for="fd">필터 기준:</label>
@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <!-- 오른쪽 콘텐츠 영역 -->
+    <!-- 콘텐츠 영역 -->
     <div class="col-md-9">
       <!-- 찜한 펫시터 목록 -->
       <div class="mb-5">
@@ -38,10 +38,11 @@
         <div v-if="jjimList.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           <div class="col" v-for="sitter in jjimList" :key="'jjim-' + sitter.sitter_no">
             <div class="card h-100">
-              <img :src="sitter.sitter_pic" class="card-img-top">
               <div class="card-body">
-                <h5 class="card-title">{{ sitter.user.nickname }}</h5>
-                <p class="card-text">{{ sitter.content }}</p>
+                <h5 class="card-title">
+				  {{ sitter.nickname }}
+				</h5>
+				<img :src="sitter.profile" class="card-img-top" />
                 <button class="btn btn-outline-danger btn-sm" @click="toggleJjim(sitter.sitter_no)">♥ 찜 해제</button>
               </div>
             </div>
@@ -113,8 +114,7 @@
         endPage: 1,
         fd: 'care_loc',
         st: [],
-        filterOptions: ['서울', '경기', '인천', '고양이전문', '강아지전문'],
-        token: localStorage.getItem("token") || ""
+        filterOptions: ['서울', '경기', '인천', '고양이전문', '강아지전문']
       }
     },
     computed: {
@@ -151,12 +151,9 @@
       async loadJjimList() {
         try {
           const res = await axios.get('/web/sitter/jjim/list', {
-           headers:{
-                            "Content-Type":"application/json"
-                        },
-                        withCredentials: true
-                    });
-          this.jjimList = res.data 
+    			withCredentials: true 
+			})
+			this.jjimList = res.data
         } catch (e) {
           console.error('찜 목록 로딩 실패:', e)
         }
@@ -164,7 +161,7 @@
       async toggleJjim(sitter_no) {
         try {
           await axios.post('/web/sitter/jjim/toggle', { sitter_no }, {
-            headers: { Authorization: `Bearer ` + this.token }
+            withCredentials: true
           })
           this.loadJjimList()
           this.dataRecv(this.curpage)
