@@ -71,7 +71,7 @@
     function loginWithKakao() {
         //카카오톡 -> 없으면 카카오 계정으로 로그인
         Kakao.Auth.authorize({
-            redirectUri: '${fn:substringBefore(pageContext.request.requestURL,pageContext.request.requestURI)}/auth/join',
+            redirectUri: '${fn:substringBefore(pageContext.request.requestURL,pageContext.request.requestURI)}${pageContext.request.contextPath }/auth/join',
         });
     }
 </script>

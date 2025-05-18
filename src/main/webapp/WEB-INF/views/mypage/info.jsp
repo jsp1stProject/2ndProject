@@ -94,7 +94,7 @@
                     formData.value=new FormData(uploadForm.value)
                     if(res.data.data.social_id!=null ){
                         $("#orig_pwd").prop('required',false);
-                        $("#user_mail").prop('disabled',true);
+                        $("#user_mail").prop('readonly',true);
                     }
                     $("#profileChange").val(0);
                 }catch (e) {

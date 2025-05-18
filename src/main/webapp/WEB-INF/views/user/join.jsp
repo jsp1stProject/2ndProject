@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"
         integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nka" crossorigin="anonymous"></script>
@@ -51,7 +52,8 @@
                     "Content-Type":"application/json"
                 },
                 data:{
-                    "code": code
+                    "code": code,
+                    "url": "${fn:substringBefore(pageContext.request.requestURL,pageContext.request.requestURI)}${pageContext.request.contextPath }"
                 },
                 withCredentials:true
             });

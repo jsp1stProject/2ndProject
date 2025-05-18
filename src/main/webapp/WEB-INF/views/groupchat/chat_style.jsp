@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath }/assets/css/styles.css" />
 
     <script src="${pageContext.request.contextPath }/assets/libs/jquery/dist/jquery.min.js"></script>
-    <script src="${pageContext.request.contextPath }/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="${pageContext.request.contextPath }/assets/libs/bootstrap/dist/js/bootstrap.bundle.js"></script>
     <script src="${pageContext.request.contextPath }/assets/js/chat.js"></script>
     <script src="${pageContext.request.contextPath }/assets/libs/simplebar/dist/simplebar.js"></script>
 

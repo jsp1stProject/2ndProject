@@ -46,7 +46,7 @@ public class UserController {
         return "redirect:/main";
     }
 
-    @GetMapping("auth/join")
+    @GetMapping("/auth/join")
     public String join(@RequestParam(required = false, value="code") String code, Model model) {
         model.addAttribute("main_jsp", "../user/join.jsp");
         return "main/main";

@@ -19,7 +19,7 @@
     white-space: nowrap;
   }
 
-  input {
+  input:not([type="checkbox"]) {
     width: 100%;
     padding: 10px;
     border: none;
@@ -63,6 +63,10 @@
     label {
       font-size: 0.9em;
       padding: 8px 12px 0;
+    }
+
+    input[type="checkbox"] + label {
+      padding: 0;
     }
 
     label + input {

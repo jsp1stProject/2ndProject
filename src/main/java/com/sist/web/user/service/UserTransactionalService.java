@@ -43,7 +43,7 @@ public class UserTransactionalService {
         vo.setUser_no(userno);
         userMapper.insertKakaoUser(vo);
         Map<String, Object> map = new HashMap<>();
-        map.put("userNo",userno);
+        map.put("user_no",userno);
         map.put("authority", "ROLE_USER");
         userMapper.insertUserAuthority(map);
     }
