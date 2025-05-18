@@ -9,7 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-
+import java.sql.*;
+import java.sql.Date;
 @RestController
 public class SitterResRestController {
 
@@ -25,7 +26,7 @@ public class SitterResRestController {
 	// 예약 목록
 	@GetMapping("/sitter/resList_vue")
 	public ResponseEntity<Map<String, Object>> res_list(@RequestParam int page,
-			@CookieValue(name = "token", required = false) String token) {
+			@CookieValue(name = "accesstoken", required = false) String token) {
 		Map<String, Object> map = new HashMap<>();
 		int user_no = parseUserNo(token);
 		if (user_no == -1) {
@@ -47,7 +48,7 @@ public class SitterResRestController {
 	// 예약 상세
 	@GetMapping("/sitter/resDetail_vue")
 	public ResponseEntity<?> reserve_detail(@RequestParam int res_no,
-			@CookieValue(name = "token", required = false) String token) {
+			@CookieValue(name = "accesstoken", required = false) String token) {
 		int user_no = parseUserNo(token);
 		if (user_no == -1)
 			return new ResponseEntity<>("unauthorized", HttpStatus.UNAUTHORIZED);
@@ -68,7 +69,7 @@ public class SitterResRestController {
 	// 예약 등록
 	@PostMapping("/sitter/reserve_vue")
 	public ResponseEntity<String> reserve_vue(@RequestBody SitterResVO vo,
-			@CookieValue(name = "token", required = false) String token) {
+			@CookieValue(name = "accesstoken", required = false) String token) {
 		int user_no = parseUserNo(token);
 		if (user_no == -1)
 			return new ResponseEntity<>("unauthorized", HttpStatus.UNAUTHORIZED);
@@ -82,11 +83,33 @@ public class SitterResRestController {
 			return new ResponseEntity<>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@GetMapping("/sitter/res/disabled_hours")
+	public ResponseEntity<Map<String, Object>> getDisabledHours(
+	        @RequestParam int sitter_no,
+	        @RequestParam String res_date) {
+
+		Date sqlDate = Date.valueOf(res_date);
+	    List<Map<String, String>> reserved = rService.getReservedTimeRanges(sitter_no, sqlDate);
+	    Set<Integer> disabledHours = new HashSet<>();
+
+	    for (Map<String, String> r : reserved) {
+	        int start = Integer.parseInt(r.get("start_time").substring(0, 2));
+	        int end = Integer.parseInt(r.get("end_time").substring(0, 2));
+	        for (int h = start; h < end; h++) {
+	            disabledHours.add(h);
+	        }
+	    }
+
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("disabledHours", disabledHours);
+	    return ResponseEntity.ok(result);
+	}
 
 	// 결제 완료 후 호출
 	@PostMapping("/sitter/res/pay_complete")
 	public ResponseEntity<String> payComplete(@RequestParam("res_no") int res_no,
-			@RequestParam("imp_uid") String imp_uid, @CookieValue(name = "token", required = false) String token) {
+			@RequestParam("imp_uid") String imp_uid, @CookieValue(name = "accesstoken", required = false) String token) {
 		int user_no = parseUserNo(token);
 		if (user_no == -1)
 			return new ResponseEntity<>("unauthorized", HttpStatus.UNAUTHORIZED);

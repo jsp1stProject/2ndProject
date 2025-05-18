@@ -19,7 +19,7 @@
   <h2 class="mb-4">펫시터 예약하기</h2>
 
   <form @submit.prevent="submitReservation">
-    <!-- 반려동물 선택 -->
+
     <div class="mb-3">
       <label class="form-label">돌봄 아이</label>
       <div class="d-flex flex-wrap gap-2">
@@ -34,13 +34,11 @@
       </div>
     </div>
 
-    <!-- 방문지 -->
     <div class="mb-3">
       <label class="form-label">방문지 주소</label>
       <input type="text" v-model="form.location_detail" class="form-control" required>
     </div>
 
-    <!-- 출입 방법 -->
     <div class="mb-3">
       <label class="form-label">출입 방법</label>
       <select v-model="form.location_type" class="form-select" required>
@@ -52,13 +50,13 @@
       </select>
     </div>
 
-    <!-- 돌봄 일자 -->
+
     <div class="mb-3">
       <label class="form-label">돌봄 일자</label>
       <input type="date" v-model="form.res_date" class="form-control" @change="fetchDisabledHours" required>
     </div>
 
-    <!-- 시간대 선택 -->
+  
     <div class="mb-3">
       <label class="form-label">시간대 선택</label>
       <div class="d-flex flex-wrap gap-1">
@@ -70,8 +68,7 @@
         </button>
       </div>
     </div>
-
-    <!-- 남길 말 -->
+    
     <div class="mb-3">
       <label class="form-label">펫시터에게 남길 말</label>
       <textarea class="form-control" rows="3" v-model="form.memo"></textarea>
@@ -95,7 +92,7 @@
 
 <script type="module">
   import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
-  import axios from 'https://unpkg.com/axios/dist/axios.min.js';
+  import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.7/+esm';
 
   createApp({
     data() {
@@ -146,7 +143,7 @@
       async fetchDisabledHours() {
         if (!this.form.res_date) return;
         try {
-          const res = await axios.get("/sitter/res/disabled_hours", {
+          const res = await axios.get("/web/sitter/res/disabled_hours", {
             params: {
               sitter_no: this.sitterNo,
               res_date: this.form.res_date
@@ -171,7 +168,7 @@
           res_status: "요청",
         };
         try {
-          const res = await axios.post("/sitter/reserve_vue", payload);
+          const res = await axios.post("/web/sitter/reserve_vue", payload);
           if (res.data === "success") {
             alert("예약 신청이 완료되었습니다!");
             location.href = "/sitter/resList";
