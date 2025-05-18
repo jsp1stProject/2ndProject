@@ -117,5 +117,11 @@ public class SitterServiceImpl implements SitterService{
 		return sDao.toggleJjim(user_no, sitter_no);
 	}
 
+	@Override
+	public int getReviewWriter(int review_no) {
+		// TODO Auto-generated method stub
+		return sDao.getReviewWriter(review_no);
+	}
+
 
 }

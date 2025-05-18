@@ -104,10 +104,8 @@ public class SitterRestController {
     // 목록
     @GetMapping("/sitter/jjim/list")
     public ResponseEntity<List<SitterVO>> jjimList(
-            @RequestHeader(value = "Authorization", required = false) String token) {
+            @CookieValue(value = "accessToken", required = false) String token) {
         try {
-        	System.out.println("jjimlist==================");
-            // 유효성 검사
             if (token == null || token.trim().isEmpty() || !token.contains(".")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -122,14 +120,13 @@ public class SitterRestController {
         }
     }
 
+
     // insert/delete
     @PostMapping("/sitter/jjim/toggle")
     public ResponseEntity<String> toggleJjim(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @CookieValue(value = "accessToken", required = false) String token,
             @RequestBody Map<String, Integer> data) {
         try {
-        	System.out.println("jjimtoggle==================");
-            // 유효성 검사
             if (token == null || token.trim().isEmpty() || !token.contains(".")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰 없음 또는 잘못된 형식");
             }
@@ -145,6 +142,7 @@ public class SitterRestController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰 오류");
         }
     }
+
 
 
 

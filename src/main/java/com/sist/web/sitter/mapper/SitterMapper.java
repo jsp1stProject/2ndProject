@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Update;
 import com.sist.web.sitter.vo.*;
 
 public interface SitterMapper {
-	// ✅ 전체 목록
+	// 전체 목록
     @Select("SELECT sitter_no, jjimcount, carecount, score, tag, content, sitter_pic, care_loc, pet_first_price, "
           + "nickname, user_name, history, license, info, num " 
           + "FROM (SELECT sitter_no, jjimcount, carecount, score, tag, content, sitter_pic, care_loc, pet_first_price, "
@@ -44,7 +44,7 @@ public interface SitterMapper {
     })
     public List<SitterVO> sitterListDataAll(Map map);
 
-    // ✅ 필터 포함 목록
+    // 필터 포함 목록
     @Select("SELECT sitter_no, jjimcount, carecount, score, tag, content, sitter_pic, care_loc, pet_first_price, "
           + "nickname, user_name, history, license, info, num " 
           + "FROM (SELECT sitter_no, jjimcount, carecount, score, tag, content, sitter_pic, care_loc, pet_first_price, "
@@ -78,11 +78,11 @@ public interface SitterMapper {
     })
     public List<SitterVO> sitterListDataWithFilter(Map map);
 
-    // ✅ 총 페이지 수
+    // 총 페이지 수
     @Select("SELECT CEIL(COUNT(*) / 8.0) FROM p_sitter")
     public int sitterTotalPage();
 
-    // ✅ 상세보기
+    // 상세보기
     @Select("SELECT s.*, "
           + "u.user_no AS u_user_no, u.nickname AS u_nickname, u.user_name AS u_user_name, "
           + "a.history AS a_history, a.license AS a_license, a.info AS a_info "
@@ -168,6 +168,10 @@ public interface SitterMapper {
 	        "VALUES(p_sitrev_no_seq.NEXTVAL, #{sitter_no}, #{user_no}, NULL, #{rev_comment}, #{group_id}, #{group_step})")
 	public void replyInsert(SitterReviewVO vo);
 
+	// 리뷰 본인 여부
+	@Select("SELECT user_no FROM p_sitter_review WHERE review_no = #{review_no}")
+	public int getReviewWriter(@Param("review_no") int review_no);
+
 	// 리뷰 수정
 	@Update("UPDATE p_sitter_review SET rev_comment = #{rev_comment}, rev_score = #{rev_score} " +
 	        "WHERE review_no = #{review_no}")
@@ -182,22 +186,27 @@ public interface SitterMapper {
 	public void deleteSitterReviewWithPost(int sitter_no);
 	
 	// 찜하기
-	@Select("SELECT ps.sitter_no, ps.app_no, ps.user_no, ps.jjimcount, ps.carecount, "
-			+ "CASE WHEN EXISTS ( "
-			+  "  SELECT 1 FROM p_jjim "
-			+  "  WHERE user_no = #{user_no} AND sitter_no = ps.sitter_no "
-			+  ") THEN 1 ELSE 0 END AS jjimCheck "
-			+  "FROM p_sitter ps "
-			+  "ORDER BY ps.sitter_no DESC")
+	@Select("SELECT ps.sitter_no, pu.nickname, pu.profile " 
+	        + "FROM p_sitter ps " 
+	        + "JOIN p_sitter_jjim pj ON ps.sitter_no = pj.sitter_no " 
+	        + "JOIN p_users pu ON ps.user_no = pu.user_no " 
+	        + "WHERE pj.user_no = #{user_no} " 
+	        + "ORDER BY ps.sitter_no DESC")
+	@Results({
+	    @Result(property = "sitter_no", column = "sitter_no"),
+	    @Result(property = "nickname", column = "nickname"),
+	    @Result(property = "profile", column = "profile")
+	})
 	public List<SitterVO> jjimSitterList(@Param("user_no") int user_no);
+
 	
-	@Select("SELECT COUNT(*) FROM p_jjim WHERE user_no = #{user_no} AND sitter_no = #{sitter_no}")
+	@Select("SELECT COUNT(*) FROM p_sitter_jjim WHERE user_no = #{user_no} AND sitter_no = #{sitter_no}")
 	public int checkJjim(@Param("user_no") int user_no, @Param("sitter_no") int sitter_no);
 
-	@Insert("INSERT INTO p_jjim(jjim_no, user_no, sitter_no) VALUES (jjim_seq.NEXTVAL, #{user_no}, #{sitter_no})")
+	@Insert("INSERT INTO p_sitter_jjim(jjim_no, user_no, sitter_no) VALUES (p_sitjjim_seq.NEXTVAL, #{user_no}, #{sitter_no})")
 	public void insertJjim(@Param("user_no") int user_no, @Param("sitter_no") int sitter_no);
 
-	@Delete("DELETE FROM p_jjim WHERE user_no = #{user_no} AND sitter_no = #{sitter_no}")
+	@Delete("DELETE FROM p_sitter_jjim WHERE user_no = #{user_no} AND sitter_no = #{sitter_no}")
 	public void deleteJjim(@Param("user_no") int user_no, @Param("sitter_no") int sitter_no);
 
 	@Update("UPDATE p_sitter SET jjimcount = jjimcount + #{amount} WHERE sitter_no = #{sitter_no}")

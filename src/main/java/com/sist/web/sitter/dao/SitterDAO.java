@@ -78,6 +78,10 @@ public class SitterDAO {
 	{
 		return mapper.reviewListData(sitter_no);
 	}
+	public int getReviewWriter(int review_no)
+	{
+		return mapper.getReviewWriter(review_no);
+	}
 	public void reviewInsert(SitterReviewVO vo)
 	{
 		mapper.reviewInsert(vo);

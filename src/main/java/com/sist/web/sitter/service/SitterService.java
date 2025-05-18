@@ -24,6 +24,7 @@ public interface SitterService {
     boolean toggleJjim(int user_no, int sitter_no);
 	// 리뷰
 	public List<SitterReviewVO> reviewListData(int sitter_no);
+	public int getReviewWriter(int review_no);
 	public void reviewInsert(SitterReviewVO vo);
 	public void replyInsert(SitterReviewVO vo);
 	public void reviewUpdate(SitterReviewVO vo);
