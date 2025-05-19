@@ -21,5 +21,37 @@
 		ORDER BY gm.message_no DESC 
 		FETCH FIRST 35 ROWS ONLY
 	</select>
-	<!-- insertGroup 작성 예정 -->
+	<select id="selectMessagesByFilters" resultType="com.sist.web.groupchat.dto.GroupChatDTO" 
+										 parameterType="com.sist.web.groupchat.dto.MessageSearchFilterDTO">
+		SELECT * FROM p_group_msg 
+		WHERE group_no = #{groupNo} 
+		<if test="keyword != null and keyword != ''">
+			AND content LIKE CONCAT('%', #{keyword}, '%') 
+		</if>
+		<if test="senderNickname != null and senderNickname != ''">
+			AND sender_nickname LIKE CONCAT('%', #{senderNickname}, '%') 
+		</if>
+		<if test="startDate != null and endDate != null">
+			AND sent_at BETWEEN #{startDate} AND #{endDate}
+		</if>
+		ORDER BY sent_at ASC		
+	</select>
+	<select id="selectMessagesAround" resultType="com.sist.web.groupchat.dto.GroupChatDTO" parameterType="hashmap">
+		(
+			SELECT * FROM (
+				SELECT * FROM p_group_msg 
+				WHERE group_no = #{groupNo} AND message_no &lt; #{messageNo} 
+				ORDER BY message_no DESC 
+				FETCH FIRST 10 ROWS ONLY 
+			)
+			ORDER BY message_no ASC
+		)
+		UNION ALL
+		(
+			SELECT * FROM p_group_msg 
+			WHERE group_no = #{groupNo} AND message_no &gt;= #{messageNo} 
+			ORDER BY message_no ASC 
+			FETCH FIRST 11 ROWS ONLY
+		)
+	</select>
 </mapper>

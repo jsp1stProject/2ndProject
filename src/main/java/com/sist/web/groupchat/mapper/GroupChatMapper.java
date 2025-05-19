@@ -1,11 +1,14 @@
 package com.sist.web.groupchat.mapper;
 
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectKey;
 import com.sist.web.groupchat.dto.GroupChatDTO;
+import com.sist.web.groupchat.dto.MessageSearchFilterDTO;
 
 public interface GroupChatMapper {
 	@Insert("INSERT INTO p_group_msg (message_no, group_no, sender_no, content, sender_nickname) "
@@ -18,9 +21,9 @@ public interface GroupChatMapper {
 	@Select("SELECT * FROM p_group_msg WHERE message_no = #{message_no}")
 	public GroupChatDTO selectGroupChatByMessageNo(@Param("message_no") long messageNo);
 	
+	public List<GroupChatDTO> selectMessagesByFilters(MessageSearchFilterDTO dto);
 	
-	
-	
+	public List<GroupChatDTO> selectMessagesAround(Map<String, Object> param);
 	
 	
 	

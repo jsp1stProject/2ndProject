@@ -1,7 +1,9 @@
 package com.sist.web.groupchat.service;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -11,6 +13,7 @@ import com.sist.web.common.exception.code.GroupErrorCode;
 import com.sist.web.common.exception.domain.GroupException;
 import com.sist.web.groupchat.dao.GroupChatDAO;
 import com.sist.web.groupchat.dto.GroupChatDTO;
+import com.sist.web.groupchat.dto.MessageSearchFilterDTO;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserVO;
 import lombok.RequiredArgsConstructor;
@@ -72,12 +75,17 @@ public class GroupChatServiceImpl implements GroupChatService {
 		return list;
 	}
 	
+	@Override
+	public List<GroupChatDTO> getMessagesByFilters(MessageSearchFilterDTO dto) {
+		
+		return cDao.selectMessagesByFilters(dto);
+	}
 	
-
-	
-
-	
-
-	
-
+	@Override
+	public List<GroupChatDTO> getMessagesAround(int groupNo, int messageNo) {
+		Map<String, Object> param = new HashMap<>();
+		param.put("groupNo", groupNo);
+		param.put("messageNo", messageNo);
+		return cDao.selectMessagesAround(param);
+	}
 }
