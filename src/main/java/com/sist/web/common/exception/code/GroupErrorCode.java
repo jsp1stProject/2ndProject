@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum GroupErrorCode implements ErrorInfo {
 	GROUP_NOT_FOUND("G404", "그룹이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
-    DUPLICATE_GROUP("G409", "이미 존재하는 그룹입니다.", HttpStatus.CONFLICT);
+    DUPLICATE_GROUP("G409", "이미 존재하는 그룹입니다.", HttpStatus.CONFLICT),
+	USER_NOT_FOUND("G404", "그룹에 추가할 사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+	IMAGE_UPLOAD_FAILED("G500", "이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final String code;
     private final String message;

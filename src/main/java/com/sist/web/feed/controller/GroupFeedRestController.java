@@ -13,17 +13,19 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sist.web.feed.service.*;
 import com.sist.web.feed.vo.*;
 
+import lombok.RequiredArgsConstructor;
+
 import java.io.File;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+@RequiredArgsConstructor
 @RestController
 public class GroupFeedRestController {
 	
-	@Autowired
-	private GroupFeedService service;
+	private final GroupFeedService service;
 	
 	@GetMapping("group/groups")
 	public ResponseEntity<Map> group_groups()
