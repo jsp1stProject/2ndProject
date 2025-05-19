@@ -103,7 +103,7 @@
                             <div class="date-divider">{{ date }}</div>
                             <div class="msg d-flex" v-for="msg in msgList" :key="msg.message_no">
                                 <a href="#" class="user-profile">
-                                    <img :src="msg.profile || '${contextPath}/assets/images/profile/default_pf.png'" alt="" width="35" height="35" class="rounded-circle">
+                                    <img :src="msg.profile_img || '${pageContext.request.contextPath}/assets/images/profile/default_pf.png'" alt="" width="35" height="35" class="rounded-circle">
                                 </a>
                                 <div class="msg-body d-flex flex-column">
                                     <div class="user-info">

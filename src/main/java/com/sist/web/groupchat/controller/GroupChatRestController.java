@@ -32,6 +32,6 @@ public class GroupChatRestController {
 			@PathVariable @Min(value = 1, message = "유효하지 않은 그룹 번호입니다") Integer groupNo, 
 			@RequestParam(required = false) Long lastMessageNo) {
 		List<GroupChatDTO> messages = chatService.getLatestMessageByGroupNo(groupNo, lastMessageNo);
-		return ResponseEntity.ok(ApiResponse.success(messages));
+		return ResponseEntity.ok(ApiResponse.success(messages)); 
 	}
 }

@@ -59,7 +59,10 @@ export function initGroupChat(contextPath, createApp) {
         this.isLoading = true;
         const res = await axios.get(url);
         console.log('res: ', res);
-        const newMessages = res.data.data;
+        const newMessages = res.data.data.map(msg => ({
+          ...msg,
+          profile_img: msg.profile || `${this.contextPath}/assets/images/profile/default_pf.png`
+        }));
 
         if (newMessages.length === 0) {
           this.noMoreMessages = true;
