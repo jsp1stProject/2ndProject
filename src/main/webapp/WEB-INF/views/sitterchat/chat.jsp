@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>1:1 채팅</title>
+  <title>펫시터 1:1 채팅</title>
   <script src="https://unpkg.com/vue@3.3.4/dist/vue.global.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
@@ -54,8 +54,12 @@
   </div>
 </div>
 
-<script>
-const { createApp } = Vue;
+<script type="module">
+import { createApp } from 'https://unpkg.com/vue@3.3.4/dist/vue.esm-browser.js'
+import axios from 'https://cdn.skypack.dev/axios'
+import SockJS from 'https://cdn.skypack.dev/sockjs-client'
+import { Client } from 'https://cdn.skypack.dev/@stomp/stompjs'
+
 createApp({
   data() {
     return {
@@ -64,56 +68,81 @@ createApp({
       messages: [],
       chatContent: '',
       stompClient: null,
-      userNo: null  // 실제는 쿠키/JWT에서 파싱 필요
+      userNo: 1
     }
   },
   mounted() {
-	this.userNo = this.getUserNoFromToken();
-	if (!this.userNo) {
-		  alert("로그인이 필요한 서비스입니다.");
-		  return;
-		}
+	console.log("✅ Vue mounted 시작됨");
+    this.userNo = this.getUserNoFromToken();
+    if (!this.userNo) {
+      alert("로그인이 필요한 서비스입니다.");
+      return;
+    }
+
     axios.get('/sitterchat/list_vue').then(res => {
-      this.rooms = res.data.list;
+      const fetched = res.data.list;
+      if (!fetched || fetched.length === 0) {
+        this.rooms = [{
+          roomId: 999,
+          opponentNickname: "테스트 펫시터",
+          opponentNo: 100,
+          resDate: "2025-06-01",
+          startTimeStr: "14:00"
+        }];
+      } else {
+        this.rooms = fetched;
+      }
     });
 
     const socket = new SockJS('/ws-s');
-    this.stompClient = Stomp.over(socket);
-    this.stompClient.connect({}, () => {
-      console.log("WebSocket connected");
-    });
-  },
-  methods: {
-	  getUserNoFromToken() {
-		  const token = document.cookie
-		    .split('; ')
-		    .find(row => row.startsWith('accesstoken='))
-		    ?.split('=')[1];
-		  if (!token) return null;
-		  try {
-		    const payload = JSON.parse(atob(token.split('.')[1]));
-		    return parseInt(payload.sub); // 또는 payload.userNo 등, 서버 발급 구조에 맞게
-		  } catch (e) {
-		    return null;
-		  }
-		},
-    enterRoom(room) {
-      this.currentRoom = room;
-      this.messages = [];
-      axios.get('/sitterchat/msglist', { params: { room_id: room.roomId } }).then(res => {
-        this.messages = res.data;
-      });
+this.stompClient = new Client({
+  webSocketFactory: () => socket,
+  reconnectDelay: 5000,
+  onConnect: () => {
+    console.log("✅ WebSocket connected");
 
-      this.stompClient.subscribe('/ssub/chat/' + room.roomId, msg => {
+    // 선택된 방이 있으면 자동 구독
+    if (this.currentRoom) {
+      this.stompClient.subscribe('/ssub/chat/' + this.currentRoom.roomId, msg => {
         this.messages.push(JSON.parse(msg.body));
       });
+    }
+  }
+});
+this.stompClient.activate();
+  },
+  methods: {
+    getUserNoFromToken() {
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('accesstoken='))
+        ?.split('=')[1];
+      if (!token) return null;
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return parseInt(payload.sub);
+      } catch (e) {
+        return null;
+      }
+    },
+    enterRoom(room) {
+  this.currentRoom = room;
+  this.messages = [];
+
+  axios.get('/sitterchat/msglist', { params: { room_id: room.roomId } }).then(res => {
+    this.messages = res.data;
+  });
+
+  this.stompClient.subscribe('/ssub/chat/' + room.roomId, msg => {
+    this.messages.push(JSON.parse(msg.body));
+  });
     },
     sendMessage() {
       if (!this.chatContent.trim()) return;
       const msg = {
         roomId: this.currentRoom.roomId,
         senderNo: this.userNo,
-        receiverNo: this.currentRoom.opponentNo, // 이 필드는 서버에서 구분용으로 필요
+        receiverNo: this.currentRoom.opponentNo,
         chatContent: this.chatContent,
         chatType: 'text'
       };
