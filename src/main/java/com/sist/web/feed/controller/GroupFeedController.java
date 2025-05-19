@@ -23,17 +23,10 @@ public class GroupFeedController {
 	private final GroupFeedService service;
 
 	@GetMapping("/group/feed")
-	public String group_feed(int feed_no, Model model, HttpServletRequest request)
+	public String group_feed(Model model)
 	{
-		FeedVO vo = service.feedData(feed_no);
-		long user_no = (long)request.getAttribute("userno");
-		
-		System.out.println("vo는 "+vo);
-		System.out.println("user_no는"+user_no);
-		
-		model.addAttribute("user_no", user_no);
-		model.addAttribute("vo",vo);
-		return "group/feed";
+		model.addAttribute("main_jsp","../group/feed.jsp");
+		return "main/main";
 	}
 	
 }

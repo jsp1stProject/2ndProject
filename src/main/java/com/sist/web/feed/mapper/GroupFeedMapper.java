@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Update;
 
 public interface GroupFeedMapper {
 	//그룹
+
 	@Select("SELECT group_no, group_name, profile_img, description, capacity, is_public, owner,created_at, num "
 			+ "FROM (SELECT group_no, group_name, profile_img, description, capacity, is_public, owner,created_at, rownum as num "
 			+ "FROM (SELECT group_no, group_name, profile_img, description, capacity, is_public, owner,created_at "
@@ -27,7 +28,7 @@ public interface GroupFeedMapper {
 	
 	@Select("SELECT p_group_no_seq.currval FROM DUAL")
 	public int groupCurentNodata();
-	
+
 	
 	//피드
 	// 피드는 페이징 안할거야 -> 무한스크롤로 수정할예정
@@ -53,7 +54,12 @@ public interface GroupFeedMapper {
 	@Insert("INSERT INTO p_feed_fileInfo VALUES(p_feed_fileinfo_seq.nextval,#{feed_no},#{filename},#{filesize})")
 	public void feedFileInsert(FeedFileInfoVO vo);	
 	
-	@Select("SELECT feed_no, group_no, user_no, title, content, filecount,TO_CHAR(regdate,'YYYY-mm-DD') as dbday, update_time  FROM p_feed WHERE feed_no=#{feed_no}")
+	@Select("SELECT f.feed_no, f.group_no, f.user_no, u.nickname, f.title, f.content, f.filecount,"
+			+ "TO_CHAR(f.regdate,'YYYY-MM-DD') as dbday, f.update_time "
+			+ "FROM p_feed f "
+			+ "JOIN p_users u "
+			+ "ON f.user_no=u.user_no "
+			+ "WHERE f.feed_no=#{feed_no}")
 	public FeedVO feedDetailData(int feed_no);
 	
 	//피드-댓글

@@ -26,7 +26,7 @@ import javax.servlet.http.HttpSession;
 public class GroupFeedRestController {
 	
 	private final GroupFeedService service;
-	
+	/*
 	@GetMapping("group/groups")
 	public ResponseEntity<Map> group_groups()
 	{
@@ -44,7 +44,7 @@ public class GroupFeedRestController {
 		System.out.println("group_vue 완료");
 		return new ResponseEntity<>(map,HttpStatus.OK);
 	}
-	
+	*/
 	@GetMapping("group/feeds")
 	public ResponseEntity<Map> group_feeds(int group_no)
 	{
