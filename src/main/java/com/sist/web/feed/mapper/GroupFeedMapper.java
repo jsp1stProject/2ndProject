@@ -5,8 +5,6 @@ import javax.xml.stream.events.Comment;
 
 import com.sist.web.feed.vo.*;
 
-import lombok.Delegate;
-
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
