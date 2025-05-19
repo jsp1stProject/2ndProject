@@ -107,7 +107,7 @@
                                 </a>
                                 <div class="msg-body d-flex flex-column">
                                     <div class="user-info">
-                                        <span><b>{{ msg.sender_nickname }}</b></span>
+                                        <span><b>{{ getNickname(msg.sender_no) }}</b></span>
                                         <span>{{ formatMessageTime(msg.sent_at) }}</span>
                                     </div>
                                     <div class="msg-content">{{ msg.content }}</div>

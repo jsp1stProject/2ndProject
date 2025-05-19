@@ -46,7 +46,6 @@ export const apiMethods = {
       tags: this.selectedTags,
     };
     
-    console.log('dto: ', dto);
     const formData = new FormData();
     formData.append(
       'groupDetail',

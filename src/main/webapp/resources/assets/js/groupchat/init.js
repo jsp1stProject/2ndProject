@@ -58,7 +58,6 @@ export function initGroupChat(contextPath, createApp) {
 
         this.isLoading = true;
         const res = await axios.get(url);
-        console.log('res: ', res);
         const newMessages = res.data.data.map(msg => ({
           ...msg,
           profile_img: msg.profile || `${this.contextPath}/assets/images/profile/default_pf.png`
@@ -114,6 +113,10 @@ export function initGroupChat(contextPath, createApp) {
           };
           reader.readAsDataURL(file);
         }
+      },
+      getNickname(userNo) {
+        const m = this.members.find(m => m.user_no === userNo);
+        return m?.nickname || '알 수 없음';
       }
 
     }
