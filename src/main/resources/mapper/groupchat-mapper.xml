@@ -2,14 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sist.web.groupchat.mapper.GroupChatMapper">
 	<select id="selectLatestMessageByGroupNo" resultType="com.sist.web.groupchat.dto.GroupChatDTO" parameterType="hashmap">
-		SELECT message_no, group_no, sender_no, content, message_type, sent_at, sender_nickname 
-		FROM p_group_msg
-		WHERE group_no = #{group_no}
+		SELECT 
+			gm.message_no, 
+			gm.group_no, 
+			gm.sender_no, 
+			gm.content, 
+			gm.message_type, 
+			gm.sent_at, 
+			gm.sender_nickname, 
+			u.profile 
+		FROM p_group_msg gm
+		JOIN p_users u 
+		ON gm.sender_no = u.user_no 
+		WHERE gm.group_no = #{group_no}
 		<if test="last_message_no != null">
-		  AND message_no &lt; #{last_message_no}
+			AND gm.message_no &lt; #{last_message_no}
 		</if>
-		ORDER BY message_no DESC
-		FETCH FIRST 30 ROWS ONLY
+		ORDER BY gm.message_no DESC 
+		FETCH FIRST 35 ROWS ONLY
 	</select>
 	<!-- insertGroup 작성 예정 -->
 </mapper>

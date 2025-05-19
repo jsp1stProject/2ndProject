@@ -106,6 +106,7 @@ $chat-bg-light: #ffffff;
         .chat-body {
           height: calc(100vh - var(--chat-header-height) - var(--chat-input-height));
           padding: var(--chat-body-padding);
+	        overflow-y: auto;
 
           .msg {
             gap: 0.6em;
