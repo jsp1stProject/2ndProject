@@ -19,12 +19,11 @@ export const apiMethods = {
   },
 
   async loadGroupMembers() {
-    const res = await axios.get(`${this.contextPath}/api/groups/members`, {
-      params: { groupNo: this.group_no }
-    });
+    const res = await axios.get(`${this.contextPath}/api/groups/${this.group_no}/members`);
     this.members = res.data.data.map(m => ({
       user_no: m.user_no,
       nickname: m.nickname,
+      profile_img: m.profile,
       isOnline: false
     }));
   },

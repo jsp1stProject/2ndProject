@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sist.web.aws.AwsS3Service;
 import com.sist.web.common.exception.code.CommonErrorCode;
 import com.sist.web.common.exception.code.GroupErrorCode;
 import com.sist.web.common.exception.domain.CommonException;
@@ -27,17 +28,25 @@ import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserVO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class GroupServiceImpl implements GroupService{
 	private final GroupDAO gDao;
+	private final AwsS3Service awsS3;
 	private final UserMapper userMapper;
-	@Value("${file.upload-dir}")
-	private String uploadDir;
-	private static final String ROLE_OWNER = "OWNER";
-	private static final String GROUP_IMAGE_PATH_PREFIX = "/images/group/";
-
+	
+	
+	@Value("${aws.url}")
+	private String s3BaseUrl;
+	
+	private static final String FILE_DIR = "group/";
+	private static final String THUMBNAIL_DIR = "group/thumbnail";
+	private static final int THUMBNAIL_WIDTH = 100; 
+	private static final int THUMBNAIL_HEIGHT = 100; 
+	private static final String ROLE_OWNER = "OWNER"; 
 	@Override
 	public List<GroupDTO> getGroupAllList() {
 		return gDao.selectGroupAllList();
@@ -74,33 +83,11 @@ public class GroupServiceImpl implements GroupService{
 	@Transactional
 	@Override
 	public void createGroup(GroupDTO dto, MultipartFile profileImg) {
+		
 		if (profileImg != null && !profileImg.isEmpty()) {
-			try {
-				File uploadPath = new File(uploadDir);
-	            if (!uploadPath.exists()) {
-	                uploadPath.mkdirs(); // 디렉토리 없으면 생성
-	            }
-				
-	            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
-	            String extension = "";
-				
-				
-	            String originalFilename = profileImg.getOriginalFilename();
-	            int lastDot = originalFilename.lastIndexOf(".");
-	            if (lastDot != -1) {
-	                extension = originalFilename.substring(lastDot); // 예: .jpg
-	            }
-				
-	            String filename = timestamp + "_" + (int)(Math.random() * 1000) + extension;
-	            
-	            File file = new File(uploadPath, filename);
-	            profileImg.transferTo(file);
-	            
-				dto.setProfile_img(GROUP_IMAGE_PATH_PREFIX + filename);
-			} catch (Exception ex) {
-				throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
-			}
+			dto.setProfile_img(uploadThumbnailImage(profileImg));
 		}
+		
 		gDao.insertGroup(dto);
 		
 		GroupMemberDTO member = new GroupMemberDTO();
@@ -140,9 +127,15 @@ public class GroupServiceImpl implements GroupService{
 	
 	@Override
 	public List<GroupMemberDTO> getGroupMemberAllByGroupNo(int groupNo) {
-		List<GroupMemberDTO> list = new ArrayList<GroupMemberDTO>();
+		List<GroupMemberDTO> list;
 		try {
 			list = gDao.selectGroupMemberAllByGroupNo(groupNo);
+			
+			for (GroupMemberDTO dto : list) {
+				if (dto.getProfile() != null && !dto.getProfile().isBlank()) {
+					dto.setProfile(s3BaseUrl + dto.getProfile());
+				}
+			}
 		} catch (Exception ex) {
 			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
 		}
@@ -156,38 +149,15 @@ public class GroupServiceImpl implements GroupService{
 		
 	}
 
+	@Transactional
 	@Override
 	public void updateGroupDetail(GroupDTO dto, MultipartFile profileImg, List<String> tags) {
-		System.out.println("service dto: " + dto.toString());
-		System.out.println("tags: " + Arrays.asList(tags));
+		
 		if (profileImg != null && !profileImg.isEmpty()) {
-			try {
-				
-				File uploadPath = new File(uploadDir);
-	            if (!uploadPath.exists()) {
-	                uploadPath.mkdirs(); 
-	            }
-
-	            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
-	            String extension = "";
-
-	            String originalFilename = profileImg.getOriginalFilename();
-	            int lastDot = originalFilename.lastIndexOf(".");
-	            if (lastDot != -1) {
-	                extension = originalFilename.substring(lastDot); // 예: .jpg
-	            }
-
-	            String filename = timestamp + "_" + (int)(Math.random() * 1000) + extension;
-
-	            File file = new File(uploadPath, filename);
-	            profileImg.transferTo(file);
-
-				dto.setProfile_img(GROUP_IMAGE_PATH_PREFIX + filename);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
-			}
+			dto.setProfile_img(uploadThumbnailImage(profileImg));
 		}
+		
+		
 		gDao.updateGroupDetail(dto);
 		
 		gDao.deleteGroupTags(dto.getGroup_no());
@@ -237,6 +207,13 @@ public class GroupServiceImpl implements GroupService{
 		
 		
 	}
-
-
+	private String uploadThumbnailImage(MultipartFile file) {
+		try {
+			String key = awsS3.ResizeAndUploadFile(file, THUMBNAIL_DIR, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT);
+			return s3BaseUrl + key;
+		} catch (Exception ex) {
+			log.error("썸네일 이미지 업로드 실패", ex);
+			throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
+		}
+	}
 }

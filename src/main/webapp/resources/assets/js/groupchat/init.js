@@ -58,6 +58,7 @@ export function initGroupChat(contextPath, createApp) {
 
         this.isLoading = true;
         const res = await axios.get(url);
+        console.log('res: ', res);
         const newMessages = res.data.data;
 
         if (newMessages.length === 0) {

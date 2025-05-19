@@ -34,4 +34,5 @@ public class GroupDTO {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private Timestamp created_at;
 	private List<String> tags;
+	private String profile;
 }

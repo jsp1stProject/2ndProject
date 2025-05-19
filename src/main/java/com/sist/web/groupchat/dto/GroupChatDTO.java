@@ -19,4 +19,5 @@ public class GroupChatDTO {
 	private String content, message_type, is_deleted, sender_nickname;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private Timestamp sent_at;
+	private String profile;
 }
