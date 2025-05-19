@@ -353,3 +353,7 @@ gradle-app.setting
 
 .vs/config/
 .vs/
+
+# AWS S3 key security
+
+application.properties
