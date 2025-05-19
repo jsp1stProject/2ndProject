@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum CommonErrorCode implements ErrorInfo {
 
 	INVALID_INPUT("C400", "잘못된 입력입니다.", HttpStatus.BAD_REQUEST),
+    SC_UNAUTHORIZED("C401", "로그인이 필요합니다.", HttpStatus.BAD_REQUEST),
 	INVALID_PARAMETER("C400", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
     MISSING_PARAMETER("C400", "필수 요청 파라미터가 누락되었습니다.", HttpStatus.BAD_REQUEST),
     FORBIDDEN("C403", "접근 권한이 없습니다.", HttpStatus.FORBIDDEN),

@@ -20,6 +20,7 @@
 	<script src="${pageContext.request.contextPath }/assets/js/app.min.js"></script>
 	<script src="${pageContext.request.contextPath }/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
 	<script src="${pageContext.request.contextPath }/assets/libs/simplebar/dist/simplebar.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 	<script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
 
