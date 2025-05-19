@@ -7,10 +7,10 @@ import lombok.Data;
 
 @Data
 public class ScheduleVO {
-	private int sche_no, group_no, type, is_public;
+	private int sche_no, group_no, type, is_public, is_important, alarm;
 	private long user_no;
 	private String sche_title, sche_content,sche_start_str, sche_end_str,dbday;
 	private Date sche_start, sche_end, regdate;
-	private List<Long> participants; //스케쥴 참여 멤버
-	//알람추가예정
+	private List<ScheduleMemberVO> participants; //스케쥴 참여 멤버
+	
 }

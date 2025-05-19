@@ -4,7 +4,12 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
+<style>
+.fc-custom-event {
+  font-size: 14px;
+  white-space: normal;
+}
+</style>
 <!-- 전체 페이지 템플릿 구조 -->
 <div class="container pt-header mt-4" id="app">
   <div class="row">
@@ -13,35 +18,44 @@
       <div class="card shadow-sm mb-3">
         <div class="card-header fw-bold">📌 D-Day</div>
         <div class="card-body">
-          <!-- <p v-if="ddayList.length === 0" class="text-muted">등록된 D-Day 일정이 없습니다.</p>
-            <p v-for="d in ddayList" :key="d.title"> -->
-            <p class="mb-1"> 디데이출력부분 </p>
+          <p v-if="schedule_ddayList.length === 0" class="text-muted">등록된 D-Day 일정이 없습니다.</p>
+            <p v-for="d in schedule_ddayList" :key="d.sche_no" class="mb=1">
             <i class="bi bi-calendar-check"></i>
-             병원 - 
-             <span class="text-danger">D-5</span>
-<%--             <i class="bi bi-calendar-check"></i> {{ d.title }} - <span :class="d.dday <= 3 ? 'text-danger' : (d.dday <= 7 ? 'text-warning' : '')">D-{{ d.dday }}</span> --%>
+             {{d.sche_title}}
+             <span :class="getDdayText(d.sche_end_str).includes('-') ? 'text-danger' : 'text-muted'">
+    {{getDdayText(d.sche_end_str)}}
+  </span>
         </div>
       </div>
 
       <div class="card shadow-sm">
-        <div class="card-header fw-bold">📌 오늘의 일정</div>
-        <div class="card-body p-2">
-          <ul class="list-group list-group-flush">
-            <p>
-              🕒 2025-05-18 - 산책가는날 <span class="badge bg-secondary">산책</span>
-            </p>
-            <p>
-              🕒 2025-05-18 - 산책가는날 <span class="badge bg-secondary">산책</span>
-            </p>
-            <p>
-              🕒 2025-05-18 - 산책가는날 <span class="badge bg-secondary">산책</span>
-            </p>
-            
-          </ul>
-        </div>
-      </div>
+	  <div class="card-header fw-bold">📌 중요일정</div>
+	  <div class="card-body p-2">
+	    <ul class="list-group list-group-flush">
+	      <li v-if="schedule_importList.length === 0" class="text-muted list-group-item">
+	        등록된 중요 일정이 없습니다.
+	      </li>
+	      <li
+		  v-for="schedule in schedule_importList"
+		  :key="schedule.sche_no"
+		  class="list-group-item d-flex justify-content-between align-items-center"
+		>
+		  
+		  <span class="me-2">
+		    🕒 {{ schedule.sche_start_str }}
+		    <template v-if="schedule.sche_start_str !== schedule.sche_end_str">
+		      ~ {{ schedule.sche_end_str }}
+		    </template>
+		    - {{ schedule.sche_title }}
+		  </span>
+		  <span class="badge bg-secondary">
+		    {{ schedule.type === 0 ? '개인' : '그룹' }}
+		  </span>
+		</li>
+	    </ul>
+	  </div>
+	</div>
     </div>
-
     <!-- 중앙 FullCalendar -->
     <div class="col-md-9">
       <!-- 모바일 전용 toggle 버튼 -->
@@ -67,28 +81,19 @@
 		  </button>
 		 </div>
           <ul class="list-group">
-            <!-- 
-            <li class="list-group-item" v-for="event in filteredSchedule" :key="event.title">
-              {{ event.time }} - {{ event.title }} ({{ event.type }})
+            <li class="list-group-item d-flex justify-content-between align-items-center" v-for="event in selected_date_schedules" :key="event.sche_no">
+              {{ event.sche_start_str }} ~ {{ event.sche_end_str}} - {{ event.sche_title }}
+              <span class="badge bg-info">({{ event.type === 0 ? '개인' : '그룹' }})</span>
             </li>
-             -->
-             <li class="list-group-item d-flex justify-content-between align-items-center" >
-             🗓️ 2025-05-28 - 병원 <span class="badge bg-info">병원 예약 3시</span>
-             </li>
-             <!-- <li
-		          v-if="filteredSchedule.length === 0"
-		          class="list-group-item text-muted"
-		        >
-		          📭 선택된 일정이 없습니다.
-		        </li> -->
-		     
+            <li v-if="selected_date_schedules.length === 0" class="list-group-item text-muted">
+		          📭 선택된 일정이 없습니다.{{selected_date_schedules.length}}
+		    </li>
           </ul>
         </div>
       </div>
     </div>
-  </div>
-</div>
-<div class="modal fade" id="addScheduleModal" tabindex="-1" aria-labelledby="addScheduleLabel" aria-hidden="true">
+
+  <div class="modal fade" id="addScheduleModal" tabindex="-1" aria-labelledby="addScheduleLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -96,7 +101,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form @submit.prevent="submitSchedule">
+        <form @submit.prevent="addSchedule">
           <div class="mb-3">
             <label class="form-label">제목</label>
             <input type="text" class="form-control" v-model="newSchedule.title" required>
@@ -117,6 +122,10 @@
             <input class="form-check-input" type="checkbox" v-model="newSchedule.is_important" id="importantCheck">
             <label class="form-check-label" for="importantCheck">⭐️ 중요 일정</label>
           </div>
+          <div class="form-check mb-3">
+			  <input class="form-check-input" type="checkbox" v-model="newSchedule.alarm" id="alarmCheck">
+			  <label class="form-check-label" for="alarmCheck">🔔 일정 전에 알림 받기</label>
+			</div>
           <div class="text-end">
             <button type="submit" class="btn btn-success">등록하기</button>
           </div>
@@ -125,22 +134,98 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="scheduleDetailModal" tabindex="-1" aria-labelledby="scheduleDetailLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+    
+      <div class="modal-header">
+        <h5 class="modal-title" id="scheduleDetailLabel">
+          📋 일정 상세보기
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="mb-3">
+          <h5>
+            <span class="badge bg-primary me-2" v-if="detail_schedule.type === 0">개인</span>
+            <span class="badge bg-success me-2" v-else>그룹</span>
+            {{ detail_schedule.sche_title }}
+          </h5>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label fw-bold">📅 일정 시간</label>
+          <div>
+            {{ detail_schedule.sche_start_str }} ~ {{ detail_schedule.sche_end_str }}
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label fw-bold">📄 내용</label>
+          <div class="border rounded p-2 bg-light">
+            {{ detail_schedule.sche_content }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">👥 참여자</label>
+          <ul class="list-group list-group-flush">
+            <li v-for="user in detail_schedule.participants" :key="user.user_no" class="list-group-item">
+              {{ user.nickname }}
+            </li>
+            <li v-if="!detail_schedule.participants || detail_schedule.participants.length === 0" class="list-group-item text-muted">
+              참여자가 없습니다
+            </li>
+          </ul>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">⭐️ 중요</label>
+          <span :class="detail_schedule.is_important === 1 ? 'text-warning' : 'text-muted'">
+            {{ detail_schedule.is_important === 1 ? '중요 일정입니다.' : '일반 일정입니다.' }}
+          </span>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label fw-bold">🔔 알림 설정</label>
+          <span :class="detail_schedule.alarm === 1 ? 'text-primary' : 'text-muted'">
+            {{ detail_schedule.alarm === 1 ? '알림이 설정되어 있습니다.' : '알림 없음' }}
+          </span>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+</div>
 <script type="module">
   import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
   createApp({
     data() {
       return {
-        ddayList: [
-          { title: "프로젝트 마감", dday: 2 },
-          { title: "시험", dday: 5 }
-        ],
-        selectedDate: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
-        scheduleList: [
-          { date: '2025-05-13', time: '10:00', title: '회의', type: '개인' },
-          { date: '2025-05-13', time: '14:00', title: '팀 회의', type: '그룹' },
-          { date: '2025-05-14', time: '09:30', title: '스터디', type: '개인' }
-        ]
+		newSchedule: {
+			title:'',
+			content:'',
+			start:'',
+			end:'',
+			is_important: false,
+			alarm:false
+		},
+		clickTimer: null,
+		lastClickedDate: null,
+		schedule_totalList: [],
+		detail_schedule:{},
+        selected_date_schedules:[],
+		schedule_ddayList: [],
+		schedule_importList:[]
       }
     },
     computed: {
@@ -149,25 +234,140 @@
       }
     },
     mounted() {
-		
-      const calendarEl = document.getElementById('calendar');
-      this.calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: 'ko',
-        dateClick: this.handleDateClick,
-		eventClick: this.handleEventClick,
-        events: this.scheduleList.map(e => ({
-          title: e.title,
-          start: e.date
-        }))
-      });
-      this.calendar.render();
-      
+		console.log(Math.abs(-3));
+      this.dataRecv()
     },
     methods: {
-      handleDateClick(info) {
-        this.selectedDate = info.dateStr;
-      }
+	  getDdayText(endDateStr){
+		if (!endDateStr) return "";		
+
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+
+		const endDate = new Date(endDateStr);
+		endDate.setHours(0, 0, 0, 0);
+
+		const diffTime = endDate - today;
+		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+		if (diffDays > 0) return "D-" + diffDays;
+		
+    	if (diffDays === 0) return "D-DAY";
+    	return "D+" + Math.abs(diffDays);
+	  },
+	  addSchedule(){
+		console.log("스케쥴 입력 실행 ")
+		const formData = new FormData();
+		formData.append('sche_title',this.newSchedule.title);
+		formData.append('sche_content',this.newSchedule.content);
+		formData.append('sche_start_str',this.newSchedule.start);
+		formData.append('sche_end_str',this.newSchedule.end);
+		formData.append('is_important',this.newSchedule.is_important ? 1 : 0);
+		formData.append('alarm',this.newSchedule.alarm ? 1 : 0);
+		axios.post('../api/schedules',formData)
+		.then(res => {
+			const schedulemodal = bootstrap.Modal.getInstance(document.getElementById('addScheduleModal'));
+  			schedulemodal.hide();
+    		this.dataRecv()
+		})
+		.catch(err => {
+     		 console.error("일정 등록 실패", err);
+    	});
+	  },
+	  
+	  handleDateClick(info){
+		const clickedDate = info.dateStr;
+
+	    if (this.clickTimer && this.lastClickedDate === clickedDate) {
+      		clearTimeout(this.clickTimer);
+     		 this.clickTimer = null;
+     		 this.handleDateDoubleClick(clickedDate);
+    	} 
+		else {
+			this.lastClickedDate = clickedDate;
+      		this.clickTimer = setTimeout(() => {
+      			this.handleDateSingleClick(clickedDate);
+        		this.clickTimer = null;
+				this.lastClickedDate = null;
+      		}, 300);
+    	}
+  	  },
+  	  handleDateSingleClick(clickedDate) {
+   		 console.log("해당날짜 일정 출력")
+		 console.log(clickedDate)
+		 axios.get('../api/schedules/date/'+clickedDate)
+		 .then(res => {
+			console.log(res.data)
+			this.selected_date_schedules = res.data
+		 })
+  	  },
+	  handleDateDoubleClick(clickedDate) {
+		console.log("해당날짜 일정 추가")
+		const modal = new bootstrap.Modal(document.getElementById('addScheduleModal'));
+   		modal.show();
+	  },
+  	  handleEventClick(info) {
+		const sche_no = info.event.id;
+		console.log("일정클릭시 디테일모달창으로")
+		axios.get('../api/schedules/'+sche_no+'/detail')
+		.then(res => {
+			console.log(res.data)
+			this.detail_schedule=res.data
+			const modal = new bootstrap.Modal(document.getElementById('scheduleDetailModal'));
+   		 	modal.show();
+		})
+		.catch(err => {
+     		 console.error("일정 조회 실패", err);
+    	});
+	  },
+	  dataRecv(){
+		axios.get('../api/schedules')
+		.then(res => {
+			console.log(res.data);
+			this.schedule_totalList = res.data.list;
+			this.schedule_ddayList = res.data.ddayList;
+			this.schedule_importList = res.data.importList;
+			const calendarEl = document.getElementById('calendar');
+      		this.calendar = new FullCalendar.Calendar(calendarEl, {
+        		initialView: 'dayGridMonth',
+        		locale: 'ko',
+       	 		dateClick: this.handleDateClick,
+				eventClick: this.handleEventClick,
+				eventContent: function(arg) {
+					const props = arg.event.extendedProps;
+					//console.log("🧩 title:", arg.event.title);
+  					//console.log("🧩 props:", props);
+
+					let icons='';
+					if(props.is_important ===1 ) icons +='⭐';
+					if (props.alarm === 1) icons += '🔔';
+    				icons += props.type === 0 ? '👤' : '👥';
+					const container = document.createElement('div');
+					container.innerHTML = '<b>' + icons + ' ' + arg.event.title + '</b>';
+					return {
+						domNodes: [container]
+    				};
+				},
+        		events: this.schedule_totalList.map(s => ({
+					id: s.sche_no,
+          			title: s.sche_title,
+          			start: s.sche_start_str.replace(' ', 'T'),
+					// start는 필수 속성이라서 값이 없으면 출력 불가, 표시 안하고 싶으면 아래처럼 allDay를 적어두면 됨
+					end: (() => {
+    					const end = new Date(s.sche_end_str.replace(' ', 'T'));
+    					end.setDate(end.getDate() + 1);
+    					return end.toISOString();
+  					})(),
+					allDay: true,
+					backgroundColor: s.type === 0 ? '#17EBCF' : '#FF9AB5',
+					borderColor: s.type === 0 ? '#12D1B8' : '#FF7A9F',
+					is_important: s.is_important,
+ 					alarm: s.alarm,
+  					type: s.type
+				}))
+      	 	});
+      		this.calendar.render();
+		})
+       }
     }
   }).mount('.container')
 </script>

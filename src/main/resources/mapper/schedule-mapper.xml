@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.feed.mapper.ScheduleMapper">
+<select id="schedule_dday" parameterType="long" resultType="com.sist.web.feed.vo.ScheduleVO">
+  SELECT * 
+  FROM (SELECT p.sche_no, p.sche_title,
+  		TO_CHAR(p.sche_start, 'YYYY-MM-DD') AS sche_start_str,
+        TO_CHAR(p.sche_end, 'YYYY-MM-DD') AS sche_end_str,
+        p.is_important, p.type
+        FROM p_schedule p 
+        LEFT JOIN p_schedule_member m
+        ON p.sche_no = m.sche_no
+        WHERE (p.user_no=#{user_no} OR m.user_no=#{user_no}) 
+        	AND TRUNC(p.sche_end) >= TRUNC(SYSDATE)
+        GROUP BY p.sche_no, p.sche_title, p.sche_start, p.sche_end, p.is_important, p.type
+        ORDER BY p.sche_end ASC)
+   WHERE ROWNUM &lt;= 5    
+</select>
+</mapper>

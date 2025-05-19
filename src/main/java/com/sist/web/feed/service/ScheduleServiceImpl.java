@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,14 +28,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 	private ScheduleDAO dao;
 		
 	@Override
-	public void scheduleInsert(ScheduleVO vo) {
-		// TODO Auto-generated method stub
-		dao.scheduleInsert(vo);		
+	public void groupScheduleInsert(ScheduleVO vo) {
+		dao.groupScheduleInsert(vo); 
 	}
 
 	@Override
 	public void scheduleMemberInsert(ScheduleMemberVO vo) {
-		// TODO Auto-generated method stub
 		dao.scheduleMemberInsert(vo);
 	}
 	
@@ -60,11 +59,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 		}
 		vo.setUser_no(user_no);
 	    System.out.println(vo);
-	    scheduleInsert(vo);
+	    groupScheduleInsert(vo);
 		System.out.println("인서트1");
 		List<Long> participants = new ArrayList<Long>();
 		
-		participants = vo.getParticipants();
+		//participants = vo.getParticipants();
 		for(long participant : participants)
 		{
 			ScheduleMemberVO mvo = new ScheduleMemberVO();
@@ -81,13 +80,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	@Override
 	public List<ScheduleVO> scheduleGroupList(int group_no) {
-		// TODO Auto-generated method stub
 		return dao.scheduleGroupList(group_no);
 	}
 
 	@Override
 	public Map scheduleGroupListData(int group_no) {
-		// TODO Auto-generated method stub
 		Map map = new HashMap();
 		List<ScheduleVO> list = scheduleGroupList(group_no);
 		map.put("list", list);
@@ -96,9 +93,67 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	@Override
 	public List<ScheduleVO> scheduleUserTotalList(long user_no) {
-		// TODO Auto-generated method stub
 		return dao.scheduleUserTotalList(user_no);
 	}
-	
 
+	@Override
+	public void scheduleInsert(ScheduleVO vo) {
+		dao.scheduleInsert(vo);
+	}
+
+	@Override
+	public ScheduleVO schedule_detail(int sche_no) {
+		// TODO Auto-generated method stub
+		ScheduleVO vo = new ScheduleVO();
+		try {
+			vo = dao.schedule_detail(sche_no);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return vo;
+	}
+
+	@Override
+	public List<ScheduleMemberVO> schedule_participatns(int shce_no) {
+		// TODO Auto-generated method stub
+		return dao.schedule_participatns(shce_no);
+	}
+	
+	@Override
+	public ScheduleVO scheduleDetailData(int shce_no) {
+		ScheduleVO vo = new ScheduleVO();
+		try {
+			System.out.println("serviceimpl");
+			vo = dao.schedule_detail(shce_no);
+			System.out.println(vo);
+			vo.setParticipants(dao.schedule_participatns(shce_no));
+			System.out.println(vo);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return vo;
+	}
+
+	@Override
+	public List<ScheduleVO> schedule_selected_data(@Param("selected_date") String selected_date,
+            @Param("user_no") long user_no) {
+		// TODO Auto-generated method stub
+		return dao.schedule_selected_data(selected_date,user_no);
+	}
+
+	@Override
+	public List<ScheduleVO> schedule_dday(long user_no) {
+		// TODO Auto-generated method stub
+		return dao.schedule_dday(user_no);
+	}
+
+	@Override
+	public List<ScheduleVO> schedule_important(long user_no) {
+		// TODO Auto-generated method stub
+		return dao.schedule_important(user_no);
+	}
+
+ 
 }
