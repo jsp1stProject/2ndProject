@@ -1,4 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="com.google.gson.Gson" %>
+<%@ page import="com.sist.web.user.vo.UserVO" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -89,7 +91,7 @@
     </div>
   </form>
 </div>
-
+<script src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
 <script type="module">
   import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
   import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.7/+esm';
@@ -155,34 +157,61 @@
         }
       },
       async submitReservation() {
-  const payload = {
-    sitter_no: this.sitterNo,
-    pet_nos: this.form.pet_nos,
-    res_date: this.form.res_date,
-    start_time: this.startTime,
-    end_time: this.endTime,
-    location_type: this.form.location_type,
-    location_detail: this.form.location_detail,
-    total_price: this.totalPrice,
-    pay_status: "미결제",
-    res_status: "요청",
-  };
-  try {
-    const res = await axios.post("/web/sitter/reserve_vue", payload, {
-      withCredentials: true
-    });
-    if (res.data === "success") {
-      alert("예약 신청이 완료되었습니다!");
-      location.href = "/sitter/resList";
-    } else {
-      alert("예약 신청에 실패했습니다.");
-    }
-  } catch (err) {
-    console.error("❌ 예약 오류:", err);
-    alert("오류가 발생했습니다.");
-  }
-}
+  const IMP = window.IMP;
+  IMP.init("."); // 포트원 가맹점 식별코드
 
+  const amount = this.totalPrice;
+  const merchantUid = 'resv_' + new Date().getTime(); // 고유 주문번호
+
+  IMP.request_pay({
+    pg: "kakaopay", // ✅ PG사: 카카오페이
+    pay_method: "card",
+    merchant_uid: merchantUid,
+    name: "펫시터 돌봄 예약",
+    amount: amount,
+    buyer_email: "test@example.com",         // 실제 유저 정보로 교체 가능
+    buyer_name: "홍길동",
+    buyer_tel: "010-1234-5678",
+    buyer_addr: this.form.location_detail,
+    buyer_postcode: "12345"
+  }, async (rsp) => {
+    if (rsp.success) {
+      // ✅ 결제 성공 → 예약 정보 서버로 전송
+      const payload = {
+        sitter_no: this.sitterNo,
+        pet_nos: this.form.pet_nos,
+        res_date: this.form.res_date,
+        start_time: this.startTime,
+        end_time: this.endTime,
+        location_type: this.form.location_type,
+        location_detail: this.form.location_detail,
+        total_price: this.totalPrice,
+        pay_status: "결제완료",
+        res_status: "요청",
+        imp_uid: rsp.imp_uid,
+        merchant_uid: rsp.merchant_uid
+      };
+
+      try {
+        const res = await axios.post("/web/sitter/reserve_vue", payload, {
+          withCredentials: true
+        });
+        if (res.data === "success") {
+          alert("예약 및 결제 완료!");
+          location.href = "/sitter/resList";
+        } else {
+          alert("예약 저장 실패");
+        }
+      } catch (err) {
+        console.error("❌ 예약 등록 오류:", err);
+        alert("오류 발생");
+      }
+
+    } else {
+      alert("❌ 결제 실패: " + rsp.error_msg);
+    }
+  });
+}
     }
   }).mount("#app");
 </script>

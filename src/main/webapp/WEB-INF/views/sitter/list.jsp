@@ -6,27 +6,54 @@
   <title>펫시터 목록</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .card-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    .card-text {
+      font-size: 0.9rem;
+      color: #555;
+    }
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+    }
+    .sidebar-box {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .filter-label {
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+  </style>
 </head>
 <body>
-<div class="container-fluid" id="app">
-  <h2 class="mb-4">펫시터 목록</h2>
+<div class="container-fluid py-4" id="app">
+  <h2 class="mb-4 text-center">펫시터 찾기</h2>
   <div class="row">
     <!-- 필터 영역 -->
     <div class="col-md-3">
-      <div class="mb-4">
-        <label for="fd">필터 기준:</label>
-        <select v-model="fd" id="fd" class="form-select">
+      <div class="sidebar-box">
+        <label class="filter-label" for="fd">필터 기준</label>
+        <select v-model="fd" id="fd" class="form-select mb-3">
           <option value="care_loc">지역</option>
           <option value="tag">태그</option>
         </select>
 
-        <div class="form-check mt-3" v-for="option in filterOptions" :key="option">
+        <div class="form-check" v-for="option in filterOptions" :key="option">
           <input class="form-check-input" type="checkbox" :value="option" v-model="st">
           <label class="form-check-label">{{ option }}</label>
         </div>
 
-        <button class="btn btn-secondary btn-sm mt-3" @click="dataRecv(1)">검색</button>
-        <button class="btn btn-outline-secondary btn-sm mt-2" @click="resetFilter">초기화</button>
+        <button class="btn btn-primary btn-sm mt-3 w-100" @click="dataRecv(1)">검색</button>
+        <button class="btn btn-outline-secondary btn-sm mt-2 w-100" @click="resetFilter">초기화</button>
       </div>
     </div>
 
@@ -34,16 +61,15 @@
     <div class="col-md-9">
       <!-- 찜한 펫시터 목록 -->
       <div class="mb-5">
-        <h4 class="mb-3">♥ 내가 찜한 펫시터</h4>
-        <div v-if="jjimList.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-          <div class="col" v-for="sitter in jjimList" :key="'jjim-' + sitter.sitter_no">
-            <div class="card h-100">
+        <h4 class="mb-3">♥ 찜한 펫시터</h4>
+        <div v-if="jjimList.length > 0" class="row g-4">
+          <div class="col-md-6 col-lg-4" v-for="sitter in jjimList" :key="'jjim-' + sitter.sitter_no">
+            <div class="card h-100 shadow-sm">
+              <img :src="sitter.profile" class="card-img-top" alt="profile">
               <div class="card-body">
-                <h5 class="card-title">
-				  {{ sitter.nickname }}
-				</h5>
-				<img :src="sitter.profile" class="card-img-top" />
-                <button class="btn btn-outline-danger btn-sm" @click="toggleJjim(sitter.sitter_no)">♥ 찜 해제</button>
+                <h5 class="card-title">{{ sitter.nickname }}</h5>
+                <button class="btn btn-sm btn-outline-danger me-2" @click="toggleJjim(sitter.sitter_no)">♥ 찜 해제</button>
+                <button class="btn btn-sm btn-primary" @click="goDetail(sitter.sitter_no)">상세보기</button>
               </div>
             </div>
           </div>
@@ -54,31 +80,31 @@
       <!-- 전체 펫시터 목록 -->
       <div>
         <h4 class="mb-3">전체 펫시터 목록</h4>
-        <div v-if="list.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-          <div class="col" v-for="sitter in list" :key="sitter.sitter_no">
-            <div class="card h-100">
+        <div v-if="list.length > 0" class="row g-4">
+          <div class="col-md-6 col-lg-4" v-for="sitter in list" :key="sitter.sitter_no">
+            <div class="card h-100 shadow-sm">
               <img :src="sitter.sitter_pic" class="card-img-top" alt="sitter_pic">
               <div class="card-body">
                 <h5 class="card-title">{{ sitter.user.nickname }} ({{ sitter.user.user_name }})</h5>
                 <p class="card-text">{{ sitter.content }}</p>
-                <ul class="list-unstyled">
+                <ul class="list-unstyled mb-3">
                   <li><strong>태그:</strong> {{ sitter.tag }}</li>
-                  <li><strong>돌봄 횟수:</strong> {{ sitter.carecount }}</li>
+                  <li><strong>돌봄:</strong> {{ sitter.carecount }}회</li>
                   <li><strong>평점:</strong> {{ sitter.score }}</li>
                   <li><strong>지역:</strong> {{ sitter.care_loc }}</li>
                   <li><strong>시작가:</strong> {{ sitter.pet_first_price }}</li>
                   <li v-if="sitter.sitterApp"><strong>자격증:</strong> {{ sitter.sitterApp.license }}</li>
                   <li v-if="sitter.sitterApp"><strong>경력:</strong> {{ sitter.sitterApp.history }}</li>
                 </ul>
-                <button class="btn btn-outline-danger btn-sm me-2" @click="toggleJjim(sitter.sitter_no)">
+                <button class="btn btn-sm btn-outline-danger me-2" @click="toggleJjim(sitter.sitter_no)">
                   {{ sitter.jjimCheck ? '♥' : '♡' }}
                 </button>
-                <button class="btn btn-primary btn-sm" @click="goDetail(sitter.sitter_no)">상세보기</button>
+                <button class="btn btn-sm btn-primary" @click="goDetail(sitter.sitter_no)">상세보기</button>
               </div>
             </div>
           </div>
         </div>
-        <div v-else class="text-muted">목록이 없습니다.</div>
+        <div v-else class="text-muted">펫시터가 없습니다.</div>
       </div>
 
       <!-- 페이지네이션 -->
@@ -100,8 +126,8 @@
 </div>
 
 <script type="module">
-  import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
-  import axios from 'https://cdn.skypack.dev/axios'
+  import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+  import axios from 'https://cdn.skypack.dev/axios';
 
   createApp({
     data() {
@@ -151,9 +177,9 @@
       async loadJjimList() {
         try {
           const res = await axios.get('/web/sitter/jjim/list', {
-    			withCredentials: true 
-			})
-			this.jjimList = res.data
+            withCredentials: true
+          })
+          this.jjimList = res.data
         } catch (e) {
           console.error('찜 목록 로딩 실패:', e)
         }
