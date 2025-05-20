@@ -13,6 +13,8 @@ import com.sist.web.sitter.service.SitterResPetService;
 import com.sist.web.sitter.service.SitterResService;
 import com.sist.web.sitter.service.SitterService;
 import com.sist.web.sitter.vo.SitterVO;
+import com.sist.web.user.vo.UserVO;
+
 import java.util.*;
 import com.sist.web.sitter.vo.*;
 @Controller
@@ -68,7 +70,6 @@ public class SitterResController {
 	    for (PetsVO pet : petsList) {
 	        System.out.println("➡️ pet_name: " + pet.getPet_name());
 	    }
-
 	    String petsJson = new Gson().toJson(petsList);
 
 	    model.addAttribute("petFirstPrice", petFirstPrice);

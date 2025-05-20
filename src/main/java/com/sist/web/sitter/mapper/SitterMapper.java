@@ -79,7 +79,7 @@ public interface SitterMapper {
     public List<SitterVO> sitterListDataWithFilter(Map map);
 
     // 총 페이지 수
-    @Select("SELECT CEIL(COUNT(*) / 8.0) FROM p_sitter")
+    @Select("SELECT CEIL(COUNT(*) / 9.0) FROM p_sitter")
     public int sitterTotalPage();
 
     // 상세보기
