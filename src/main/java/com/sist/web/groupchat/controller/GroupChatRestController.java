@@ -47,10 +47,9 @@ public class GroupChatRestController {
 	@GetMapping("/{groupNo}/messages/search")
 	public ResponseEntity<ApiResponse<List<GroupChatDTO>>> getMessagesByFilters(
 			@PathVariable Integer groupNo, 
-			@Valid @ModelAttribute MessageSearchFilterDTO dto, 
-			BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			log.error("메세지 검색 유효성 실패", bindingResult.getAllErrors());
+			@ModelAttribute MessageSearchFilterDTO dto) {
+		if (!dto.isValid()) {
+			log.error("메세지 검색 유효성 검사 실패 sDate={}, eData={}", dto.getStartDate(), dto.getEndDate());
 			throw new CommonException(CommonErrorCode.INVALID_PARAMETER);
 		}
 		dto.setGroupNo(groupNo);

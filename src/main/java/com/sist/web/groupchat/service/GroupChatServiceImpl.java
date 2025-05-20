@@ -35,8 +35,7 @@ public class GroupChatServiceImpl implements GroupChatService {
 	@Override
 	public void saveAndSendGroupChatMessage(GroupChatDTO vo) {
 		
-		UserVO sender = userMapper.getUserMailFromUserNo(String.valueOf(vo.getSender_no()));
-		vo.setSender_nickname(sender.getNickname());
+		vo.setSender_nickname(cDao.selectGroupNickname(vo.getGroup_no(), vo.getSender_no()));
 		
 		cDao.insertGroupChatMessage(vo);
 		log.info("메세지 저장 성공: {}", vo.getContent());

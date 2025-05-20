@@ -38,4 +38,9 @@ public class GroupChatDAO {
 		return mapper.selectMessagesAround(param);
 	}
 	
+	/** group_member 테이블의 닉네임 조회 */
+	public String selectGroupNickname(int groupNo, int userNo) {
+		return mapper.selectGroupNickname(groupNo, userNo);
+	}
+	
 }

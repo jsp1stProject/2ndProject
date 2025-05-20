@@ -40,7 +40,6 @@ export const wsMethods = {
       const body = JSON.parse(msg.body);
 
       const sender = this.members.find(m => m.user_no === body.sender_no);
-      console.log('sender_no:', body.sender_no, '→ matched member:', sender);
       body.profile_img = sender?.profile_img || `${this.contextPath}/assets/images/profile/default_pf.png`;
 
       const container = this.scrollTarget;

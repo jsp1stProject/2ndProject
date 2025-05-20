@@ -25,7 +25,8 @@ public interface GroupChatMapper {
 	
 	public List<GroupChatDTO> selectMessagesAround(Map<String, Object> param);
 	
-	
+	@Select("SELECT nickname FROM p_group_member WHERE group_no = #{groupNo} AND user_no = #{userNo}")
+	public String selectGroupNickname(@Param("groupNo") int groupNo, @Param("userNo") int userNo);
 	
 	
 	

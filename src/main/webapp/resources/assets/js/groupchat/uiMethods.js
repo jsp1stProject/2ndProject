@@ -105,4 +105,5 @@ export const uiMethods = {
       this.selectedTags.push(tag);
     }
   }
+
 };

@@ -3,6 +3,7 @@ import { apiMethods } from './apiMethods.js';
 import { wsMethods } from './wsMethods.js';
 import { uiMethods } from './uiMethods.js';
 import { utilMethods } from './utilMethods.js';
+import { searchMethods } from './searchMethods.js';
 
 export function initGroupChat(contextPath, createApp) {
   createApp({
@@ -11,6 +12,15 @@ export function initGroupChat(contextPath, createApp) {
         ...groupChatData,
         contextPath
       };
+    },
+    computed: {
+      searchModelLabel() {
+        switch (this.searchMode) {
+          case 'keyword': return '메세지 내용:';
+          case 'sender': return '보낸 사람:';
+          default: return '';
+        }
+      }
     },
     mounted() {
       this.initialize();
@@ -30,6 +40,7 @@ export function initGroupChat(contextPath, createApp) {
       ...wsMethods,
       ...uiMethods,
       ...utilMethods,
+      ...searchMethods,
 
       async joinGroup(groupNo) {
         const selected = this.availableGroups.find(g => g.group_no === groupNo);
