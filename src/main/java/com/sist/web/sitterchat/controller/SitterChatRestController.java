@@ -36,7 +36,7 @@ public class SitterChatRestController {
         }
     }
 
-    // 채팅방 목록 조회 (검색 + 페이지네이션)
+    // 채팅방 목록 조회
     @GetMapping("/list_vue")
     public ResponseEntity<Map<String, Object>> chat_list(
         @CookieValue(name = "accesstoken", required = false) String token,
