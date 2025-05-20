@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.admin.mapper.AdminMapper">
+
+	<select id="getUsers" resultType="com.sist.web.user.vo.UserDetailDTO" parameterType="HashMap">
+		SELECT u.USER_NO,USER_MAIL,USER_NAME,NICKNAME,ENABLED,AUTHORITY
+		<if test="authority == 'ROLE_SITTER'">
+			,SCORE,CARE_LOC
+		</if>
+		FROM P_USERS u JOIN P_AUTHORITIES a
+		ON u.USER_NO = a.USER_NO
+		<if test="authority == 'ROLE_SITTER'">
+			LEFT JOIN P_SITTER s ON u.USER_NO = s.USER_NO
+		</if>
+		<where>
+			<if test="authority != null">
+				AND regexp_like(a.authority, #{authority}, 'i')
+			</if>
+			<if test="user_name != null">
+				AND regexp_like(user_name, #{user_name}, 'i')
+			</if>
+			<if test="user_mail != null">
+				AND regexp_like(user_mail, #{user_mail}, 'i')
+			</if>
+			<if test="enabled != null">
+				AND regexp_like(enabled, #{enabled}, 'i')
+			</if>
+			<if test="user_no != null">
+				AND regexp_like(user_no, #{user_no}, 'i')
+			</if>
+			<if test="social != null">
+				AND social is not null
+			</if>
+		</where>
+		ORDER BY u.USER_NO DESC
+		OFFSET #{start, jdbcType=INTEGER} ROWS FETCH NEXT #{rowsize, jdbcType=INTEGER } ROWS ONLY
+	</select>
+	<select id="getUsersTotalPage" resultType="int" parameterType="HashMap">
+		SELECT CEIL(COUNT(*)/#{f_rowsize})
+		FROM P_USERS u JOIN P_AUTHORITIES a
+		ON u.USER_NO = a.USER_NO
+		<where>
+			<if test="authority != null">
+				AND regexp_like(a.authority, #{authority}, 'i')
+			</if>
+			<if test="user_name != null">
+				AND regexp_like(user_name, #{user_name}, 'i')
+			</if>
+			<if test="user_mail != null">
+				AND regexp_like(user_mail, #{user_mail}, 'i')
+			</if>
+			<if test="enabled != null">
+				AND regexp_like(enabled, #{enabled}, 'i')
+			</if>
+			<if test="user_no != null">
+				AND regexp_like(user_no, #{user_no}, 'i')
+			</if>
+			<if test="social != null">
+				AND social is not null
+			</if>
+		</where>
+	</select>
+	<select id="getSitterApps" resultType="com.sist.web.mypage.vo.SitterDTO" parameterType="HashMap">
+		SELECT APP_NO,s.USER_NO,HISTORY,LICENSE,INFO,STATUS,TO_CHAR(s.REGDATE,'YYYY.mm.DD') as dbday, u.USER_NAME, u.USER_MAIL, u.NICKNAME
+		FROM P_SITTER_APP s JOIN P_USERS u
+		ON s.USER_NO = u.USER_NO
+		<where>
+			<if test="user_name != null">
+				AND regexp_like(user_name, #{user_name}, 'i')
+			</if>
+		</where>
+		ORDER BY APP_NO DESC
+		OFFSET #{start, jdbcType=INTEGER} ROWS FETCH NEXT #{rowsize, jdbcType=INTEGER } ROWS ONLY
+	</select>
+
+	<select id="getSitterAppsTotalPage" resultType="int" parameterType="HashMap">
+		SELECT CEIL(COUNT(*)/#{f_rowsize})
+		FROM P_SITTER_APP
+		<where>
+			<if test="user_name != null">
+				AND regexp_like(user_name, #{user_name}, 'i')
+			</if>
+		</where>
+	</select>
+</mapper>

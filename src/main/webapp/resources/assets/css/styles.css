@@ -13220,7 +13220,8 @@ ul {
     overflow: hidden; }
     .chat-wrapper .group-room .group-main .group-chat .chat-body {
       height: calc(100vh - var(--chat-header-height) - var(--chat-input-height));
-      padding: var(--chat-body-padding); }
+      padding: var(--chat-body-padding);
+      overflow-y: auto; }
       .chat-wrapper .group-room .group-main .group-chat .chat-body .msg {
         gap: 0.6em;
         align-items: flex-start;

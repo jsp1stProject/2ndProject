@@ -178,7 +178,7 @@
         </div>
         <div class="app-content">
             <div class="container-fluid">
-                <jsp:include page="${main_jsp}"></jsp:include>
+                <jsp:include page="${main_jsp }"></jsp:include>
             </div>
         </div>
     </main>

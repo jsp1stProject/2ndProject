@@ -26,9 +26,8 @@
                         <th>이메일</th>
                         <th>이름</th>
                         <th>닉네임</th>
-                        <th>돌봄횟수</th>
-                        <th>돌봄지역</th>
-                        <th>평점</th>
+                        <th>신청일</th>
+                        <th>상태</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -38,9 +37,15 @@
                             <td>${i.user_mail}</td>
                             <td>${i.user_name}</td>
                             <td>${i.nickname}</td>
-                            <td></td>
-                            <td>${i.care_loc}</td>
-                            <td>${i.score}</td>
+                            <td>${i.dbday}</td>
+                            <td class="py-1">
+                                <c:if test="${i.status eq 0}">
+                                    <button type="button" class="btn btn-sm btn-info">허가</button>
+                                </c:if>
+                                <c:if test="${i.status eq 1}">
+                                    <button type="button" class="btn btn-sm btn-dark" disabled>완료</button>
+                                </c:if>
+                            </td>
                         </tr>
                     </c:forEach>
                     </tbody>
