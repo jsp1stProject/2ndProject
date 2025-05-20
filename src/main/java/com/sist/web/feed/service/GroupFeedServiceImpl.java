@@ -71,7 +71,7 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
-			GroupDTO gvo = gdao.selectGroupDetail(group_no);
+			GroupDTO gvo = gdao.selectGroupDetailTotal(group_no);
 			
 			int rowSize=5;
 			map.put("user_no", user_no);

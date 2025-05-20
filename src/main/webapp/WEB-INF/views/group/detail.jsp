@@ -61,7 +61,15 @@
 	          <p class="text-muted mb-2">{{ gvo.description }}</p>
 	          <div class="d-flex align-items-center flex-wrap gap-2 fs-3">
 	            <div class="d-flex align-items-center gap-1">
-	              <span>최대 인원</span><span class="text-dark">{{ gvo.capacity }}명</span>
+	              <span>방장</span><span class="text-dark">{{gvo.owner_name}}</span>
+	            </div>
+	            <div class="d-flex align-items-center gap-1">
+	              <span>참여자</span><span class="text-dark">{{gvo.current_member_count}} / {{ gvo.capacity }}</span>
+	            </div>
+	          </div>
+	          <div class="d-flex align-items-center flex-wrap gap-2 fs-3">
+	            <div class="d-flex align-items-center gap-1">
+	              <span>개설일</span><span class="text-dark">{{gvo.created_at}}</span>
 	            </div>
 	            <div class="d-flex align-items-center gap-1">
 	              <span>공개 여부</span>
