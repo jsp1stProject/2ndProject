@@ -2,6 +2,7 @@ package com.sist.web.sitter.controller;
 
 import com.sist.web.sitter.service.*;
 import com.sist.web.sitter.vo.*;
+import com.sist.web.aws.AwsS3Service;
 import com.sist.web.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,9 @@ public class SitterResRestController {
 
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
+	
+	@Autowired
+	private AwsS3Service AwsS3Service;
 
 	// 예약 목록
 	@GetMapping("/sitter/resList_vue")

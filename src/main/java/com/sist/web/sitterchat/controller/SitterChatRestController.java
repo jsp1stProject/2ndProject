@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import com.sist.web.aws.AwsS3Service;
 import com.sist.web.security.JwtTokenProvider;
 import com.sist.web.sitterchat.service.SitterChatService;
 import com.sist.web.sitterchat.vo.*;
@@ -21,6 +22,9 @@ public class SitterChatRestController {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+    
+    @Autowired
+	private AwsS3Service AwsS3Service;
 
     // 내부 토큰 파싱
     private int parseUserNo(String token) {

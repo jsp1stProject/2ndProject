@@ -1,5 +1,6 @@
 package com.sist.web.sitter.controller;
 
+import com.sist.web.aws.AwsS3Service;
 import com.sist.web.security.JwtTokenProvider;
 import com.sist.web.sitter.service.SitterService;
 import com.sist.web.sitter.vo.*;
@@ -20,6 +21,9 @@ public class SitterRestController {
 
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
+	
+	@Autowired
+	private AwsS3Service AwsS3Service;
 
 	// 공통 토큰 검증
 	private Integer validateTokenAndGetUserNo(String token) {
