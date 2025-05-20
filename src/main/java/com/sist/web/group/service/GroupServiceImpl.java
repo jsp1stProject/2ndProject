@@ -80,6 +80,18 @@ public class GroupServiceImpl implements GroupService{
 		return dto;
 	}
 	
+	@Override
+	public GroupDTO getGroupDetailTotal(int group_no) {
+		// TODO Auto-generated method stub
+		GroupDTO dto = new GroupDTO();
+		try {
+			dto = gDao.selectGroupDetailTotal(group_no);
+		} catch (Exception ex) {
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		}
+		return dto;
+	}
+	
 	@Transactional
 	@Override
 	public void createGroup(GroupDTO dto, MultipartFile profileImg) {
@@ -216,4 +228,6 @@ public class GroupServiceImpl implements GroupService{
 			throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
 		}
 	}
+
+	
 }

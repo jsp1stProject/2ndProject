@@ -29,6 +29,14 @@ public interface GroupMapper {
 		@Select("SELECT * FROM p_group WHERE group_no = #{group_no}")
 		public GroupDTO selectGroupDetail(@Param("group_no") int groupNo);
 		
+		@Select("SELECT g.group_no, g.group_name, g.profile_img, g.description, g.capacity, g.is_public, g.owner, g.created_at, u.nickname as owner_name, "
+				+ "(SELECT COUNT(*) FROM p_group_member gm WHERE gm.group_no=g.group_no AND left_at IS NULL) as current_member_count "
+				+ "FROM p_group g "
+				+ "JOIN p_users u "
+				+ "ON g.owner=u.user_no "
+				+ "WHERE group_no = #{group_no}")
+		public GroupDTO selectGroupDetailTotal(@Param("group_no") int groupNo);
+		
 		// 동적 쿼리 작성 예정
 		public void groupInsertData(GroupDTO dto);
 		
