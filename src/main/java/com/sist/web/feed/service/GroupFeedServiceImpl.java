@@ -15,9 +15,12 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sist.web.common.exception.code.CommonErrorCode;
+import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.feed.dao.*;
 import com.sist.web.feed.vo.*;
 import com.sist.web.group.dao.GroupDAO;
+import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupMemberDTO;
 
 @Service
@@ -42,11 +45,11 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 	}
 	
 	@Override
-	public List<FeedVO> feedListData(int group_no) {
+	public List<FeedVO> feedListData(Map map) {
 		// TODO Auto-generated method stub
+		//group_no, start, end
 		
-		
-		return dao.feedListData(group_no);
+		return dao.feedListData(map);
 	}
 
 	@Override
@@ -64,34 +67,47 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 	}
 	*/
 	@Override
-	public Map groupFeedData(int group_no)
+	public Map<String, Object> groupFeedTotalData(int group_no, int page, long user_no)
 	{
-		Map map = new HashMap();
-		GroupVO gvo = dao.groupDetailData(group_no);
-		
-		List<FeedVO> feedList = dao.feedListData(group_no);
-		
-		for(FeedVO vo : feedList)
-		{
-			List<FeedFileInfoVO> flist = dao.fileListData(vo.getFeed_no());
-			List<String> filenames = new ArrayList<String>();
-			for(FeedFileInfoVO ffvo : flist)
-			{
-				filenames.add(ffvo.getFilename());
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			GroupDTO gvo = gdao.selectGroupDetail(group_no);
+			
+			int rowSize=5;
+			map.put("user_no", user_no);
+			map.put("group_no", group_no);
+			map.put("start", (page-1)*rowSize);
+			map.put("end", page*rowSize);
+			
+			
+			List<FeedVO> feedList = dao.feedListData(map);
+			for(FeedVO vo : feedList)
+  			{
+				List<FeedFileInfoVO> flist = dao.fileListData(vo.getFeed_no());
+				List<String> filenames = new ArrayList<String>();
+				for(FeedFileInfoVO ffvo : flist)
+				{
+					filenames.add(ffvo.getFilename());
+				}
+				vo.setImages(filenames);	
+				/*
+				List<String> filenames = fvo.stream()
+					    .map(FeedFileInfoVO::getFilename)
+					    .collect(Collectors.toList());
+				*/
+				//stream으로 하면 코드는 간편한데 아직 공부못한부분
 			}
-			vo.setImages(filenames);	
-			/*
-			List<String> filenames = fvo.stream()
-				    .map(FeedFileInfoVO::getFilename)
-				    .collect(Collectors.toList());
-			*/
-			//stream으로 하면 코드는 간편한데 아직 공부못한부분
-		}
-		List<GroupMemberDTO> mvo = gdao.selectGroupMemberAllByGroupNo(group_no);
-		System.out.println("mvo"+mvo);
-		map.put("mvo", mvo);
-		map.put("list", feedList);
-		map.put("gvo", gvo);
+			List<GroupMemberDTO> mvo = gdao.selectGroupMemberAllByGroupNo(group_no);
+			System.out.println("mvo"+mvo);
+			map = new HashMap<String, Object>();
+			map.put("mvo", mvo);
+			map.put("list", feedList);
+			map.put("gvo", gvo);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		}		
 		
 		return map;
 		

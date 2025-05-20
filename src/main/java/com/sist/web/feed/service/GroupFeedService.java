@@ -13,10 +13,10 @@ public interface GroupFeedService {
 	
 	public List<GroupVO> groupListData();	
 	public GroupVO groupDetailData(int group_no);
-	public List<FeedVO> feedListData(int group_no);
+	public List<FeedVO> feedListData(Map map);
 	public List<FeedFileInfoVO> fileListData(int feed_no);
 	//public List<GroupMemberVO> joined_groupmember(int group_no);
-	public Map groupFeedData(int group_no);
+	public Map groupFeedTotalData(int group_no, int page, long user_no);
 	public int feedInsertData(FeedVO vo);
 	public void feedFileInsert(FeedFileInfoVO vo);
 	public FeedVO feedDetailData(int feed_no);

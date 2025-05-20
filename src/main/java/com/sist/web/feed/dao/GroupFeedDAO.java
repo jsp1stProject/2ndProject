@@ -30,9 +30,9 @@ public class GroupFeedDAO {
 		return mapper.groupDetailData(group_no);
 	}
 	
-	public List<FeedVO> feedListData(int group_no)
+	public List<FeedVO> feedListData(Map map)
 	{
-		return mapper.feedListData(group_no);
+		return mapper.feedListData(map);
 	}
 	
 	public List<FeedFileInfoVO> fileListData(int feed_no)

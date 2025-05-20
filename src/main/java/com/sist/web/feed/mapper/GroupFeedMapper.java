@@ -31,12 +31,12 @@ public interface GroupFeedMapper {
 
 	
 	//피드
-	// 피드는 페이징 안할거야 -> 무한스크롤로 수정할예정
-	@Select("SELECT feed_no,group_no,user_no,title,filecount,TO_CHAR(regdate,'YYYY-mm-DD') as dbday "
-			+ "FROM p_feed "
-			+ "WHERE group_no=#{group_no} "
-			+ "ORDER BY feed_no DESC")
-	public List<FeedVO> feedListData(int group_no);
+	// 피드는 페이징 안할거야 -> 무한스크롤로 수정할예정 -> 무한스크롤을 페이징으로 구현할 수 있어 
+	
+	public List<FeedVO> feedListData(Map map);
+	
+	@Select("SELECT CEIL(COUNT(*)/5.0) FROM p_feed WHERE group_no=#{group_no}")
+	public int feedTotalCount(int group_no);
 	
 	@Select("SELECT * FROM p_feed_fileInfo WHERE feed_no=#{feed_no}")
 	public List<FeedFileInfoVO> fileListData(int feed_no);

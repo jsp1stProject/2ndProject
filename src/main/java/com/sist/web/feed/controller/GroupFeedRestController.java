@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpSession;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/api/groups")
 public class GroupFeedRestController {
 	
 	private final GroupFeedService service;
@@ -45,13 +48,14 @@ public class GroupFeedRestController {
 		return new ResponseEntity<>(map,HttpStatus.OK);
 	}
 	*/
-	@GetMapping("group/feeds")
-	public ResponseEntity<Map> group_feeds(int group_no)
+	@GetMapping("/{group_no}/feeds")
+	public ResponseEntity<Map> group_feeds(@PathVariable("group_no") int group_no, int page , HttpServletRequest request)
 	{
+		System.out.println("컨트롤러");
 		Map map = new HashMap<>();
 		try {
-			
-			map = service.groupFeedData(group_no);
+			long user_no = (long)request.getAttribute("userno");
+			map = service.groupFeedTotalData(group_no, page,user_no);
 			
 		} catch (Exception e) {
 			// TODO: handle exception
