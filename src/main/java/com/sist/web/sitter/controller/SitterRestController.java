@@ -41,7 +41,7 @@ public class SitterRestController {
 		Map<String, Object> queryMap = new HashMap<>();
 		Map<String, Object> result = new HashMap<>();
 
-		int rowSize = 8;
+		int rowSize = 9;
 		int start = (page - 1) * rowSize + 1;
 		int end = page * rowSize;
 
