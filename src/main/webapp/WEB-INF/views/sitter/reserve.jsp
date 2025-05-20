@@ -92,6 +92,7 @@
   </form>
 </div>
 <script src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+<script>window.__IMP_CODE__ = '<%= request.getAttribute("impCode") %>';</script>
 <script type="module">
   import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
   import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.7/+esm';
@@ -158,7 +159,7 @@
       },
       async submitReservation() {
   const IMP = window.IMP;
-  IMP.init("."); // 포트원 가맹점 식별코드
+  IMP.init(window.__IMP_CODE__);
 
   const amount = this.totalPrice;
   const merchantUid = 'resv_' + new Date().getTime(); // 고유 주문번호
