@@ -13,15 +13,12 @@ import org.apache.ibatis.annotations.Update;
 
 public interface GroupFeedMapper {
 	//그룹
-
+/*
 	@Select("SELECT group_no, group_name, profile_img, description, capacity, is_public, owner,created_at, num "
 			+ "FROM (SELECT group_no, group_name, profile_img, description, capacity, is_public, owner,created_at, rownum as num "
 			+ "FROM (SELECT group_no, group_name, profile_img, description, capacity, is_public, owner,created_at "
 			+ "FROM p_group ORDER BY group_no DESC))")
 	public List<GroupVO> groupListData();
-	
-	@Select("SELECT * FROM p_group WHERE group_no=#{group_no}")
-	public GroupVO groupDetailData(int group_no);
 	
 	@Insert("INSERT INTO p_group VALUES(p_group_no_seq.nextval,#{group_name},#{profile_img},#{description},#{capacity},#{is_public},#{owner},current_timestamp)")
 	public void groupInsertData(GroupVO vo);
@@ -29,7 +26,7 @@ public interface GroupFeedMapper {
 	@Select("SELECT p_group_no_seq.currval FROM DUAL")
 	public int groupCurentNodata();
 
-	
+	*/
 	//피드
 	// 피드는 페이징 안할거야 -> 무한스크롤로 수정할예정 -> 무한스크롤을 페이징으로 구현할 수 있어 
 	

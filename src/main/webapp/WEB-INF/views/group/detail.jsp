@@ -13,27 +13,36 @@
               <span class="me-2">그룹 일정</span>
             </button>
             <div class="dropdown">
-              <button id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" class="rounded-circle btn-transparent btn-sm px-1 btn shadow-none">
-                <i class="ti ti-dots-vertical fs-6"></i>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
-                <li><a class="dropdown-item" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#newScheduleModal">일정 추가</a></li>
-              </ul>
-            </div>
+			  <button id="dropdownMenuButton1"
+			          data-bs-toggle="dropdown"
+			          aria-expanded="false"
+			          class="rounded-circle btn-transparent btn-sm px-1 btn shadow-none">
+			    <i class="ti ti-dots-vertical fs-6"></i>
+			  </button>
+			
+			  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+			    <!-- 일정 추가 모달 열기 -->
+			    <li>
+			      <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#newScheduleModal">
+			        📅 일정 추가
+			      </button>
+			    </li>
+			  </ul>
+			</div>
           </div>
           <ul class="list-unstyled mb-0 accordion-collapse collapse show" id="collapseOne">
-            <!-- <li v-for="(item, idx) in schedulelist" :key="idx" class="py-10 border-bottom"> -->
-            <li class="py-10 border-bottom">
-              <!-- <h6 class="mb-1 fs-3">{{ item.sche_title }}</h6> -->
-              <h6 class="mb-1 fs-3">초코 산책 품앗이</h6>
+            <li v-for="(item, idx) in schedule_list" :key="idx" class="py-10 border-bottom">
+              <h6 class="mb-1 fs-3">{{ item.sche_title }}</h6>
               <div class="fs-2 d-flex gap-2">
                 <div class="d-flex align-items-center gap-1">
                   <iconify-icon icon="solar:clock-circle-broken" class="fs-4 text-primary"></iconify-icon>
-                  <span>2025.05.12</span>
+                  <span>{{ item.sche_start_str }} - {{ item.sche_start_end }}</span>
                 </div>
                 <div class="d-flex align-items-center gap-1">
                   <iconify-icon icon="solar:users-group-rounded-broken" class="fs-4 text-primary"></iconify-icon>
-                  <span>유저1, 유저2</span>
+                  <!-- <span v-for="(user idx) in schedule_list.participaints" :key="idx" >
+                  	{{user.nickname}}
+                  </span> -->
                 </div>
               </div>
             </li>
@@ -48,8 +57,12 @@
 	<div class="card mb-3 overflow-hidden">
 	  <div class="row g-0">
 	    <div class="col-sm-3 d-none d-sm-block">
-	      <img :src="gvo.profile_img || '/assets/images/profile/default.png'" class="card-img-top h-100" alt="그룹 이미지" style="object-fit: cover;">
-	    </div>
+		  <img 
+		    :src="gvo.profile_img ? gvo.profile_img : '/assets/images/noimage.png'" 
+		    class="card-img-top h-100" 
+		    alt="그룹 이미지" 
+		    style="object-fit: cover;">
+		</div>
 	    <div class="card-body col-sm-9 p-3">
 	      <div class="d-flex gap-2">
 	        <div class="d-sm-none d-flex align-items-center">
@@ -89,43 +102,35 @@
 	  </div>
 	
 	  <!-- 피드 목록 -->
-	  <!-- <div v-for="(vo, index) in list" :key="vo.feed_no" class="card overflow-hidden mb-3"> -->
-	  <div class="card overflow-hidden mb-3">
+	  <div v-for="(vo, index) in list" :key="vo.feed_no" class="card overflow-hidden mb-3">
 	    <div class="row g-0">
 	      <div class="card-body col-3 p-3">
 	        <div class="d-flex gap-2">
 	          <div class="d-flex align-items-center">
-	            <!-- <img :src="vo.profile_img || '/assets/images/profile/default.png'" width="42" height="42" class="rounded-circle fs-1"> -->
-	            <img src="../assets/images/profile/user-2.jpg" width="42" height="42" class="rounded-circle fs-1">
+	            <img src="https://pet4u.s3.ap-northeast-2.amazonaws.com/profile/21ef189e-a172-4649-ae01-cb37381b61b3.jpg">
 	          </div>
 	          <div class="">
-	            <a class="d-block fs-4 text-dark fw-semibold link-primary" href="javascript:void(0)" >  <!-- @click="feed_detail(vo.feed_no)" -->
-	              <!-- {{ vo.title }} -->
-	              다음주 금요일에 돌봄 가능하신 분!
-	            </a>
+	            
 	            <div class="d-flex align-items-center flex-wrap gap-2 fs-3">
 	              <div class="d-flex align-items-center gap-1">
-	                <span>작성자</span><span class="text-dark"><!-- {{ vo.writer }} -->test12</span>
+	                <span>닉네임</span><span class="text-dark">{{ vo.nickname }}</span>
 	              </div>
 	              <div class="d-flex align-items-center gap-1">
-	                <span>작성일</span><span class="text-dark"><!-- {{ vo.dbday }} -->25.05.20</span>
+	                <span>작성일</span><span class="text-dark">{{ vo.dbday }}</span>
 	              </div>
 	            </div>
+	            <a class="d-block fs-4 text-dark fw-semibold link-primary" :href="'../group/feed?feed_no='+vo.feed_no" >  <!-- @click="feed_detail(vo.feed_no)" -->
+	              {{ vo.title }}
+	            </a>
 	          </div>
 	        </div>
-	
-	        <div class="feed-content my-3">
-	          <p><!-- {{ vo.content }} -->강아지 좋아하는 사람들 다 모이세요!! 서로 정보도 공유하고 품앗이도 가능한 방 입니다</p>
-	        </div>
-	
+
 	        <!-- 이미지가 있을 경우에만 출력 -->
-	        <!-- <div v-if="vo.images && vo.images.length"> -->
-	        <div>
+	        <div v-if="vo.images && vo.images.length">
 	          <div :id="'carousel-' + index" class="carousel slide my-2" data-bs-ride="carousel">
 	            <div class="carousel-inner">
-	              <!-- <div class="carousel-item" v-for="(img, i) in vo.images" :class="{ active: i === 0 }"> -->
-	              <div class="carousel-item">
-	                <img :src="'/web/images/' + img" class="d-block w-100 rounded" style="max-height: 300px; object-fit: cover;">
+	              <div class="carousel-item" v-for="(img, i) in vo.images" :class="{ active: i === 0 }">
+	                <img :src="img" class="d-block w-100 rounded" style="max-height: 300px; object-fit: cover;">
 	              </div>
 	            </div>
 	            <button class="carousel-control-prev" type="button" :data-bs-target="'#carousel-' + index" data-bs-slide="prev">
@@ -205,15 +210,28 @@
 	            <label class="form-label">종료일</label>
 	            <input type="datetime-local" class="form-control" v-model="newSchedule.end" required>
 	          </div>
-	          <div class="mb-3">
-	            <label class="form-label">참여자 선택</label>
-	            <div v-for="member in mvo" :key="member.user_no" class="form-check">
-	              <input class="form-check-input" type="checkbox" :id="'member-' + member.user_no" :value="member.user_no" v-model="newSchedule.participants">
-	              <label class="form-check-label" :for="'member-' + member.user_no">
-	                {{ member.user_no }} ({{ member.role }})
-	              </label>
-	            </div>
+	          <div class="form-check mb-3">
+	            <input class="form-check-input" type="checkbox" v-model="newSchedule.is_important" id="importantCheck">
+	            <label class="form-check-label" for="importantCheck">⭐️ 중요 일정</label>
 	          </div>
+	          <div class="form-check mb-3">
+				  <input class="form-check-input" type="checkbox" v-model="newSchedule.alarm" id="alarmCheck">
+				  <label class="form-check-label" for="alarmCheck">🔔 일정 전에 알림 받기</label>
+				</div>
+	          <div class="mb-3">
+				  <label class="form-label">참여자 선택</label>
+				  <div v-for="member in mvo" :key="member.user_no" class="form-check">
+				    <input class="form-check-input"
+				           type="checkbox"
+				           :id="'member-' + member.user_no"
+				           :value="member.user_no"
+				           v-model="newSchedule.participants_no"
+				           @change="convertParticipantToNumbers">
+				    <label class="form-check-label" :for="'member-' + member.user_no">
+				      {{ member.user_no }} ({{ member.role }})
+				    </label>
+				  </div>
+				</div>
 	        </div>
 	        <div class="modal-footer">
 	          <button type="submit" class="btn btn-success">일정 등록</button>
@@ -240,14 +258,16 @@ createApp({
       },
       selectedFiles: [],
       imagePreviews: [],
-      schedulelist: [],
+      schedule_list: [],
       newSchedule: {
         title: '',
         content: '',
         start: '',
         end: '',
-        participants: [],
-        type: 1
+        participants_no: [],
+        type: 1,
+		is_important: false,
+		alarm:false
       },
 	  curpage: 1,
 	  
@@ -284,12 +304,11 @@ createApp({
       const formData = new FormData();
       formData.append('title', this.newPost.title);
       formData.append('content', this.newPost.content);
-      formData.append('group_no', this.group_no);
       this.selectedFiles.forEach(file => {
         formData.append('files', file);
       });
 
-      axios.post('../group/feeds', formData)
+      axios.post('../api/groups/'+this.group_no+'/feeds', formData)
         .then(() => {
           bootstrap.Modal.getInstance(document.getElementById('newPostModal')).hide();
           this.newPost.title = '';
@@ -310,18 +329,25 @@ createApp({
       formData.append('sche_start_str', this.newSchedule.start);
       formData.append('sche_end_str', this.newSchedule.end);
       formData.append('type', this.newSchedule.type);
-      this.newSchedule.participants.forEach(p => {
-        formData.append('participants', p);
+	  formData.append('is_important',this.newSchedule.is_important ? 1 : 0);
+	  formData.append('alarm',this.newSchedule.alarm ? 1 : 0);
+      this.newSchedule.participants_no.forEach(p => {
+        formData.append('participants_no', p);
       });
-
-      axios.post('../api/schedules', formData)
-        .then(() => {
-          bootstrap.Modal.getInstance(document.getElementById('newScheduleModal')).hide();
-          this.scheduleRecv();
-        })
-        .catch(err => {
-          console.error("일정 등록 실패", err);
-        });
+	  axios.post('../api/schedules/group/'+this.group_no,formData)
+		.then(res => {
+			console.log("성공")
+			const schedulemodal = bootstrap.Modal.getInstance(document.getElementById('newScheduleModal'));
+  			schedulemodal.hide();
+    		this.scheduleRecv()
+		})
+		.catch(err => {
+     		 console.log("일정 등록 실패", err);
+    	});
+     
+    },
+	convertParticipantsToNumbers() {
+    this.newSchedule.participants_no = this.newSchedule.participants_no.map(p => Number(p));
     },
     async dataRecv() {
 	  console.log("dataRecv실행전")
@@ -338,10 +364,16 @@ createApp({
 	  
     },
     async scheduleRecv() {
-      const res = await axios.get('../api/schedules', {
-         
-      });
-      this.schedulelist = res.data.list;
+	  await axios.get('../api/schedules/group/'+this.group_no)
+		.then(res => {
+		console.log("스케쥴 그룹일정")
+		console.log(res.data)
+        this.schedule_list = res.data;
+
+	  }).catch(error => {
+		 console.err(error);
+	  })
+     
     }
   }
 }).mount('#group-detail-app');

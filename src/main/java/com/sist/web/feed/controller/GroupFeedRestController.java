@@ -28,34 +28,13 @@ import javax.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/api/groups")
 public class GroupFeedRestController {
-	@Autowired
-	private AwsS3Service service2;
 	
 	private final GroupFeedService service;
-	/*
-	@GetMapping("group/groups")
-	public ResponseEntity<Map> group_groups()
-	{
-		Map map = new HashMap<>();
-		try {
-			List<GroupVO> list = service.groupListData();
-			map.put("list", list);
-			
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			System.out.println("======== error ========");
-			return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		System.out.println("group_vue 완료");
-		return new ResponseEntity<>(map,HttpStatus.OK);
-	}
-	*/
+	
 	@GetMapping("/{group_no}/feeds")
-	public ResponseEntity<Map> group_feeds(@PathVariable("group_no") int group_no, int page , HttpServletRequest request)
+	public ResponseEntity<Map<String, Object>> group_feeds(@PathVariable("group_no") int group_no, int page , HttpServletRequest request)
 	{
-		System.out.println("컨트롤러");
-		Map map = new HashMap<>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		try {
 			long user_no = (long)request.getAttribute("userno");
 			map = service.groupFeedTotalData(group_no, page,user_no);
@@ -71,52 +50,15 @@ public class GroupFeedRestController {
 	}
 	
 	
-	@PostMapping("/feeds")
-	public ResponseEntity<String> group_feeds_insert(@RequestParam("title") String title, @RequestParam("content") String content,
-		    @RequestParam(value = "files", required = false) List<MultipartFile> files, @RequestParam("group_no") int group_no, 
+	@PostMapping("/{group_no}/feeds")
+	public ResponseEntity<String> group_feeds_insert(@PathVariable("group_no") int group_no, @RequestParam("title") String title, @RequestParam("content") String content,
+		    @RequestParam(value = "files", required = false) List<MultipartFile> files, 
 		    HttpServletRequest request)
 	{
 		String result="";
 		try {
 			long user_no=(long)request.getAttribute("userno");
-			FeedVO vo = new FeedVO();
-			System.out.println("입력된 title은 ="+title);
-			System.out.println("입력된 content은 ="+content);
-			System.out.println("입력된 files는 ="+files);
-			System.out.println("입력된 group_no는 "+group_no);
-			
-			int fileCount = (files == null || files.isEmpty()) ? 0 : files.size();
-			vo.setTitle(title);
-	        vo.setContent(content);
-	        vo.setFilecount(fileCount);
-	        vo.setGroup_no(group_no);    
-	        vo.setUser_no(user_no);   
-			String path="c:\\download\\";
-			try {
-				
-				int no=service.feedInsertData(vo);
-				System.out.println("입력된 새글의 번호"+no);
-				
-				if(files != null && !files.isEmpty())
-				{
-					for (MultipartFile mf : files) {
-		                String storedFileName = service2.uploadFile(mf, "feeds/");
-
-		                FeedFileInfoVO fvo = new FeedFileInfoVO();
-		                fvo.setFilename(storedFileName);       // S3 저장 경로
-		                fvo.setFilesize(mf.getSize());          // 용량
-		                fvo.setFeed_no(no);
-
-		                service.feedFileInsert(fvo);
-		            }
-				}
-				
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}
-			
-			result="ok";
+			result=service.feedInserDataTotal(group_no, user_no, title, content, files);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

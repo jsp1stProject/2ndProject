@@ -2,19 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sist.web.feed.mapper.GroupFeedMapper">
   <select id="feedListData" parameterType="hashmap" resultType="com.sist.web.feed.vo.FeedVO">
-    SELECT * 
-	FROM (SELECT feed_no,group_no,user_no,nickname, title, filecount,comment_count, is_liked,TO_CHAR(regdate,'YYYY-mm-DD') as dbday, rownum as num
-		  FROM (SELECT f.feed_no,f.group_no,f.user_no,u.nickname, f.title, f.filecount, f.regdate,
-		  				(SELECT COUNT(*) FROM p_feed_comment c WHERE c.feed_no=f.feed_no) as comment_count,
-		  				(SELECT COUNT(*) FROM p_feed_like l WHERE l.feed_no = f.feed_no AND l.user_no = #{user_no}) AS is_liked
-				FROM p_feed f
-				JOIN p_users u 
-				ON f.user_no = u.user_no 
-				WHERE f.group_no=#{group_no} ORDER BY f.feed_no DESC
-				) inner_result
-		   )
-	WHERE num BETWEEN #{start} AND #{end}  
-  </select>
+  SELECT * 
+  FROM (
+    SELECT feed_no, group_no, user_no, nickname, profile, title, filecount, comment_count, is_liked,
+           TO_CHAR(regdate, 'YYYY-MM-DD') AS dbday,
+           rownum AS num
+    FROM (
+      SELECT f.feed_no, f.group_no, f.user_no, gm.nickname, u.profile, f.title, f.filecount, f.regdate,
+             (SELECT COUNT(*) FROM p_feed_comment c WHERE c.feed_no = f.feed_no) AS comment_count,
+             (SELECT COUNT(*) FROM p_feed_like l 
+              WHERE l.feed_no = f.feed_no AND l.user_no = #{user_no}) AS is_liked
+      FROM p_feed f
+      JOIN p_users u ON f.user_no = u.user_no
+      JOIN p_group_member gm ON f.group_no = gm.group_no AND f.user_no = gm.user_no
+      WHERE f.group_no = #{group_no}
+      ORDER BY f.feed_no DESC
+    )
+  )
+  WHERE num BETWEEN #{start} AND #{end}
+</select>
   <!-- <select id="feedCommentDelete" parameterType="hashmap" resultType="ScheduleMapper">
    DELETE FROM p_feed_comment WHERE 
    <if test="group_step==0">

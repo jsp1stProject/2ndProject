@@ -13,8 +13,11 @@ import org.apache.commons.collections.map.HashedMap;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.sist.web.aws.AwsS3Service;
 import com.sist.web.common.exception.code.CommonErrorCode;
 import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.feed.dao.*;
@@ -32,18 +35,18 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 	@Autowired
 	private GroupDAO gdao;
 	
-	@Override
-	public List<GroupVO> groupListData() {
-		// TODO Auto-generated method stub
-		return dao.groupListData();
-	}
-
-	@Override
-	public GroupVO groupDetailData(int group_no) {
-		// TODO Auto-generated method stub
-		return dao.groupDetailData(group_no);
-	}
+	@Autowired
+	private AwsS3Service service;
 	
+	@Value("${aws.url}")
+	private String awsUrl;
+	/*
+	 * @Override public List<GroupVO> groupListData() { // TODO Auto-generated
+	 * method stub return dao.groupListData(); }
+	 * 
+	 * @Override public GroupVO groupDetailData(int group_no) { // TODO
+	 * Auto-generated method stub return dao.groupDetailData(group_no); }
+	 */
 	@Override
 	public List<FeedVO> feedListData(Map map) {
 		// TODO Auto-generated method stub
@@ -119,8 +122,47 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		return dao.feedInsertData(vo);
 		
 	}
-
-
+	
+	@Override
+	public String feedInserDataTotal(int group_no, long user_no, String title, String content, List<MultipartFile> files)
+	{
+		FeedVO vo = new FeedVO();
+		System.out.println("입력된 title은 ="+title);
+		System.out.println("입력된 content은 ="+content);
+		System.out.println("입력된 files는 ="+files);
+		System.out.println("입력된 group_no는 "+group_no);
+		
+		int fileCount = (files == null || files.isEmpty()) ? 0 : files.size();
+		vo.setTitle(title);
+        vo.setContent(content);
+        vo.setFilecount(fileCount);
+        vo.setGroup_no(group_no);    
+        vo.setUser_no(user_no);   
+		String path="c:\\download\\";
+		
+		int no=dao.feedInsertData(vo);
+		System.out.println("입력된 새글의 번호"+no);
+			
+		if(files != null && !files.isEmpty())
+		{
+			for (MultipartFile file : files) {
+			    try {
+			    	String s3Path = service.uploadFile(file, "feeds/");
+			    	String fullUrl = awsUrl + s3Path;
+			        FeedFileInfoVO fileVO = new FeedFileInfoVO();
+			        fileVO.setFeed_no(no);
+			        fileVO.setFilename(fullUrl);
+			        fileVO.setFilesize(file.getSize());
+			        dao.feedFileInsert(fileVO);
+			    } catch (Exception e) {
+			        
+			        // 실패한 파일만 스킵하거나 전체 트랜잭션 롤백 등 판단 필요
+			        throw new RuntimeException("파일 업로드 실패");
+			    }
+			}
+		}
+		return "파일 업로드 완료";
+	}
 	@Override
 	public void feedFileInsert(FeedFileInfoVO vo) {
 		// TODO Auto-generated method stub
@@ -151,12 +193,10 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		return vo;	
 	}
 
-	@Override
-	public int groupInsertData(GroupVO vo) {
-		// TODO Auto-generated method stub
-		return dao.groupInsertData(vo);
-	}
-	
+	/*
+	 * @Override public int groupInsertData(GroupVO vo) { // TODO Auto-generated
+	 * method stub return dao.groupInsertData(vo); }
+	 */
 	@Override
 	public List<FeedCommentVO> feedCommentListData(Map map) {
 		// TODO Auto-generated method stub
@@ -202,6 +242,7 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		
 		return map;
 	}
+	
 	
 	/*
 	@Insert("INSERT INTO p_feed_comment(no,user_no,feed_no,msg, group_id) VALUES(p_feedcom_seq.nextval, #{user_no}, #{feed_no}, #{msg}, #{group_id})")

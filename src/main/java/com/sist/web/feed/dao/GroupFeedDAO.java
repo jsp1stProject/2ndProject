@@ -14,22 +14,22 @@ public class GroupFeedDAO {
 
 	@Autowired
 	private GroupFeedMapper mapper;
-	
+	/*
 	public List<GroupVO> groupListData()
 	{
 		return mapper.groupListData();
 	}
-	/*
+
 	public List<GroupMemberVO> joined_groupmember(int group_no)
 	{
 		return mapper.joined_groupmember(group_no);
 	}
-	*/
+	
 	public GroupVO groupDetailData(int group_no)
 	{
 		return mapper.groupDetailData(group_no);
 	}
-	
+	*/
 	public List<FeedVO> feedListData(Map map)
 	{
 		return mapper.feedListData(map);
@@ -55,12 +55,15 @@ public class GroupFeedDAO {
 	{
 		return mapper.feedDetailData(feed_no);
 	}
+	/*
+	 * 
+	 * 수정필요!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	public int groupInsertData(GroupVO vo)
 	{
 		mapper.groupInsertData(vo);
 		return mapper.groupCurentNodata();
 	}
-	
+	*/
 	public List<FeedCommentVO> feedCommentListData(Map map)
 	{
 		return mapper.feedCommentListData(map);

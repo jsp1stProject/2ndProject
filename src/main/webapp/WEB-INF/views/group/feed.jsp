@@ -1,12 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title>피드 상세보기</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -83,7 +75,7 @@ textarea.form-control {
 </style>
 </head>
 <body>
-<div id="app" class="container-fluid custom-container">
+<div class="container pt-header mt-4" id="app">
   <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
       <div>
@@ -270,5 +262,4 @@ textarea.form-control {
     }
   }).mount('#app');
 </script>
-</body>
-</html>
+
