@@ -22,6 +22,6 @@ public class SitterResPetDAO {
 	}
 	public List<PetsVO> getPetsByUserNo(int user_no)
 	{
-		return mapper.getPetsByResNo(user_no);
+		return mapper.getPetsByUserNo(user_no);
 	}
 }

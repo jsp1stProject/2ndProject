@@ -155,30 +155,34 @@
         }
       },
       async submitReservation() {
-        const payload = {
-          sitter_no: this.sitterNo,
-          pet_nos: this.form.pet_nos,
-          res_date: this.form.res_date,
-          start_time: this.startTime,
-          end_time: this.endTime,
-          location_type: this.form.location_type,
-          location_detail: this.form.location_detail,
-          total_price: this.totalPrice,
-          pay_status: "미결제",
-          res_status: "요청",
-        };
-        try {
-          const res = await axios.post("/web/sitter/reserve_vue", payload);
-          if (res.data === "success") {
-            alert("예약 신청이 완료되었습니다!");
-            location.href = "/sitter/resList";
-          } else {
-            alert("예약 신청에 실패했습니다.");
-          }
-        } catch (err) {
-          alert("오류가 발생했습니다.");
-        }
-      }
+  const payload = {
+    sitter_no: this.sitterNo,
+    pet_nos: this.form.pet_nos,
+    res_date: this.form.res_date,
+    start_time: this.startTime,
+    end_time: this.endTime,
+    location_type: this.form.location_type,
+    location_detail: this.form.location_detail,
+    total_price: this.totalPrice,
+    pay_status: "미결제",
+    res_status: "요청",
+  };
+  try {
+    const res = await axios.post("/web/sitter/reserve_vue", payload, {
+      withCredentials: true
+    });
+    if (res.data === "success") {
+      alert("예약 신청이 완료되었습니다!");
+      location.href = "/sitter/resList";
+    } else {
+      alert("예약 신청에 실패했습니다.");
+    }
+  } catch (err) {
+    console.error("❌ 예약 오류:", err);
+    alert("오류가 발생했습니다.");
+  }
+}
+
     }
   }).mount("#app");
 </script>
