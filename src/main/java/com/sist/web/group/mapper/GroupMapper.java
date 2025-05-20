@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Update;
 import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.dto.GroupMemberDTO;
+import com.sist.web.group.dto.GroupMemberInfoDTO;
 
 public interface GroupMapper {
 		//그룹
@@ -71,5 +72,18 @@ public interface GroupMapper {
 		public void insertGroupTags(Map<String, Object> tags);
 		
 		@Delete("DELETE p_group_tag WHERE group_no = #{group_no}")
-		public void deleteGroupTags(@Param("group_no") int groupno);
+		public void deleteGroupTags(@Param("group_no") int groupNo);
+		
+		@Delete("DELETE p_group WHERE group_no = #{group_no}")
+		public void deleteGroup(@Param("group_no") int groupNo);
+		
+		@Select("SELECT COUNT(*) FROM p_group_member WHERE group_no = #{group_no}")
+		public int selectMemberCountByGroupNo(@Param("group_no") int groupNo);
+		
+		@Select("SELECT g.group_no, g.nickname, g.joined_at, g.role, u.profile "
+			  + "FROM p_group_member g JOIN p_users u "
+			  + "ON g.user_no = u.user_no "
+			  + "WHERE g.group_no = #{group_no} "
+			  + "AND u.user_no = #{user_no}")
+		public GroupMemberInfoDTO selectGroupMemberInfo(@Param("group_no") int groupNo, @Param("user_no") int userNo);
 }

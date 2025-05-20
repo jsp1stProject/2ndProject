@@ -13,6 +13,10 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +36,8 @@ import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.service.GroupService;
 import com.sist.web.group.dto.GroupMemberDTO;
+import com.sist.web.group.dto.GroupMemberInfoDTO;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -166,4 +172,17 @@ public class GroupRestController {
 		return ResponseEntity.ok(ApiResponse.success("심사후 멤버추가 완료"));
 	}
 	
+	@DeleteMapping("/{groupNo}")
+	public ResponseEntity<ApiResponse<Object>> deleteGroup(@PathVariable Integer groupNo, HttpServletRequest req) {
+		int userNo = (Integer) req.getAttribute("userno");
+		service.removeGroup(groupNo, userNo);
+		return ResponseEntity.ok(ApiResponse.success(null, "그룹이 삭제되었습니다."));
+	}
+	
+	@GetMapping("/members/details")
+	public ResponseEntity<ApiResponse<GroupMemberInfoDTO>> getGroupMemberDetail(Integer groupNo, Integer userNo) {
+		// 유효성 검사 필요
+		GroupMemberInfoDTO dto = service.getGroupMemberDetail(groupNo, userNo);
+		return ResponseEntity.ok(ApiResponse.success(dto));
+	}
 }

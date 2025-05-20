@@ -9,6 +9,8 @@ import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.mapper.GroupMapper;
 import com.sist.web.group.dto.GroupMemberDTO;
+import com.sist.web.group.dto.GroupMemberInfoDTO;
+
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -86,5 +88,20 @@ public class GroupDAO {
 	/** 그룹 태그 수정 전 태그 모두 삭제 */
 	public void deleteGroupTags(int groupNo) {
 		mapper.deleteGroupTags(groupNo);
+	}
+	
+	/** 그룹 삭제 */
+	public void deleteGroup(int groupNo) {
+		mapper.deleteGroup(groupNo);
+	}
+	
+	/** 그룹의 현재 인원 조회 */
+	public int selectMemberCountByGroupNo(int groupNo) {
+		return mapper.selectMemberCountByGroupNo(groupNo);
+	}
+	
+	/** 그룹 멤버 상세정보 조회 */
+	public GroupMemberInfoDTO selectGroupMemberInfo(int groupNo, int userNo) {
+		return mapper.selectGroupMemberInfo(groupNo, userNo);
 	}
 }

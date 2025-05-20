@@ -24,6 +24,7 @@ import com.sist.web.group.dao.GroupDAO;
 import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.dto.GroupMemberDTO;
+import com.sist.web.group.dto.GroupMemberInfoDTO;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserVO;
 
@@ -207,6 +208,25 @@ public class GroupServiceImpl implements GroupService{
 		
 		
 	}
+	
+	@Override
+	public void removeGroup(int groupNo, int userNo) {
+		GroupDTO dto = gDao.selectGroupDetail(groupNo);
+		int memberCount = gDao.selectMemberCountByGroupNo(groupNo);
+		if (memberCount != 1) {
+			throw new GroupException(GroupErrorCode.CANNOT_DELETE_GROUP_WITH_MULTIPLE_MEMBERS);
+		} else if (dto.getOwner() != userNo) {
+			throw new GroupException(GroupErrorCode.NOT_GROUP_OWNER);
+		}
+		gDao.deleteGroup(groupNo);
+	}
+	
+	@Override
+	public GroupMemberInfoDTO getGroupMemberDetail(int groupNo, int userNo) {
+		// 기타 로직 수행 필요
+		return gDao.selectGroupMemberInfo(groupNo, userNo);
+	}
+	
 	private String uploadThumbnailImage(MultipartFile file) {
 		try {
 			String key = awsS3.ResizeAndUploadFile(file, THUMBNAIL_DIR, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT);
@@ -216,4 +236,6 @@ public class GroupServiceImpl implements GroupService{
 			throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
 		}
 	}
+	
+	
 }
