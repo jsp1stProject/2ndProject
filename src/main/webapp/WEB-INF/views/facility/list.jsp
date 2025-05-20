@@ -89,6 +89,7 @@
         </tr>
         <c:forEach var="vo" items="${list}">
             <tr>
+                <!-- <td><a href="/facility/detail?facilityId=${vo.facility_id}">${vo.fclty_nm}</a></td> 디테일용 --> 
                 <td>${vo.fclty_nm}</td>
                 <td>${vo.lnm_addr}</td>
                 <td>${vo.tel_no}</td>

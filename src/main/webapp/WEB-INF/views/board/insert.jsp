@@ -18,7 +18,7 @@
 <body>
     <h2 style="text-align:center;">📝 게시글 작성</h2>
 
-    <form method="post" action="${pageContext.request.contextPath}/web/board/insert">
+    <form method="post" action="${pageContext.request.contextPath}/web/board/insert" enctype="multipart/form-data">
         <input type="hidden" name="user_no" value="${sessionScope.user_no}" />
 
         <table>
@@ -42,6 +42,12 @@
                 <td>내용</td>
                 <td><textarea name="post_content" required></textarea></td>
             </tr>
+            <!--  <tr>  이미지 파일 올리는거 나중에
+            <th class="text-center" width="15%">첨부파일</th>
+            <td width="85%">
+                <input type="file" name="filename" id="filename" size="30" class="form-control-sm">
+            </td>
+        </tr>-->
         </table>
 
         <div class="btn-box">

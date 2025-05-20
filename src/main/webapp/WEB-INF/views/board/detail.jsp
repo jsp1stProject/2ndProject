@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <html>
 <head>
@@ -77,8 +78,10 @@
         </div>
 
         <div class="post-actions">
+            <c:if test="${sessionScope.user_no!=null }">
             <a href="update?post_id=${vo.post_id}">✏ 수정</a>
             <a href="delete?post_id=${vo.post_id}" onclick="return confirm('정말 삭제하시겠습니까?')">🗑 삭제</a>
+            </c:if>
             <a href="list">📋 목록</a>
         </div>
     </div>

@@ -36,7 +36,7 @@ public interface FacilityMapper {
 	        " SELECT a.*, ROWNUM AS rn FROM ( " +
 	        "   SELECT * FROM P_PET_FACILITY " +
 	        "   WHERE CTGRY_TWO_NM = #{category} " +
-	        "   AND signgu_nm LIKE '%' || #{location} || '%' " +
+	        "   AND lnm_addr LIKE '%' || #{location} || '%' " +
 	        "   ORDER BY FCLTY_NM " +
 	        " ) a " +
 	        " WHERE ROWNUM <= #{end} " +
@@ -50,14 +50,15 @@ public interface FacilityMapper {
 
     		@Select("SELECT COUNT(*) FROM P_PET_FACILITY "
     		+"WHERE CTGRY_TWO_NM = #{category} "
-    		+"AND signgu_nm LIKE '%' || #{location} || '%' ")
+    		+"AND lnm_addr LIKE '%' || #{location} || '%' ")
     		int facilityTotalPageFiltered(@Param("category") String category,@Param("location") String location);
 
     
 	
-    // 디테일 수정할거있나
-    @Select("SELECT * FROM P_PET_FACILITY WHERE FCLTY_NM = #{FCLTY_NM}")
-    public FacilityVO facilityDetail();
+    // 디테일 추가할거 많음
+    @Select("SELECT * FROM P_PET_FACILITY WHERE FACILITY_ID = #{facilityId}")
+    public FacilityVO facilityDetail(@Param("facilityId") int facilityId);
+
 
     // 반경 5km 내의 시설 찾기
     @Select("SELECT FCLTY_NM AS name, RDNMADR_NM AS address, TEL_NO AS tel, " +

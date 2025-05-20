@@ -4,12 +4,13 @@ import lombok.Data;
 
 @Data
 public class FacilityVO {
+	private int facility_id;
     private String fclty_nm;
     private String CTGRY_ONE_NM;
     private String CTGRY_TWO_NM;
     private String CTGRY_THREE_NM;
     private String CTPRVN_NM;
-    private String SIGNGU_NM;
+    private String signgu_nm;
     private String LEGALDONG_NM;
     private String LI_NM;
     private String LNBR_NO;

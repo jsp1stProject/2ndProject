@@ -2,6 +2,7 @@ package com.sist.web.facility.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class FacilityServiceImpl implements FacilityService{
 	@Override
 	public int facilityTotalPage(String category) {
 		// TODO Auto-generated method stub
-		return 0;
+		return Fdao.facilityTotalPage(category);
 	}
 
 	@Override
@@ -36,7 +37,7 @@ public class FacilityServiceImpl implements FacilityService{
 	@Override
 	public List<FacilityVO> facilityListFiltered(String category, String location, int start, int end) {
 		// TODO Auto-generated method stub
-		return Fdao.facilityList(category, start, end);
+		return Fdao.facilityListFiltered(category, location, start, end);
 	}
 
 	@Override
@@ -45,8 +46,17 @@ public class FacilityServiceImpl implements FacilityService{
 		return Fdao.facilityTotalPage(category);
 	}
 
-	
+	@Override
+	public List<Map<String, Object>> findNearbyFacilities(double lat, double lon) {
+		// TODO Auto-generated method stub
+		return Fdao.findNearbyFacilities(lat, lon);
+	}
 
+	@Override
+	public FacilityVO facilityDetail(int facilityId) {
+		// TODO Auto-generated method stub
+		return Fdao.facilityDetail(facilityId);
+	}
 	
 
 }

@@ -56,19 +56,24 @@ public class FacilityController {
 	    return "facility/list";
 	}
 
+	@GetMapping("/detail")
+	public String facilityDetail(@RequestParam("facilityId") int facilityId, Model model) {
+	    FacilityVO vo = service.facilityDetail(facilityId);
+	    model.addAttribute("vo", vo);
+	    return "facility/detail";
+	}
+
 	
 	
-	
-	
-	/*  이거 근처 시설 출력
+	// 이거 근처 시설 출력
     @RequestMapping(value = "/nearbyFacilities", method = RequestMethod.GET)
     @ResponseBody
     public List<Map<String, Object>> findNearbyFacilities(@RequestParam("lat") double lat, @RequestParam("lon") double lon) {
-        return facilityService.findNearbyFacilities(lat, lon);
+        return service.findNearbyFacilities(lat, lon);
     }
 
     @RequestMapping(value = "/map", method = RequestMethod.GET)
     public String showMapPage() {
         return "facility/facility";  // JSP 뷰 이름 (예: /WEB-INF/views/map.jsp)
-    }*/
+    }
 }
