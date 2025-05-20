@@ -30,7 +30,7 @@ public class SitterResRestController {
 	// 예약 목록
 	@GetMapping("/sitter/resList_vue")
 	public ResponseEntity<Map<String, Object>> res_list(@RequestParam int page,
-			@CookieValue(name = "accesstoken", required = false) String token) {
+			@CookieValue(name = "accessToken", required = false) String token) {
 		Map<String, Object> map = new HashMap<>();
 		int user_no = parseUserNo(token);
 		if (user_no == -1) {
@@ -52,7 +52,7 @@ public class SitterResRestController {
 	// 예약 상세
 	@GetMapping("/sitter/resDetail_vue")
 	public ResponseEntity<?> reserve_detail(@RequestParam int res_no,
-			@CookieValue(name = "accesstoken", required = false) String token) {
+			@CookieValue(name = "accessToken", required = false) String token) {
 		int user_no = parseUserNo(token);
 		if (user_no == -1)
 			return new ResponseEntity<>("unauthorized", HttpStatus.UNAUTHORIZED);
@@ -73,7 +73,7 @@ public class SitterResRestController {
 	// 예약 등록
 	@PostMapping("/sitter/reserve_vue")
 	public ResponseEntity<String> reserve_vue(@RequestBody SitterResVO vo,
-			@CookieValue(name = "accesstoken", required = false) String token) {
+			@CookieValue(name = "accessToken", required = false) String token) {
 		int user_no = parseUserNo(token);
 		if (user_no == -1)
 			return new ResponseEntity<>("unauthorized", HttpStatus.UNAUTHORIZED);
@@ -113,7 +113,7 @@ public class SitterResRestController {
 	// 결제 완료 후 호출
 	@PostMapping("/sitter/res/pay_complete")
 	public ResponseEntity<String> payComplete(@RequestParam("res_no") int res_no,
-			@RequestParam("imp_uid") String imp_uid, @CookieValue(name = "accesstoken", required = false) String token) {
+			@RequestParam("imp_uid") String imp_uid, @CookieValue(name = "accessToken", required = false) String token) {
 		int user_no = parseUserNo(token);
 		if (user_no == -1)
 			return new ResponseEntity<>("unauthorized", HttpStatus.UNAUTHORIZED);
