@@ -50,7 +50,7 @@ public class MypageController {
 
     @GetMapping("/petsitters")
     public String petsitters(Model model){
-        model.addAttribute("main_jsp", "../mypage/petsitters.jsp");
+        model.addAttribute("main_jsp", "../mypage/petsitters_apply.jsp");
         return "main/main";
     }
 

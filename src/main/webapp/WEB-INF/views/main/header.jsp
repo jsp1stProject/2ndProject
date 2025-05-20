@@ -77,16 +77,16 @@
 										<iconify-icon icon="solar:user-broken" class="fs-7"></iconify-icon>
 										<p class="mb-0 fs-3">내 프로필</p>
 									</a>
-									<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+									<a href="${pageContext.request.contextPath}/mypage/pets/list" class="d-flex align-items-center gap-2 dropdown-item">
 										<iconify-icon icon="solar:paw-linear" class="fs-7"></iconify-icon>
 										<p class="mb-0 fs-3">내 반려동물</p>
 									</a>
-									<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+									<a href="${pageContext.request.contextPath}/mypage/petsitters" class="d-flex align-items-center gap-2 dropdown-item">
 										<iconify-icon icon="solar:user-id-broken" class="fs-7"></iconify-icon>
 										<p class="mb-0 fs-3">펫시터 프로필</p>
 									</a>
 									<c:if test="${role[0] eq 'ROLE_ADMIN'}">
-										<a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+										<a href="${pageContext.request.contextPath}/admin" class="d-flex align-items-center gap-2 dropdown-item">
 											<iconify-icon icon="solar:shield-user-bold" class="fs-7"></iconify-icon>
 											<p class="mb-0 fs-3">관리자 페이지</p>
 										</a>

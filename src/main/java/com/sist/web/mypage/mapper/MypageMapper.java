@@ -2,10 +2,8 @@ package com.sist.web.mypage.mapper;
 
 import com.sist.web.mypage.vo.PetDTO;
 import com.sist.web.mypage.vo.PetVO;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import com.sist.web.mypage.vo.SitterDTO;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -32,4 +30,14 @@ public interface MypageMapper {
 
     @Delete("delete from P_PETS where PET_NO=#{petno}")
     public void DeleteMyPet(String petno);
+
+    @Insert("INSERT INTO P_SITTER_APP(app_no, pet_no, user_no, history, license, info) " +
+            "VALUES (APP_NO_SEQ.nextval,#{pet_no, jdbcType=DOUBLE},#{user_no},#{history},#{license},#{info})")
+    public void applyPetsitter(SitterDTO dto);
+
+    @Select("select APP_NO,USER_NO,HISTORY,LICENSE,INFO FROM P_SITTER_APP where USER_NO=#{user_no}")
+    public SitterDTO getAppSitter(@Param("user_no")String Userno);
+
+    @Update("UPDATE P_SITTER_APP set HISTORY=#{history}, LICENSE=#{license}, INFO=#{info} where USER_NO=#{user_no}")
+    public void updateAppSitter(SitterDTO dto);
 }

@@ -4,6 +4,7 @@ import com.sist.web.common.response.ApiResponse;
 import com.sist.web.mypage.service.MypageService;
 import com.sist.web.mypage.service.MypageTransactionalService;
 import com.sist.web.mypage.vo.PetDTO;
+import com.sist.web.mypage.vo.SitterDTO;
 import com.sist.web.security.JwtTokenProvider;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserDetailDTO;
@@ -75,6 +76,20 @@ public class MypageRestController {
             @CookieValue(value="accessToken", required = false) String token){
         mypageTransactionalService.insertMyPetDetail(token,dto,file,isChange);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/petsitters")
+    public ResponseEntity<Void> applyPetsitter(
+            @ModelAttribute SitterDTO dto,
+            @CookieValue(value="accessToken", required = false) String token){
+        mypageService.applyOrUpdatePetsitter(token, dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/petsitters")
+    public ResponseEntity<ApiResponse<SitterDTO>> GetPetsitter(
+            @CookieValue(value="accessToken", required = false) String token){
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getPetsitter(token)));
     }
 
 }

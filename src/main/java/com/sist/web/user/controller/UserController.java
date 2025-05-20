@@ -67,13 +67,6 @@ public class UserController {
         return "main/main";
     }
 
-    //권한 테스트용 페이지
-    @GetMapping("admin")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String admin(Model model) {
-        model.addAttribute("main_jsp", "home.jsp");
-        return "main/main";
-    }
 
     //권한 테스트용 페이지
     @GetMapping("users/test")

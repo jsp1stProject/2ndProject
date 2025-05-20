@@ -2,12 +2,15 @@ package com.sist.web.mypage.service;
 
 import com.sist.web.aws.AwsS3Service;
 import com.sist.web.common.exception.code.CommonErrorCode;
+import com.sist.web.common.exception.code.PetErrorCode;
 import com.sist.web.common.exception.code.UserErrorCode;
 import com.sist.web.common.exception.domain.CommonException;
+import com.sist.web.common.exception.domain.PetException;
 import com.sist.web.common.exception.domain.UserException;
 import com.sist.web.mypage.mapper.MypageMapper;
 import com.sist.web.mypage.vo.PetDTO;
 import com.sist.web.mypage.vo.PetVO;
+import com.sist.web.mypage.vo.SitterDTO;
 import com.sist.web.security.JwtTokenProvider;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserDetailDTO;
@@ -39,6 +42,17 @@ public class MypageServiceImpl implements MypageService {
             throw new CommonException(CommonErrorCode.NOT_FOUND);
         }
         return userno;
+    }
+
+    public String getRolls(String token) {
+        if(token==null){
+            throw new CommonException(CommonErrorCode.SC_UNAUTHORIZED);
+        }
+        List<String> list=jwtTokenProvider.getRoles(token);
+        if(list==null){
+            throw new CommonException(CommonErrorCode.NOT_FOUND);
+        }
+        return list.get(0);
     }
 
     @Override
@@ -210,6 +224,40 @@ public class MypageServiceImpl implements MypageService {
             vo.setPet_profilepic(dto.getPet_profilepic());
         }
         mypageMapper.updateMyPet(vo);
+    }
+
+    @Override
+    public void applyOrUpdatePetsitter(String token, SitterDTO dto) {
+        String roll=getRolls(token);
+        if(!roll.equals("ROLE_USER")){
+            throw new PetException(PetErrorCode.CONFLICT_APPLY);
+        }
+        
+        if(dto.getLicense()!=null){
+            dto.setLicense("반려동물종합관리사");
+        }
+        String userno=getValidUserNo(token);
+        SitterDTO origApp= mypageMapper.getAppSitter(userno);
+        dto.setUser_no(Integer.parseInt(userno));
+        
+        //이미 신청서가 존재하면 수정, 없으면 새로 등록
+        if(origApp!=null){
+            mypageMapper.updateAppSitter(dto);
+        }else{
+            dto.setUser_no(Integer.parseInt(userno));
+            mypageMapper.applyPetsitter(dto);
+        }
+        
+    }
+
+    @Override
+    public SitterDTO getPetsitter(String token) {
+        String userno=getValidUserNo(token);
+        SitterDTO origApp= mypageMapper.getAppSitter(userno);
+        if(origApp==null){
+            throw new CommonException(CommonErrorCode.INVALID_PARAMETER);
+        }
+        return origApp;
     }
 
 

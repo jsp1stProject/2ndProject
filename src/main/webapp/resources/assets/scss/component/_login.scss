@@ -61,7 +61,6 @@
     }
 
     label {
-      font-size: 0.9em;
       padding: 8px 12px 0;
     }
 
@@ -71,6 +70,21 @@
 
     label + input {
       padding-top: 4px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      border: none;
+      resize: none;
+      padding: 4px 10px;
+    }
+
+    textarea + p {
+      margin-bottom:0;
+      padding: 0 10px 10px 10px;
+      font-size:0.9em;
+      text-align: right;
     }
 
   }

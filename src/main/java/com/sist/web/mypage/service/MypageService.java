@@ -1,6 +1,7 @@
 package com.sist.web.mypage.service;
 
 import com.sist.web.mypage.vo.PetDTO;
+import com.sist.web.mypage.vo.SitterDTO;
 import com.sist.web.user.vo.UserDetailDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,4 +16,6 @@ public interface MypageService {
     public List<PetDTO> getMyPets(String token);
     public PetDTO getMyPetDetail(String token, String petno);
     public void updateMyPetDetail(String token, PetDTO dto, MultipartFile file, int isChange);
+    public void applyOrUpdatePetsitter(String token, SitterDTO dto);
+    public SitterDTO getPetsitter(String token);
 }
