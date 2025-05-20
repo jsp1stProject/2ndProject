@@ -1,6 +1,8 @@
 package com.sist.web.group.dto;
 
 import java.sql.Timestamp;
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -27,7 +29,10 @@ public class GroupDTO {
 	private String join_status; 
 	private Integer current_member_count;
 	private String description;
+	@ToString.Exclude
 	private String profile_img;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private Timestamp created_at;
+	private List<String> tags;
+	private String profile;
 }

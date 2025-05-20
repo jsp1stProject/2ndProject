@@ -19,12 +19,11 @@ export const apiMethods = {
   },
 
   async loadGroupMembers() {
-    const res = await axios.get(`${this.contextPath}/api/groups/members`, {
-      params: { groupNo: this.group_no }
-    });
+    const res = await axios.get(`${this.contextPath}/api/groups/${this.group_no}/members`);
     this.members = res.data.data.map(m => ({
       user_no: m.user_no,
       nickname: m.nickname,
+      profile_img: m.profile,
       isOnline: false
     }));
   },
@@ -44,9 +43,9 @@ export const apiMethods = {
   async updateGroupDetail() {
     const dto = {
       ...this.groupDetail,
+      tags: this.selectedTags,
     };
     
-    console.log('dto: ', dto);
     const formData = new FormData();
     formData.append(
       'groupDetail',
@@ -59,9 +58,7 @@ export const apiMethods = {
     }
 
     const res = await axios.put(
-      `${this.contextPath}/api/groups/${this.groupDetail.group_no}`,
-      formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } }
+      `${this.contextPath}/api/groups/${this.groupDetail.group_no}`, formData
     );
 
     return res.data;

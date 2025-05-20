@@ -3,6 +3,7 @@ package com.sist.web.group.mapper;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -41,10 +42,14 @@ public interface GroupMapper {
 		
 		public void insertGroupMember(GroupMemberDTO dto);
 		
-		@Select("SELECT g.group_no, group_name FROM p_group g JOIN p_group_member m ON g.group_no = m.group_no WHERE m.user_no = #{user_no}")
+		@Select("SELECT g.group_no, group_name, g.profile_img FROM p_group g JOIN p_group_member m ON g.group_no = m.group_no WHERE m.user_no = #{user_no}")
 		public List<GroupDTO> selectGroup(String userNo);
 		
-		@Select("SELECT group_no, user_no, nickname FROM p_group_member WHERE group_no = #{group_no}")
+		@Select("SELECT gm.group_no, gm.user_no, gm.nickname, u.profile "
+			  + "FROM p_group_member gm "
+			  + "JOIN p_users u "
+			  + "ON gm.user_no = u.user_no "
+			  + "WHERE gm.group_no = #{group_no}")
 		public List<GroupMemberDTO> selectGroupMemberAllByGroupNo(@Param("group_no") int groupNo);
 		
 		@Insert("INSERT INTO p_group_joinrequests(request_no, group_no, user_no) VALUES(p_gjoin_req_seq.nextval, #{group_no}, #{user_no} )")
@@ -62,4 +67,9 @@ public interface GroupMapper {
 		public void updateJoinRequestStatus(GroupJoinRequestsDTO dto);
 		
 		public void updateGroupDetail(GroupDTO dto);
+		
+		public void insertGroupTags(Map<String, Object> tags);
+		
+		@Delete("DELETE p_group_tag WHERE group_no = #{group_no}")
+		public void deleteGroupTags(@Param("group_no") int groupno);
 }

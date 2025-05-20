@@ -6,18 +6,16 @@ import com.sist.web.common.exception.domain.UserException;
 import com.sist.web.security.JwtTokenProvider;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.KakaoUserDTO;
+import com.sist.web.user.vo.UserDetailDTO;
 import com.sist.web.user.vo.UserVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -63,7 +61,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String GetKakaoAccessToken(String code,String url) {
+    public String getKakaoAccessToken(String code, String url) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -93,7 +91,7 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public ResponseEntity InsertOrLoginKakaoUser(String kakaoAccessToken, HttpServletResponse res) {
+    public void insertOrLoginKakaoUser(String kakaoAccessToken, HttpServletResponse res) {
         //kakao 유저 정보 가져오기 api
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -161,8 +159,41 @@ public class UserServiceImpl implements UserService {
             log.error(e.getMessage());
             throw new UserException(UserErrorCode.NOT_FOUND);
         }
-        return ResponseEntity.ok().build();
     }
+
+    @Override
+    public void checkActiveUser(String userno) {
+        int isActive=userMapper.checkUserActive(userno);
+        if(!Integer.valueOf(1).equals(isActive)) {
+            throw new UserException(UserErrorCode.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public UserDetailDTO getUserDetail(String userno) {
+        return userMapper.getUserDtoFromUserNo(userno);
+    }
+
+    @Override
+    public UserDetailDTO getActiveUserDetail(String userno) {
+        checkActiveUser(userno);
+        return getUserDetail(userno);
+    }
+
+    @Override
+    public UserDetailDTO getHeaderDetail(String token) {
+        String userno=getValidUserNo(token);
+        return userMapper.getHeaderDetailFromUserNo(userno);
+    }
+
+    public String getValidUserNo(String token) {
+        if(token!=null){
+            String userno=jwtTokenProvider.getUserNoFromToken(token);
+            return userno;
+        }
+        return "";
+    }
+
     Cookie addCk(String name, String token, int expire) {
         Cookie cookie = new Cookie(name, token);
         cookie.setMaxAge(expire);//1시간

@@ -18,4 +18,5 @@ public class GroupMemberDTO {
 	private String nickname, role, status;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private Timestamp joined_at, left_at;
+	private String profile;
 }

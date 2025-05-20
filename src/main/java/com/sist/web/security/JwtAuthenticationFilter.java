@@ -115,7 +115,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String getJwtFromRequest(HttpServletRequest request,String ckName) {
         //쿠키에서 토큰 추출
-        if(request.getCookies() != null || request.getCookies().length > 0) {
+        if(request.getCookies() != null && request.getCookies().length > 0) {
             for (Cookie cookie : request.getCookies()) {
                 if(ckName.equals(cookie.getName())) {
                     return cookie.getValue();

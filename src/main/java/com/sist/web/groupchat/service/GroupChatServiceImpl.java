@@ -2,6 +2,8 @@ package com.sist.web.groupchat.service;
 
 import java.util.Collections;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,10 @@ public class GroupChatServiceImpl implements GroupChatService {
 	private final GroupChatDAO cDao;
 	private final SimpMessagingTemplate messagingTemplate;
 	private final UserMapper userMapper;
+	
+	@Value("${aws.url}")
+	private String a3BaseUrl;
+	
 	@Transactional
 	@Override
 	public void saveAndSendGroupChatMessage(GroupChatDTO vo) {
@@ -43,11 +49,25 @@ public class GroupChatServiceImpl implements GroupChatService {
 
 	@Override
 	public List<GroupChatDTO> getLatestMessageByGroupNo(int groupNo, Long lastMessageNo) {
-		List<GroupChatDTO> list = cDao.selectLatestMessageByGroupNo(groupNo, lastMessageNo);
-		if (list == null || list.isEmpty()) {
-			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
-			// 채팅 내역 비어있을 시 분기 작성 필요.
+		List<GroupChatDTO> list;
+		try {
+			list = cDao.selectLatestMessageByGroupNo(groupNo, lastMessageNo);
+			
+			if (list == null || list.isEmpty()) {
+				throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
+				// 채팅 내역 비어있을 시 분기 작성 필요.
+			}
+			
+			for (GroupChatDTO dto : list) {
+				if (dto.getProfile() != null && !dto.getProfile().isBlank()) {
+					dto.setProfile(a3BaseUrl + dto.getProfile());
+				}
+			}
+		} catch (Exception ex) {
+			log.error("이미지 불러오기 실패", ex);
+			throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
 		}
+		 
 		Collections.reverse(list);
 		return list;
 	}

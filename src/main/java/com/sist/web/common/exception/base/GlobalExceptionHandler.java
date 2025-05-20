@@ -48,6 +48,7 @@ public class GlobalExceptionHandler {
                 .map(v -> v.getMessage())
                 .collect(Collectors.joining(", "));
         ErrorInfo info = CommonErrorCode.INVALID_INPUT;
+        log.debug(ex.getMessage(), ex);
         return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), errorMsg));
     }
 
@@ -55,6 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiResponse<Object>> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
         ErrorInfo info = CommonErrorCode.METHOD_NOT_ALLOWED;
+        log.debug(ex.getMessage(), ex);
         return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
     }
 
@@ -62,6 +64,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<ApiResponse<Object>> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
         ErrorInfo info = CommonErrorCode.UNSUPPORTED_MEDIA_TYPE;
+        log.debug(ex.getMessage(), ex);
         return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
     }
 
@@ -69,6 +72,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
         ErrorInfo info = CommonErrorCode.FORBIDDEN;
+        log.debug(ex.getMessage(), ex);
         return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
     }
 
@@ -76,6 +80,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Object>> handleIllegalArgument(IllegalArgumentException ex) {
         ErrorInfo info = CommonErrorCode.INVALID_INPUT;
+        log.debug(ex.getMessage(), ex);
         return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
     }
 
@@ -83,7 +88,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGeneralException(Exception ex) {
         ErrorInfo info = CommonErrorCode.INTERNAL_SERVER_ERROR;
-        ex.printStackTrace();
+        log.debug(ex.getMessage(), ex);
         return ResponseEntity.status(info.getStatus()).body(ApiResponse.fail(info.getCode(), info.getMessage()));
     }
 }

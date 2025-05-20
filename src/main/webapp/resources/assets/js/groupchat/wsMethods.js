@@ -38,9 +38,16 @@ export const wsMethods = {
     this.subscription?.unsubscribe();
     this.subscription = this.stompClient.subscribe(`/sub/chats/groups/${this.group_no}`, async msg => {
       const body = JSON.parse(msg.body);
+
+      const sender = this.members.find(m => m.user_no === body.sender_no);
+      console.log('sender_no:', body.sender_no, '→ matched member:', sender);
+      body.profile_img = sender?.profile_img || `${this.contextPath}/assets/images/profile/default_pf.png`;
+
       const container = this.scrollTarget;
       const atBottom = container.scrollHeight - (container.scrollTop + container.clientHeight) < 300;
+
       this.messages.push(body);
+
       await Vue.nextTick();
       if (body.sender_no === this.sender_no || atBottom) this.scrollToBottom();
     });

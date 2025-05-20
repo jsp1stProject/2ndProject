@@ -23,35 +23,13 @@ public class UserController {
         return "main/main";
     }
 
-    @GetMapping("/dev")
-    public String dev_home(Model model){
-        model.addAttribute("main_jsp", "dev.jsp");
-        return "main/main";
-    }
-
-    //권한 테스트용 페이지
-    @GetMapping("admin")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String admin(Model model) {
-        model.addAttribute("main_jsp", "home.jsp");
-        return "main/main";
-    }
-
-    //권한 테스트용 페이지
-    @GetMapping("users/test")
-    @PreAuthorize("hasRole('USER')")
-    public String test(Model model) {
-
-        return "main/main";
-    }
-
-    @GetMapping("login")
+    @GetMapping("/login")
     public String login(Model model) {
         model.addAttribute("main_jsp", "../user/login.jsp");
         return "main/main";
     }
 
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public String logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("accessToken", null);
         cookie.setMaxAge(0);
@@ -71,6 +49,37 @@ public class UserController {
     @GetMapping("auth/join")
     public String join(@RequestParam(required = false, value="code") String code, Model model) {
         model.addAttribute("main_jsp", "../user/join.jsp");
+        return "main/main";
+    }
+
+    @GetMapping("/users/{userno}")
+    public String getUserDetail(@PathVariable("userno") String userno, Model model) {
+        model.addAttribute("main_jsp", "../user/detail.jsp");
+        return "main/main";
+    }
+
+
+
+
+    @GetMapping("/dev")
+    public String dev_home(Model model){
+        model.addAttribute("main_jsp", "dev.jsp");
+        return "main/main";
+    }
+
+    //권한 테스트용 페이지
+    @GetMapping("admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String admin(Model model) {
+        model.addAttribute("main_jsp", "home.jsp");
+        return "main/main";
+    }
+
+    //권한 테스트용 페이지
+    @GetMapping("users/test")
+    @PreAuthorize("hasRole('USER')")
+    public String test(Model model) {
+
         return "main/main";
     }
 

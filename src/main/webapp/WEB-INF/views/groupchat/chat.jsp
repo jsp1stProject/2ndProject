@@ -60,7 +60,8 @@
             <ul class="p-2 m-0">
                 <li v-for="group in availableGroups" :key="group.group_no">
                     <a href="#" @click.prevent="joinGroup(group.group_no)">
-                    	<div class="group-initial" :style="getGroupFontSize(group.group_name)">
+                        <img v-if="group.profile_img" :src="group.profile_img" alt="thumbnail" class="group-thumbnail"/>
+                    	<div v-else class="group-initial" :style="getGroupFontSize(group.group_name)">
                     		{{ group.group_name.substring(0, 4) }}
                     	</div>
                     </a>
@@ -102,11 +103,11 @@
                             <div class="date-divider">{{ date }}</div>
                             <div class="msg d-flex" v-for="msg in msgList" :key="msg.message_no">
                                 <a href="#" class="user-profile">
-                                    <img src="${pageContext.request.contextPath }/assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
+                                    <img :src="msg.profile_img || '${pageContext.request.contextPath}/assets/images/profile/default_pf.png'" alt="" width="35" height="35" class="rounded-circle">
                                 </a>
                                 <div class="msg-body d-flex flex-column">
                                     <div class="user-info">
-                                        <span><b>{{ msg.sender_nickname }}</b></span>
+                                        <span><b>{{ getNickname(msg.sender_no) }}</b></span>
                                         <span>{{ formatMessageTime(msg.sent_at) }}</span>
                                     </div>
                                     <div class="msg-content">{{ msg.content }}</div>
@@ -160,7 +161,7 @@
                         <ul id="onlineUl" class="accordion-collapse collapse show" aria-labelledby="onlinedrop">
                             <li v-for="m in members.filter(m => m.isOnline)" :key="m.user_no">
                                 <a href="#" class="user-profile">
-                                    <img src="${pageContext.request.contextPath }/assets/images/profile/user-3.jpg" alt="" width="35" height="35" class="rounded-circle">
+                                    <img :src="m.profile_img ? m.profile_img : '${pageContext.request.contextPath}/assets/images/profile/default_pf.png'" alt="" width="35" height="35" class="rounded-circle">
                                     <p class="user-info">{{ m.nickname }}</p>
                                 </a>
                             </li>
@@ -172,7 +173,7 @@
                         <ul id="offlineUl" class="accordion-collapse show" aria-labelledby="offlinedrop">
                             <li v-for="m in members.filter(m => !m.isOnline)" :key="m.user_no">
                                 <a href="#" class="user-profile">
-                                    <img src="${pageContext.request.contextPath }/assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
+                                    <img :src="m.profile_img ? m.profile_img : '${pageContext.request.contextPath}/assets/images/profile/default_pf.png'" alt="" width="35" height="35" class="rounded-circle">
                                     <p class="user-info">{{ m.nickname }}</p>
                                 </a>
                             </li>
@@ -221,6 +222,17 @@
                         <option value="Y">공개</option>
                         <option value="N">비공개</option>
                     </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>태그 선택</label>
+                    <div class="d-flex flex-wrap gap-2" id="tag-buttons">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" v-for="tag in allTags"
+                                :key="tag" :class="{ active: selectedTags.includes(tag) }"
+                                @click="toggleTag(tag)">
+                        {{ tag }}
+                        </button>
                     </div>
                 </div>
 

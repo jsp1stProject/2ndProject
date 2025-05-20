@@ -41,8 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/groups")
 public class GroupRestController {
 	private final GroupService service;
-	@Value("${file.upload-dir}")
-	private String uploadDir;
 	
 	@GetMapping
 	public ResponseEntity<ApiResponse<Map<String, Object>>> group_groups(HttpServletRequest request)
@@ -82,8 +80,8 @@ public class GroupRestController {
 		return ResponseEntity.ok(ApiResponse.success(list));
 	}
 	
-	@GetMapping("/members")
-	public ResponseEntity<ApiResponse<List<GroupMemberDTO>>> getGroupMemberAllByGroupNo(Integer groupNo) {
+	@GetMapping("/{groupNo}/members")
+	public ResponseEntity<ApiResponse<List<GroupMemberDTO>>> getGroupMemberAllByGroupNo(@PathVariable Integer groupNo) {
 		if (groupNo == null) {
 			throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
 		}
@@ -132,10 +130,8 @@ public class GroupRestController {
     		@PathVariable("groupNo") Integer groupNo,
     		@RequestPart("groupDetail") GroupDTO dto,
     		@RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
-		System.out.println("controller dto: " + dto);
-		System.out.println("dto: " + dto.toString());
 		dto.setGroup_no(groupNo);
-        service.updateGroupDetail(dto, profileImg);
+        service.updateGroupDetail(dto, profileImg, dto.getTags());
 		return ResponseEntity.ok(ApiResponse.success("그룹 정보가 수정되었습니다."));
     }
 	
