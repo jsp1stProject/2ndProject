@@ -162,15 +162,15 @@
   IMP.init(window.__IMP_CODE__);
 
   const amount = this.totalPrice;
-  const merchantUid = 'resv_' + new Date().getTime(); // 고유 주문번호
+  const merchantUid = 'resv_' + new Date().getTime(); 
 
   IMP.request_pay({
-    pg: "kakaopay", // ✅ PG사: 카카오페이
+    pg: "kakaopay", 
     pay_method: "card",
     merchant_uid: merchantUid,
-    name: "펫시터 돌봄 예약",
+    name: "pet4you 돌봄 예약",
     amount: amount,
-    buyer_email: "test@example.com",         // 실제 유저 정보로 교체 가능
+    buyer_email: "test@example.com",         // test용
     buyer_name: "홍길동",
     buyer_tel: "010-1234-5678",
     buyer_addr: this.form.location_detail,
@@ -199,7 +199,7 @@
         });
         if (res.data === "success") {
           alert("예약 및 결제 완료!");
-          location.href = "/sitter/resList";
+          location.href = "/web/sitter/resList";
         } else {
           alert("예약 저장 실패");
         }

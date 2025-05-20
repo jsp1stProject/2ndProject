@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.*;
 import com.sist.web.sitter.vo.*;
 import com.sist.web.sitter.service.*;
 @Controller
@@ -18,6 +17,7 @@ public class SitterController {
 	
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
+
 
 	@GetMapping("/sitter/list")
 	public String sitter()

@@ -54,6 +54,9 @@
 
         <button class="btn btn-primary btn-sm mt-3 w-100" @click="dataRecv(1)">검색</button>
         <button class="btn btn-outline-secondary btn-sm mt-2 w-100" @click="resetFilter">초기화</button>
+        <button class="btn btn-success btn-sm mt-3 w-100" @click="goToReservationList">
+  📋 내 예약 목록 보기
+</button>
       </div>
     </div>
 
@@ -195,6 +198,9 @@
           alert("찜 처리 실패")
         }
       },
+goToReservationList() {
+  location.href = '/web/sitter/resList';
+},
       changePage(page) {
         if (page >= 1 && page <= this.totalpage) {
           this.dataRecv(page)
@@ -209,7 +215,6 @@
       },
       goDetail(sitter_no) {
         if (!sitter_no) {
-          alert("⚠ sitter_no가 없습니다!")
           return
         }
         location.href = '/web/sitter/detail?sitter_no=' + sitter_no

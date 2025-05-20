@@ -17,7 +17,7 @@ public interface SitterResMapper {
 
 	// 예약 상세
 	@Select("SELECT r.*, "
-			+ "u.user_no AS user_user_no, u.nickname AS user_nickname, u.profile_pic AS user_profile_pic, "
+			+ "u.user_no AS user_user_no, u.nickname AS user_nickname, u.profile AS user_profile_pic, "
 			+ "s.sitter_no AS sitter_sitter_no, s.pet_first_price AS sitter_pet_first_price " + "FROM p_sitter_res r "
 			+ "JOIN p_users u ON r.user_no = u.user_no " + "JOIN p_sitter s ON r.sitter_no = s.sitter_no "
 			+ "WHERE r.res_no = #{res_no}")
@@ -34,14 +34,14 @@ public interface SitterResMapper {
 			@Result(property = "created_at", column = "created_at"),
 			@Result(property = "userVO.user_no", column = "user_user_no"),
 			@Result(property = "userVO.nickname", column = "user_nickname"),
-			@Result(property = "userVO.profile_pic", column = "user_profile_pic"),
+			@Result(property = "userVO.profile", column = "user_profile_pic"),
 			@Result(property = "sitterVO.sitter_no", column = "sitter_sitter_no"),
 			@Result(property = "sitterVO.pet_first_price", column = "sitter_pet_first_price") })
 	public SitterResVO sitterReservation(@Param("res_no") int res_no);
 
 	// 예약 목록
 	@Select("SELECT r.*, "
-			+ "u.user_no AS user_user_no, u.nickname AS user_nickname, u.profile_pic AS user_profile_pic, "
+			+ "u.user_no AS user_user_no, u.nickname AS user_nickname, u.profile AS user_profile_pic, "
 			+ "s.sitter_no AS sitter_sitter_no, s.pet_first_price AS sitter_pet_first_price " + "FROM p_sitter_res r "
 			+ "JOIN p_users u ON r.user_no = u.user_no " + "JOIN p_sitter s ON r.sitter_no = s.sitter_no "
 			+ "WHERE r.user_no = #{user_no} " + "ORDER BY r.res_date DESC, r.start_time ASC")
