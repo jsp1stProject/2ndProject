@@ -1,6 +1,7 @@
 package com.sist.web.sitter.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -28,6 +29,9 @@ public class SitterResController {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
     
+	@Value("${imp.initcode}")
+	private String impCode;
+	
 	@GetMapping("/sitter/resList")
 	public String sitter_resList()
 	{
@@ -62,19 +66,15 @@ public class SitterResController {
 	    int petFirstPrice = Integer.parseInt(
 	            sitterVO.getPet_first_price().replaceAll("[^0-9]", "")
 	    );
-
+	    
 	    // 신청자의 반려동물 리스트
 	    List<PetsVO> petsList = pService.getPetsByUserNo(user_no);
-	    System.out.println("✅ user_no: " + user_no);
-	    System.out.println("✅ petsList size: " + petsList.size());
-	    for (PetsVO pet : petsList) {
-	        System.out.println("➡️ pet_name: " + pet.getPet_name());
-	    }
 	    String petsJson = new Gson().toJson(petsList);
-
+	    
 	    model.addAttribute("petFirstPrice", petFirstPrice);
 	    model.addAttribute("petsJson", petsJson);
 	    model.addAttribute("sitterNo", sitter_no);
+	    model.addAttribute("impCode",impCode);
 
 	    return "sitter/reserve";
 	}
