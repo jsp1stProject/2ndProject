@@ -11,6 +11,7 @@ public class ScheduleVO {
 	private long user_no;
 	private String sche_title, sche_content,sche_start_str, sche_end_str,dbday;
 	private Date sche_start, sche_end, regdate;
-	private List<ScheduleMemberVO> participants; //스케쥴 참여 멤버
+	private List<ScheduleMemberVO> participants; //스케쥴 참여 멤버조회
+	private List<Long> participants_no;
 	
 }

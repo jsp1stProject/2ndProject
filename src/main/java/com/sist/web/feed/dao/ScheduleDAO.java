@@ -1,6 +1,7 @@
 package com.sist.web.feed.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -26,9 +27,9 @@ public class ScheduleDAO {
 		mapper.scheduleMemberInsert(vo);
 	}
 	
-	public List<ScheduleVO> scheduleGroupList(int group_no)
+	public List<ScheduleVO> scheduleGroupList(Map map)
 	{
-		return mapper.scheduleGroupList(group_no);
+		return mapper.scheduleGroupList(map);
 	}
 	
 	public List<ScheduleVO> scheduleUserTotalList(long user_no)

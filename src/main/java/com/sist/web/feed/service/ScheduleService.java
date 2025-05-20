@@ -13,9 +13,9 @@ import com.sist.web.feed.vo.ScheduleVO;
 public interface ScheduleService {
 	public void groupScheduleInsert(ScheduleVO vo);
 	public void scheduleMemberInsert(ScheduleMemberVO vo);
-	public Map scheduleInsertData(int group_no, ScheduleVO vo,long user_no);
-	public List<ScheduleVO> scheduleGroupList(int group_no);
-	public Map scheduleGroupListData(int group_no);
+	public String scheduleInsertData(int group_no, ScheduleVO vo,long user_no);
+	public List<ScheduleVO> scheduleGroupList(Map map);
+	public List<ScheduleVO> scheduleGroupListData(long user_no, int group_no);
 	public List<ScheduleVO> scheduleUserTotalList(long user_no);
 	public void scheduleInsert(ScheduleVO vo);
 	public ScheduleVO schedule_detail(int sche_no);

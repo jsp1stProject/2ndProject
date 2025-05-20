@@ -330,6 +330,12 @@
       		this.calendar = new FullCalendar.Calendar(calendarEl, {
         		initialView: 'dayGridMonth',
         		locale: 'ko',
+				dayMaxEventRows: true,
+  				views: {
+  				dayGridMonth: {
+      				dayMaxEventRows: 3 // 최대 3개까지만 보이고, 초과 시 "+n개 더보기"로 표시
+    				}
+  				},
        	 		dateClick: this.handleDateClick,
 				eventClick: this.handleEventClick,
 				eventContent: function(arg) {

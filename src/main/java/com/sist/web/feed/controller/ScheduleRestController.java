@@ -1,5 +1,7 @@
 package com.sist.web.feed.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.web.feed.service.ScheduleService;
 import com.sist.web.feed.vo.GroupVO;
+import com.sist.web.feed.vo.ScheduleMemberVO;
 import com.sist.web.feed.vo.ScheduleVO;
 
 import lombok.RequiredArgsConstructor;
@@ -38,13 +41,13 @@ public class ScheduleRestController {
 	private final ScheduleService service;
 	
 	@GetMapping("/group/{group_no}")
-	public ResponseEntity<Map> group_schedule_list(int group_no, HttpServletRequest request)
+	public ResponseEntity<List<ScheduleVO>> group_schedule_list(@PathVariable("group_no") int group_no, HttpServletRequest request)
 	{
-		Map map = new HashMap();
+		List<ScheduleVO> schedule_list = new ArrayList<ScheduleVO>();
 		try {
-			
-			map = service.scheduleGroupListData(group_no);
-			
+			long user_no = (long)request.getAttribute("userno");
+			schedule_list = service.scheduleGroupListData(user_no,group_no);
+			System.out.println("리스트 길이"+schedule_list.size());
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -52,33 +55,33 @@ public class ScheduleRestController {
 			return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		System.out.println("schedule_group_list 완료");
-		return new ResponseEntity<>(map,HttpStatus.OK);
+		return new ResponseEntity<>(schedule_list,HttpStatus.OK);
 	}
 	
 	@PostMapping("/group/{group_no}")
-	public ResponseEntity<Map> group_schedule_insert(@ModelAttribute ScheduleVO vo,
-											@RequestParam("group_no") int group_no,
-											@RequestParam("participants") List<Long> participants,
+	public ResponseEntity<String> group_schedule_insert(@PathVariable("group_no") int group_no, @ModelAttribute ScheduleVO vo,
 											 HttpServletRequest request )
 	{
 		System.out.println("인서트!");
 		System.out.println(vo.getSche_start_str());
 		System.out.println(vo.getSche_end_str());
-		Map map = new HashedMap();
+		System.out.println("vo값은 "+vo);
+		String result="";
+
 		try {
-			vo.setGroup_no(group_no);
 			//vo.setParticipants(participants);
 			System.out.println(vo);
 			long user_no = (long)request.getAttribute("userno");
-			service.scheduleInsertData(group_no, vo, user_no);
-			
+			result = service.scheduleInsertData(vo.getGroup_no(), vo, user_no);
+			System.out.println(result);
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("오류발생");
+
 			e.printStackTrace();
 			return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
-		}		
-		return new ResponseEntity<>(map,HttpStatus.OK);
+		}
+		System.out.println("종료");
+		return new ResponseEntity<>(result,HttpStatus.OK);
 	}
 	
 	@GetMapping()

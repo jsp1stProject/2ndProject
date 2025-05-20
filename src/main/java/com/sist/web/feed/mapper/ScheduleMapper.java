@@ -1,6 +1,7 @@
 package com.sist.web.feed.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -13,21 +14,16 @@ import com.sist.web.feed.vo.ScheduleVO;
 public interface ScheduleMapper {
 	//그룹페이지 내 그룹일정
 	@Insert("INSERT INTO p_schedule(sche_no, group_no, user_no, type, sche_title, sche_content, "
-			+ "sche_start,sche_end, is_public) " +
+			+ "sche_start,sche_end, is_public, is_important, alarm) " +
 	        "VALUES (p_sche_no_seq.nextval, #{group_no}, #{user_no}, #{type}, #{sche_title},"
-	        + " #{sche_content}, #{sche_start}, #{sche_end}, #{is_public})")
+	        + " #{sche_content}, #{sche_start}, #{sche_end}, #{is_public}, #{is_important}, #{alarm})")
 	@SelectKey(statement = "SELECT p_sche_no_seq.currval FROM dual", keyProperty = "sche_no", before = false, resultType = int.class )
 	public void groupScheduleInsert(ScheduleVO vo);
 	
 	@Insert("INSERT INTO p_schedule_member(sche_no, user_no) VALUES(#{sche_no},#{user_no})")
 	public void scheduleMemberInsert(ScheduleMemberVO vo);
 	
-	@Select("SELECT sche_no, group_no, user_no, type, sche_title, sche_content, TO_CHAR(sche_start,'YYYY-MM-DD HH24:MI') as sche_start_str, "
-			+ "TO_CHAR(sche_end,'YYYY-MM-DD HH24:MI') as sche_end_str, TO_CHAR(regdate,'YYYY-MM-DD HH24:MI') as dbday, is_public "
-			+ "FROM p_schedule "
-			+ "WHERE group_no=#{group_no} "
-			+ "ORDER BY sche_start ASC ")
-	public List<ScheduleVO> scheduleGroupList(int group_no);
+	public List<ScheduleVO> scheduleGroupList(Map map);
 	//일정관리페이지
 	@Select("SELECT DISTINCT p.sche_no, p.sche_title,TO_CHAR(p.sche_start, 'YYYY-MM-DD HH24:MI') as sche_start_str, "
 			+ "TO_CHAR(p.sche_end, 'YYYY-MM-DD HH24:MI') as sche_end_str, p.is_important, p.type "
