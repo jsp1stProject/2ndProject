@@ -16,7 +16,7 @@
                     <div class="row g-0">
                         <div class="position-relative col-5 col-sm-3 col-lg-2 d-sm-block">
                             <a href="javascript:void(0)">
-                                <img :src="'https://pet4u.s3.ap-northeast-2.amazonaws.com/'+pet.pet_profilepic" class="card-img-top h-100" :alt="pet.pet_name" style="object-fit: cover">
+                                <img :src="'${pageContext.request.contextPath}/s3/'+pet.pet_profilepic" class="card-img-top h-100" :alt="pet.pet_name" style="object-fit: cover">
                             </a>
                         </div>
                         <div class="card-body col-3 p-3">

@@ -13,7 +13,7 @@
             <form @submit.prevent="updatePet" method="post" name="uploadForm" id="uploadForm" ref="uploadForm">
                 <input type="file" id="pet_profilepic" class="d-none" name="pet_profilepic" accept="image/*" @change="checkProfile(this, $event)"/>
                 <div id="profilewrap" @click="profileupload">
-                    <div :style="pet.pet_profilepic ? { backgroundImage: 'url(https://pet4u.s3.ap-northeast-2.amazonaws.com/'+pet.pet_profilepic+')' } : {}"></div>
+                    <div :style="pet.pet_profilepic ? { backgroundImage: 'url(${pageContext.request.contextPath}/s3/'+pet.pet_profilepic+')' } : {}"></div>
                 </div>
                 <input type="hidden" id="profileChange" name="profileChange" value="0">
                 <input type="hidden" v-model="pet.pet_no" id="pet_no" name="pet_no">

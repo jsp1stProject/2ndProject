@@ -129,7 +129,7 @@
 			let profile="";
 			console.log(res.data)
 			if(res.data.data!=null){
-				profile = res.data.message + res.data.data.profile;
+				profile = '${pageContext.request.contextPath}/s3/' + res.data.data.profile;
 			}else{
 				profile = "${pageContext.request.contextPath}/assets/images/profile/default_pf.png"
 			}

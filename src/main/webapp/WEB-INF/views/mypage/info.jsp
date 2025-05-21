@@ -13,7 +13,7 @@
             <form @submit.prevent="updateUser" method="post" name="uploadForm" id="uploadForm" ref="uploadForm">
                 <input type="file" id="profile" name="profile" accept="image/*" @change="checkProfile(this, $event)"/>
                 <div id="profilewrap" @click="profileupload">
-                    <div :style="user.profile ? { backgroundImage: 'url(https://pet4u.s3.ap-northeast-2.amazonaws.com/'+user.profile+')' } : {}"></div>
+                    <div :style="user.profile ? { backgroundImage: 'url(${pageContext.request.contextPath}/s3/'+user.profile+')' } : {}"></div>
                 </div>
                 <input type="hidden" id="profileChange" name="profileChange" value="0">
                 <button type="button" class="btn btn-sm btn-outline-danger d-block mx-auto mb-3" @click="deleteProfile">기본 이미지 적용</button>
