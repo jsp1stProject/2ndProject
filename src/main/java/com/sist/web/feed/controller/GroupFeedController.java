@@ -14,24 +14,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.sist.web.feed.service.*;
 import com.sist.web.feed.vo.*;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Controller
 public class GroupFeedController {
 	
-	@Autowired
-	private GroupFeedService service;
-	/*
-	@GetMapping("/group/list")
-	public String group_list()
-	{
-		return "group/list";
-	}
-	
-	@GetMapping("/group/detail")
-	public String group_detail()
-	{
-		return "group/detail";
-	}
-	*/
+	private final GroupFeedService service;
+
 	@GetMapping("/group/feed")
 	public String group_feed(int feed_no, Model model, HttpServletRequest request)
 	{

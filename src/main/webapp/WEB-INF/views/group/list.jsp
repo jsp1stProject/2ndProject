@@ -1,221 +1,249 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>그룹리스트</title>
-  <link	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<style>
-body {
-	background-color: #f6f7f8;
-	font-family: 'Segoe UI', sans-serif;
-	padding: 20px;
-}
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="container pt-header">
+        <div class="row pt-3">
+            <div class="col-lg-4">
+                <div class="filter-container">
+                    <form action="" name="filterform" method="post">
+                    <div class="d-flex justify-content-between pb-2">
+                        <button type="button" class="cpsbtn">필터</button>
+                        <button type="reset" class="btn btn-light resetbtn">초기화</button>
+                    </div>
+                        <div class="filter-inner mb-3">
+                            <div class="filter-wrap p-3" id="filter">
+                                <div class="filter-item"> <!--checkbox 타입-->
+                                    <h6>태그</h6>
+                                    <div class="checkbtn-wrap">
+                                        <input type="checkbox" name="type" id="1">
+                                        <label for="1">태그1</label>
+                                        <input type="checkbox" name="type" id="2">
+                                        <label for="2">태그2</label>
+                                    </div>
+                                </div>
+                                <div class="filter-item"> <!--radio 타입-->
+                                    <h6>조건</h6>
+                                    <div class="radio-wrap row">
+                                        <div class="col-3 col-lg-6">
+                                            <input type="radio" name="enddate" value="false" id="enddate1" checked>
+                                            <label for="enddate1">조건 1</label>
+                                        </div>
+                                        <div class="col-3 col-lg-6">
+                                            <input type="radio" name="enddate" value="true" id="enddate2">
+                                            <label for="enddate2">조건 2</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="filter-item">
+                                    <h6>조건</h6>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                        <label class="form-check-label" for="flexSwitchCheckDefault">입장 가능</label>
+                                    </div>
+                                </div>
+                                <div class="filter-item">
+                                    <button type="button" class="btn btn-light w-100" onclick="filtersubmit();">결과 보기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary mb-2 "  data-bs-toggle="modal" data-bs-target="#newPostModal">
+                        <iconify-icon icon="solar:users-group-rounded-broken" class="fs-6 align-middle"></iconify-icon>
+                        새 그룹
+                    </button>
+                    <button type="button" class="btn btn-primary mb-2 "  @click="group_member_management(user_no)" >
+                        <iconify-icon icon="solar:users-group-rounded-broken" class="fs-6 align-middle"></iconify-icon>
+                        내 그룹관리
+                    </button>
+                </div>
+                <!--  그룹 리스트 출력부분  -->
+                <div v-for="vo in list" :key="vo.group_no" class="card overflow-hidden mb-3">
+                    <div class="row g-0">
+                        <div class="position-relative col-sm-4 d-none d-sm-block">
+                                <img :src="vo.profile_img" class="card-img-top h-100" alt="그룹프로필이미지" style="object-fit: cover"> 
+                        </div>
+                        <div class="card-body col-3 p-3">
+                            <div class="d-flex gap-2">
+                                <div class="d-flex align-items-center d-sm-none">
+                                    <img :src="vo.profile_img" width="42" height="42" class="rounded-circle fs-1">
+                                </div>
+                                <div class="">
+                                    <span v-for="(tag, idx) in vo.tag?.split(',')" :key="idx" class="badge text-bg-light fs-2 py-1 px-2 lh-sm">태그1</span>
+                                    <a class="d-block mt-1 mb-2 fs-5 text-dark fw-semibold link-primary" href="">{{vo.group_name}}</a>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center flex-wrap gap-2 mb-2 fs-2">
+                                <div class="d-flex align-items-center gap-1">
+                                    <span>방장</span><span class="text-dark">{{vo.owner_name}}</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <span>참여자</span><span class="text-dark">{{vo.current_member_count}} / {{ vo.capacity }}</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <span>개설일</span><span class="text-dark">{{vo.created_at}}</span>
+                                </div>
+                            </div>
+                            <p class="mb-3">{{vo.description}}</p>
+                            <div class="d-flex justify-content-end fs-3">
+                                <button v-if="stateMap[vo.group_no]?.IS_MEMBER === 'Y'"  type="button" class="btn btn-outline-dark" @click="detail(vo.group_no)">입장하기</button>
+                                <button v-else-if="stateMap[vo.group_no]?.JOIN_STATUS === 'WAITING'" type="button" class="btn btn-outline-warning" disabled>가입 대기 중</button>
+                                <button v-else type="button" class="btn btn-outline-warning" @click="join(vo.group_no)">신청하기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 새 그룹에 대한 모달창 -->
+	<div class="modal fade" id="newPostModal" tabindex="-1">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title">새 그룹</h5>
+	        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	      </div>
+	      <div class="modal-body">
+	        <form @submit.prevent="addPost">
+	          <div class="mb-3">
+	            <label class="form-label">그룹명</label>
+	            <input type="text" class="form-control" v-model="newPost.group_name" required>
+	          </div>
+	          <div class="mb-3">
+	            <label class="form-label">그룹 설명</label>
+	            <textarea class="form-control" v-model="newPost.description" rows="3" required></textarea>
+	          </div>
+	          <div class="mb-3">
+	            <label class="form-label">최대 인원</label>
+	            <input type="number" class="form-control" v-model="newPost.capacity" required>
+	          </div>
+	          <div class="mb-3">
+	            <label class="form-label">공개 여부</label>
+	            <select class="form-select" v-model="newPost.is_public">
+	              <option value="Y">공개</option>
+	              <option value="N">비공개</option>
+	            </select>
+	          </div>
+	          <div class="mb-3">
+	            <label class="form-label">프로필 사진 URL</label>
+	            <input type="file" class="form-control" accept="image/*" @change="handleFileChange">
+	          </div>
+	          <div class="text-end">
+	            <button type="submit" class="btn btn-success">생성하기</button>
+	          </div>
+	        </form>
+	      </div>
+	    </div>
+	  </div>
+	</div>
 
-.custom-container {
-	width: 70%;
-	margin: 0 auto;
-}
-
-.post-card {
-	margin-bottom: 20px;
-}
-
-.post-body {
-	margin-top: 10px;
-}
-
-.preview-img {
-	max-width: 100px;
-	max-height: 100px;
-	margin: 5px;
-	border-radius: 6px;
-	object-fit: cover;
-}
-
-.group-img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-@media ( max-width : 768px) {
-	.custom-container {
-		width: 95%;
-	}
-}
-</style>
-</head>
-<body>
-<div class="container-fluid custom-container">
-  <div class="row">
+<script>
+    $(document).on("click",".cpsbtn",function(){
+        var con=$(this).closest('.filter-container')
+        if(con.hasClass('active')){
+            con.removeClass('active');
+        }else{
+            con.addClass('active');
+        }
+    });
     
-    <!-- 왼쪽 필드 영역 -->
-    <div class="col-md-3 mb-4">
-      <div class="card">
-        <div class="card-header">📅 오늘의 일정</div>
-        <div class="card-body">
-          <ul class="list-unstyled mb-0">
-            <li><strong>그룹에 대한 필터 예정</strong></li>
-          </ul>
-        </div>
-      </div>
-    </div>
+</script>    
 
-    <!-- 중앙 피드 영역 -->
-    <div class="col-md-9">
-      
-      
-      <!-- 상단 새 피드 쓰기 버튼 -->
-      <div class="mb-3">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newPostModal">
-          ✏️ 새 그룹
-        </button>
-      </div>
-      <!--  상단 새 일정 쓰기 버튼 -->
-      <!-- <div class="text-right" style="margin-bottom: 15px;">
-        <button class="btn btn-primary" data-toggle="modal" data-target="#newPostModal">
-          <span class="glyphicon glyphicon-pencil"></span> 일정 추가
-        </button>
-      </div> -->
+<script type="module">    
+    import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
-	  <!-- 새 그룹 모달 -->
-      <div class="modal fade" id="newPostModal" tabindex="-1">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">새 그룹</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <form @submit.prevent="addPost">
-                <div class="mb-3">
-                  <label class="form-label">그룹명</label>
-                  <input type="text" class="form-control" v-model="newPost.group_name" required>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">그룹 설명</label>
-                  <textarea class="form-control" v-model="newPost.description" rows="3" required></textarea>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">최대 인원</label>
-                  <input type="number" class="form-control" v-model="newPost.capacity" required>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">공개 여부</label>
-                  <select class="form-select" v-model="newPost.is_public">
-                    <option value="Y">공개</option>
-                    <option value="N">비공개</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">프로필 사진 URL</label>
-                  <input type="text" class="form-control" v-model="newPost.profile_img">
-                </div>
-                <div class="text-end">
-                  <button type="submit" class="btn btn-success">생성하기</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- 게시글 반복 렌더링 -->
-      <div v-for="(vo, index) in list" :key="vo.group_no" class="card mb-4">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <img :src="vo.profile_img" class="group-img me-3">
-            <div>
-              <h5 class="mb-1">{{ vo.group_name }}</h5>
-              <p class="mb-1 text-muted">{{ vo.description }}</p>
-              <p class="mb-1">태그: {{ vo.tag }}</p>
-              <p class="mb-1">인원: {{ vo.currentMemberCount }} / {{ vo.capacity }}명</p>
-              <p class="mb-1">방장: {{ vo.owner }}</p>
-              <p class="mb-1">개설일: {{ vo.created_at }}</p>
-              <button class="btn btn-primary btn-sm mt-2" @click="detail(vo.group_no)">입장하기</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<script type="module">
-  import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+    createApp({
+      data() {
+        return {
+          list: [],
+		  states_list:[],
+		  user_no : '',
+          selectedFiles: [],
+          newPost: {
+            group_name: '',
+            profile_img: '',
+            description: '',
+            capacity: '',
+            is_public: 'Y'
+          }
+        }
+      },
+      mounted() {
+        this.dataRecv();
+      },
+      methods: {
+        handleFileChange(event) {
+          this.selectedFiles = Array.from(event.target.files);
+        },
+		group_member_management(user_no){
+		  console.log("그룹멤버관리")
+		  location.href = '../group/member_management?user_no='+user_no;
+		},
+	    join(group_no) {
+		  console.log(group_no)
+		  if(!this.user_no)
+		  {
+			 alert("로그인페이지로이동");
+			 location.href = '';
+		  }
+		  axios.post('../api/groups/'+group_no+'/join',{
 
-  createApp({
-	data(){
-      return {
-         list:[],
-		 newPost: {
-         			group_name: '',
-         			profile_img: '',
-         			description: '',
-					capacity:'',
-					is_public: 'Y'
-      			   },
-		 
+
+		  }).then(res => {
+			 alert("가입 신청 완료!!")
+			 this.dataRecv();
+		  }).catch(err => {
+		     alert("가입 신청 실패.");
+			 console.error(err);
+		  });
+		},
+        detail(group_no) {
+          location.href = '../group/detail?group_no=' + group_no;
+        },
+        addPost() {
+          const formData = new FormData();
+          formData.append('group_name', this.newPost.group_name);
+          formData.append('description', this.newPost.description);
+          formData.append('capacity', this.newPost.capacity);
+          formData.append('is_public', this.newPost.is_public);
+
+          this.selectedFiles.forEach(file => {
+            formData.append('files', file);
+          });
+
+          axios.post('../group/groups', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          }).then(response => {
+            alert('새 그룹 생성 완료');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newPostModal'));
+            modal.hide();
+            this.dataRecv();
+          }).catch(error => {
+            console.error(error);
+            alert('등록 중 오류 발생');
+          });
+        },
+        async dataRecv() {
+          const res = await axios.get('../api/groups');
+          console.log(res.data)
+		  this.list = res.data.data.group_list;
+		  this.state_list = res.data.data.states_list
+		  this.user_no = res.data.data.user_no;
+		  this.stateMap = {};
+		  this.state_list.forEach(state => {
+        	  this.stateMap[state.GROUP_NO] = state;
+			  
+      	  });
+          console.log(this.stateMap)
+        }
       }
-    },
-	mounted(){
-		this.dataRecv()
-	},
-    methods:{
-		detail(group_no) {
-			location.href='../group/detail?group_no='+group_no
-		},
-		addPost() {
-			console.log("데이터 등록 시작")
-			const formData = new FormData();
-			formData.append('title', this.newPost.title)
-			formData.append('content', this.newPost.title)
-			this.selectedFiles.forEach(file => {
-    			formData.append('files', file);
-  			});
-			axios.post('../group/groups',formData,{
-				headers:{
-				'Content-Type':'multipart/form-data'
-				}
-			}).then(response=>{
-				alert("새그룹 생성 완료")
-				const modal=boottstrap.Modal.getInstance(document.getElementById('newPostModal'));
-				modal.hide();
-				this.dataRecv();
-			}).catch(error=>{
-				console.error(error);
-				alert("데이터등록 요류발생")
-			})
-/*
-			const res = axios.post('../group/groups',{
-					title : this.newPost.title
-					content : this.newPost.content
-					files : this.newPost.files
-			}).then(response=> {
-				console.log("데이터 등록 성공")
-			}).catch(error=> {
-				console.error(error);
-				alert("데이터등록 중 오류발생")
-			});
-*/
+    }).mount('.container');
 
-			
-			
-		},
-		async dataRecv(){
-			console.log("dataRecv 실행")
-			const res = await axios.get('../group/groups',{
-			})
-            this.list=res.data.list 
-			console.log(res)
-		}
 
-	}
-  }).mount('.container-fluid')
 </script>
-</body>
-</html>
+
