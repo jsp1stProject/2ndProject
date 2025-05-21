@@ -267,6 +267,7 @@ buildNumber.properties
 build/
 nbbuild/
 dist/
+!libs/**/dist
 nbdist/
 .nb-gradle/
 
