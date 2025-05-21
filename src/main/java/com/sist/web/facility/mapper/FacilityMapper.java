@@ -56,8 +56,8 @@ public interface FacilityMapper {
     
 	
     // 디테일 추가할거 많음
-    @Select("SELECT * FROM P_PET_FACILITY WHERE FACILITY_ID = #{facilityId}")
-    public FacilityVO facilityDetail(@Param("facilityId") int facilityId);
+    @Select("SELECT * FROM P_PET_FACILITY WHERE facility_id = #{facility_id}")
+    public FacilityVO facilityDetail(@Param("facility_id") int facility_id);
 
 
     // 반경 5km 내의 시설 찾기

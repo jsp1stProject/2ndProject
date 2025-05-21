@@ -42,8 +42,9 @@ public class BoardController {
 	model.addAttribute("totalPage", totalPage);
 	model.addAttribute("type", type);
 	model.addAttribute("keyword", keyword);
+	model.addAttribute("main_jsp", "../board/list.jsp");
 	
-	return "board/list";  // /WEB-INF/views/board/list.jsp
+	return "main/main";  // /WEB-INF/views/board/list.jsp
 	}
 	
 	@GetMapping("/detail")
@@ -51,12 +52,15 @@ public class BoardController {
 	service.boardHit(post_id); // 조회수 증가
 	BoardVO vo = service.boardDetail(post_id);
 	model.addAttribute("vo", vo);
-	return "board/detail";
+	model.addAttribute("main_jsp", "../board/detail.jsp");
+	
+	return "main/main";
 	}
 
 	@GetMapping("/insert")
-	public String boardInsertForm() {
-	return "board/insert";
+	public String boardInsertForm(Model model) {
+	model.addAttribute("main_jsp", "../board/insert.jsp");
+    return "main/main";
 	}
 	
 	// 게시글 작성 처리

@@ -38,9 +38,11 @@
 
         .pagination {
             margin-top: 20px;
+            text-align: center;
         }
 
         .pagination a, .pagination strong {
+            display: inline-block;
             margin: 0 4px;
             padding: 6px 12px;
             text-decoration: none;
@@ -79,7 +81,21 @@
 	</form>
 </div>
     <h2>${category} 시설 목록</h2>
-
+<div style="text-align:center; margin-bottom: 20px;">
+    <form method="get" action="${pageContext.request.contextPath}/facility/list">
+	    <label for="category">카테고리 선택: </label>
+	    <select name="category">
+	        <c:forEach var="c" items="${categoryList}">
+	            <option value="${c}" ${c == category ? 'selected' : ''}>${c}</option>
+	        </c:forEach>
+	    </select>
+	
+	    <label for="location">지역 입력: </label>
+	    <input type="text" name="location" value="${location}" placeholder="예: 서울, 강남 등" />
+	
+	    <input type="submit" value="검색" />
+	</form>
+</div>
     <table>
         <tr>
             <th>이름</th>
@@ -88,9 +104,10 @@
             <th>홈페이지</th>
         </tr>
         <c:forEach var="vo" items="${list}">
+          
             <tr>
-                <!-- <td><a href="/facility/detail?facilityId=${vo.facility_id}">${vo.fclty_nm}</a></td> 디테일용 --> 
-                <td>${vo.fclty_nm}</td>
+                <td><a href="/web/facility/detail?facility_id=${vo.facility_id}">${vo.fclty_nm}</a></td> 
+                <!--<td>${vo.fclty_nm}</td>디테일용 --> 
                 <td>${vo.lnm_addr}</td>
                 <td>${vo.tel_no}</td>
                 <td>
@@ -106,6 +123,7 @@
     </table>
 
     <!-- 페이징 영역 -->
+   <div style="display: flex; justify-content: center;">
 	<div class="pagination">
 	    <c:if test="${startPage > 1}">
 	        <a href="${pageContext.request.contextPath}/facility/list?page=${startPage - 1}&category=${category}">이전</a>
@@ -126,6 +144,7 @@
 	        <a href="${pageContext.request.contextPath}/facility/list?page=${endPage + 1}&category=${category}">다음</a>
 	    </c:if>
 	</div>
+   </div>
 
 
 </body>

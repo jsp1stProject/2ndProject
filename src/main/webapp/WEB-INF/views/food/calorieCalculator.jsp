@@ -9,15 +9,19 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: #f4f6f8;
-      height: 100vh;
+      height: 100%;
+    }
+
+    .wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
+      min-height: 100vh;
     }
 
     .calculator {
@@ -25,7 +29,8 @@
       padding: 30px 40px;
       border-radius: 16px;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-      width: 350px;
+      width: 100%;
+      max-width: 360px;
       text-align: center;
     }
 
@@ -71,24 +76,25 @@
   </style>
 </head>
 <body>
-  <div class="calculator">
-    <h2>🐾 반려동물 권장 칼로리 계산</h2>
+  <div class="wrapper">
+    <div class="calculator">
+      <h2>🐾 반려동물 권장 칼로리 계산</h2>
+      <form method="post" action="/web/food/recommend">
+        <label for="animal">동물 종류:</label>
+        <select id="animal" name="animal" onchange="updateActivityOptions()">
+          <option value="dog">강아지 🐶</option>
+          <option value="cat">고양이 🐱</option>
+        </select>
 
-    <form method="post" action="/web/food/recommend">
-      <label for="animal">동물 종류:</label>
-      <select id="animal" name="animal" onchange="updateActivityOptions()">
-        <option value="dog">강아지 🐶</option>
-        <option value="cat">고양이 🐱</option>
-      </select>
+        <label for="weight">체중 (kg):</label>
+        <input type="number" id="weight" name="weight" placeholder="예: 5" step="0.1" required>
 
-      <label for="weight">체중 (kg):</label>
-      <input type="number" id="weight" name="weight" placeholder="예: 5" step="0.1" required>
+        <label for="activity">활동 지수 선택:</label>
+        <select id="activity" name="activity"></select>
 
-      <label for="activity">활동 지수 선택:</label>
-      <select id="activity" name="activity"></select>
-
-      <button type="submit">계산하기</button>
-    </form>
+        <button type="submit">계산하기</button>
+      </form>
+    </div>
   </div>
 
   <script>

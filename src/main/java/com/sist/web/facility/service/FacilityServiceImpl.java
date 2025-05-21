@@ -53,9 +53,9 @@ public class FacilityServiceImpl implements FacilityService{
 	}
 
 	@Override
-	public FacilityVO facilityDetail(int facilityId) {
+	public FacilityVO facilityDetail(int facility_id) {
 		// TODO Auto-generated method stub
-		return Fdao.facilityDetail(facilityId);
+		return Fdao.facilityDetail(facility_id);
 	}
 	
 

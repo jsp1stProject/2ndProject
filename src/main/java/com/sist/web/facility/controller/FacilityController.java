@@ -52,16 +52,17 @@ public class FacilityController {
 	    model.addAttribute("category", category);
 	    model.addAttribute("location", location);
 	    model.addAttribute("categoryList", categoryList);
-
-	    return "facility/list";
+	    model.addAttribute("main_jsp", "../facility/list.jsp");
+	    return "main/main";
 	}
 
 	@GetMapping("/detail")
-	public String facilityDetail(@RequestParam("facilityId") int facilityId, Model model) {
-	    FacilityVO vo = service.facilityDetail(facilityId);
+	public String facilityDetail(@RequestParam("facility_id") int facility_id, Model model) {
+	    FacilityVO vo = service.facilityDetail(facility_id);
 	    model.addAttribute("vo", vo);
-	    return "facility/detail";
-	}
+	    model.addAttribute("main_jsp", "../facility/detail.jsp");
+	    return "main/main";
+	} 
 
 	
 	

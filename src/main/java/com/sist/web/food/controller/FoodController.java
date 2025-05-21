@@ -16,8 +16,9 @@ public class FoodController {
     private FoodMapper mapper;
     
     @GetMapping("/calorieCalculator")
-    public String showCalorieCalculator() {
-        return "food/calorieCalculator"; // /WEB-INF/views/food/calorieCalculator.jsp
+    public String showCalorieCalculator(Model model) {
+    	model.addAttribute("main_jsp", "../food/calorieCalculator.jsp");
+	    return "main/main";
     }
 
 
@@ -42,8 +43,9 @@ public class FoodController {
         model.addAttribute("der", String.format("%.2f", der));
         model.addAttribute("foodList", foodList);
         model.addAttribute("animal", animal);
+        model.addAttribute("main_jsp", "../food/recommendResult.jsp");
 
-        return "food/recommendResult";  // /WEB-INF/views/food/recommendResult.jsp
+        return "main/main";  // /WEB-INF/views/food/recommendResult.jsp
     }
 
     private String getAgeKeywordByActivity(String animal, double activity) {

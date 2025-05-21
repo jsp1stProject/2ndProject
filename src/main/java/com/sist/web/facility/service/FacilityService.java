@@ -15,5 +15,5 @@ public interface FacilityService {
 	public List<FacilityVO> facilityListFiltered(String category, String location, int start, int end);
 	public int facilityTotalPageFiltered(String category, String location);
 	public List<Map<String, Object>> findNearbyFacilities(double lat, double lon);
-	public FacilityVO facilityDetail(@Param("facilityId") int facilityId);
+	public FacilityVO facilityDetail(@Param("facility_id") int facility_id);
 }

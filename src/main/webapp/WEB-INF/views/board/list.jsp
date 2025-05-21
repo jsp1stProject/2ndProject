@@ -77,6 +77,8 @@
     </style>
 </head>
 <body>
+    <h2> 애완동물 게시판</h2>
+    <h1>`</h1>
     <h2>📋 커뮤니티 게시판</h2>
     <!-- 검색 + 필터 통합 -->
     <form method="get" action="list.do">

@@ -41,8 +41,8 @@ public class FacilityDAO {
 	public List<Map<String, Object>> findNearbyFacilities(double lat, double lon){
 		return mapper.findNearbyFacilities(lat, lon);
 	}
-	public FacilityVO facilityDetail(@Param("facilityId") int facilityId) {
-		return mapper.facilityDetail(facilityId);
+	public FacilityVO facilityDetail(@Param("facility_id") int facility_id) {
+		return mapper.facilityDetail(facility_id);
 	}
 	
 }

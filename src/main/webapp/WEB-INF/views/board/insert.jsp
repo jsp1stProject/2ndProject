@@ -16,6 +16,8 @@
     </style>
 </head>
 <body>
+	<h1>🐾</h1>
+	<h1 style="text-align:center;">🐶🐱</h1>
     <h2 style="text-align:center;">📝 게시글 작성</h2>
 
     <form method="post" action="${pageContext.request.contextPath}/web/board/insert" enctype="multipart/form-data">
