@@ -146,6 +146,7 @@
       </div>
       
       <div class="modal-body">
+       <div v-if="!isEditMode">
         <div class="mb-3">
           <h5>
             <span class="badge bg-primary me-2" v-if="detail_schedule.type === 0">개인</span>
@@ -193,12 +194,47 @@
             {{ detail_schedule.alarm === 1 ? '알림이 설정되어 있습니다.' : '알림 없음' }}
           </span>
         </div>
-
+       </div>
+       
+       <div v-else>
+	    <div class="mb-3">
+	      <label class="form-label">제목</label>
+	      <input type="text" class="form-control" v-model="editForm.sche_title">
+	    </div>
+	    <div class="mb-3">
+	      <label class="form-label">내용</label>
+	      <textarea class="form-control" rows="3" v-model="editForm.sche_content"></textarea>
+	    </div>
+	    <div class="mb-3">
+	      <label class="form-label">시작 시간</label>
+	      <input type="datetime-local" class="form-control" v-model="editForm.sche_start_str">
+	    </div>
+	    <div class="mb-3">
+	      <label class="form-label">종료 시간</label>
+	      <input type="datetime-local" class="form-control" v-model="editForm.sche_end_str">
+	    </div>
+	    <div class="form-check mb-2">
+	      <input type="checkbox" class="form-check-input" v-model="editForm.is_important" id="editImportant">
+	      <label for="editImportant" class="form-check-label">⭐️ 중요 일정</label>
+	    </div>
+	    <div class="form-check mb-2">
+	      <input type="checkbox" class="form-check-input" v-model="editForm.alarm" id="editAlarm">
+	      <label for="editAlarm" class="form-check-label">🔔 알림</label>
+	    </div>
+	  </div>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-      </div>
+  <div v-if="!isEditMode">
+    <button class="btn btn-primary" @click="startEdit()">수정</button>
+    <button class="btn btn-danger" @click="deleteSchedule(detail_schedule.sche_no, detail_schedule.type)">삭제</button>
+  </div>
+  <div v-else>
+    <button class="btn btn-success" @click="submitEdit(detail_schedule.sche_no)">저장</button>
+    <button class="btn btn-secondary" @click="isEditMode = false">취소</button>
+  </div>
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+</div>
 
     </div>
   </div>
@@ -225,7 +261,9 @@
 		detail_schedule:{},
         selected_date_schedules:[],
 		schedule_ddayList: [],
-		schedule_importList:[]
+		schedule_importList:[],
+		isEditMode: false,
+		editForm: {},
       }
     },
     computed: {
@@ -238,6 +276,55 @@
       this.dataRecv()
     },
     methods: {
+	  deleteSchedule(sche_no,type) {
+    	if (!confirm("정말 삭제하시겠습니까?")) return;
+
+    	axios.post('../api/schedules/'+sche_no+'/delete', {
+    		sche_no: sche_no,
+    		type: type
+  		})
+      	.then(res => {
+        alert("삭제가 완료되었습니다.");
+
+        // 모달 닫기
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById('scheduleDetailModal')
+        );
+        modal.hide();
+
+        // 캘린더 이벤트 새로고침
+        this.dataRecv();
+      })
+      .catch(err => {
+        console.error("삭제 중 오류 발생", err);
+        alert("삭제에 실패했습니다.");
+      });
+  	  },
+	 startEdit() {
+  		console.log("수정")
+		this.isEditMode = true;
+  		this.editForm = { ...this.detail_schedule };
+	  },
+	  submitEdit(sche_no) {
+        const updateData = {
+    		...this.editForm,
+    		is_important: this.editForm.is_important ? 1 : 0,
+    		alarm: this.editForm.alarm ? 1 : 0
+  		};
+
+  		axios.post('../api/schedules/'+sche_no+'/update', updateData)
+    	.then(res => {
+      	alert('수정이 완료되었습니다');
+      	this.isEditMode = false;
+      	const modal = bootstrap.Modal.getInstance(document.getElementById('scheduleDetailModal'));
+      	modal.hide();
+      	this.dataRecv();
+       })
+    	.catch(err => {
+      	console.error('수정 실패', err);
+      	alert('수정이 실패하였습니다');
+       });
+	  },
 	  getDdayText(endDateStr){
 		if (!endDateStr) return "";		
 

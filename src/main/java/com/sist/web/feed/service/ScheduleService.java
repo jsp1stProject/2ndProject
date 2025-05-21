@@ -25,5 +25,9 @@ public interface ScheduleService {
             @Param("user_no") long user_no);
 	public List<ScheduleVO> schedule_dday(long user_no);
 	public List<ScheduleVO> schedule_important(long user_no);
-	
+	public void deleteSchedule(int sche_no);	
+	public void deleteScheduleMember(int sche_no);
+	public String deleteScheduleData(int sche_no, int type);
+	public void updateSchedule(ScheduleVO vo);
+	public String updateScheduleData(ScheduleVO vo);
 }

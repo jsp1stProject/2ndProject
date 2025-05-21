@@ -3,10 +3,12 @@ package com.sist.web.feed.mapper;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectKey;
+import org.apache.ibatis.annotations.Update;
 
 import com.sist.web.feed.vo.ScheduleMemberVO;
 import com.sist.web.feed.vo.ScheduleVO;
@@ -24,6 +26,11 @@ public interface ScheduleMapper {
 	public void scheduleMemberInsert(ScheduleMemberVO vo);
 	
 	public List<ScheduleVO> scheduleGroupList(Map map);
+
+	/*
+	 * <select id="scheduleParticipants" parameterType="list"
+	 * resultType="com.sist.web.user.vo.UserVO"> public List<userV>
+	 */
 	//일정관리페이지
 	@Select("SELECT DISTINCT p.sche_no, p.sche_title,TO_CHAR(p.sche_start, 'YYYY-MM-DD HH24:MI') as sche_start_str, "
 			+ "TO_CHAR(p.sche_end, 'YYYY-MM-DD HH24:MI') as sche_end_str, p.is_important, p.type "
@@ -82,6 +89,17 @@ public interface ScheduleMapper {
 			+ "WHERE rownum <=5")
 	public List<ScheduleVO> schedule_important(long user_no);
 			
+	@Delete("DELETE FROM p_schedule WHERE sche_no = #{sche_no}")
+	public void deleteSchedule(int sche_no);
+	
+	@Delete("DELETE FROM p_schedule_member WHERE sche_no = #{sche_no}")
+	public void deleteScheduleMember(int sche_no);
+
+	@Update("UPDATE p_schedule SET sche_title = #{sche_title},sche_content = #{sche_content},"
+			+ "sche_start = #{sche_start},sche_end = #{sche_end},"
+			+ "is_important = #{is_important},alarm = #{alarm}"
+			+ "WHERE sche_no = #{sche_no}")
+	public void updateSchedule(ScheduleVO vo);
 	
 }
 

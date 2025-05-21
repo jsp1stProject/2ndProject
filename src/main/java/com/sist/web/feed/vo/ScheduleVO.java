@@ -2,6 +2,7 @@ package com.sist.web.feed.vo;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import lombok.Data;
 
@@ -14,4 +15,16 @@ public class ScheduleVO {
 	private List<ScheduleMemberVO> participants; //스케쥴 참여 멤버조회
 	private List<Long> participants_no;
 	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ScheduleVO)) return false;
+        ScheduleVO other = (ScheduleVO) o;
+        return this.sche_no == other.sche_no;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sche_no);
+    }
 }

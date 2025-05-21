@@ -3,6 +3,7 @@ package com.sist.web.feed.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,5 +67,19 @@ public class ScheduleDAO {
 	public List<ScheduleVO> schedule_important(long user_no)
 	{
 		return mapper.schedule_important(user_no);
+	}
+	public void deleteSchedule(int sche_no)
+	{
+		mapper.deleteSchedule(sche_no);
+	}
+	
+	public void deleteScheduleMember(int sche_no)
+	{
+		mapper.deleteScheduleMember(sche_no);
+	}
+	
+	public void updateSchedule(ScheduleVO vo)
+	{
+		mapper.updateSchedule(vo);
 	}
 }

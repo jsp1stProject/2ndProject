@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +90,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	@Override
 	public List<ScheduleVO> scheduleGroupList(Map map) {
+		System.out.println(dao.scheduleGroupList(map));
+		System.out.println(dao.scheduleGroupList(map).size());
 		return dao.scheduleGroupList(map);
 	}
 
@@ -166,5 +169,62 @@ public class ScheduleServiceImpl implements ScheduleService {
 		return dao.schedule_important(user_no);
 	}
 
- 
+	@Override
+	public void deleteSchedule(int sche_no) {
+		dao.deleteSchedule(sche_no);
+		
+	}
+
+	@Override
+	public void deleteScheduleMember(int sche_no) {
+		dao.deleteScheduleMember(sche_no);
+	}
+	
+	@Transactional
+	@Override
+	public String deleteScheduleData(int sche_no, int type) {
+		
+		String result="";
+		try {
+			if(type == 1) {
+				dao.deleteScheduleMember(sche_no);
+			}
+			dao.deleteSchedule(sche_no);
+			result="일정삭제성공";
+		} catch (Exception e) {
+			// TODO: handle exception
+			result="일정삭제실패";
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	@Override
+	public String updateScheduleData(ScheduleVO vo)
+	{
+		String result="";
+		try {
+	        //String pattern = "yyyy-MM-ddTHH:mm";
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+
+	        if (vo.getSche_start_str() != null && !vo.getSche_start_str().isEmpty()) {
+	            vo.setSche_start(sdf.parse(vo.getSche_start_str()));
+	        }
+	        if (vo.getSche_end_str() != null && !vo.getSche_end_str().isEmpty()) {
+	            vo.setSche_end(sdf.parse(vo.getSche_end_str()));
+	        }
+	        dao.updateSchedule(vo);
+	        result="일정삭제성공";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result="일정삭제실패";
+	    }
+		return result;
+	}
+
+	@Override
+	public void updateSchedule(ScheduleVO vo) {
+		dao.updateSchedule(vo);
+		
+	}
 }

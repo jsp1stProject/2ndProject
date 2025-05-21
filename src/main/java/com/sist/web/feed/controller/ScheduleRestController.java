@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -168,6 +170,27 @@ public class ScheduleRestController {
 			return new ResponseEntity<List<ScheduleVO>>(list,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<List<ScheduleVO>>(list, HttpStatus.OK);
+	}
+
+	@PostMapping("/{sche_no}/delete")
+	public ResponseEntity<String> schedule_delete(@PathVariable("sche_no") int sche_no, @RequestBody ScheduleVO vo)
+	{
+	    String result="";
+		int type = vo.getType();
+	    result = service.deleteScheduleData(sche_no, type);
+	    
+	    return new ResponseEntity<String>(result, HttpStatus.OK);
+	}
+	
+	@PostMapping("/{sche_no}/update")
+	public ResponseEntity<String> schedule_update(@PathVariable("sche_no") int sche_no, @RequestBody ScheduleVO vo)
+	{
+	    String result="";
+	    System.out.println("수정 요청 들어옴");
+	    System.out.println(vo);
+	    result= service.updateScheduleData(vo);
+	    
+	    return new ResponseEntity<String>(result, HttpStatus.OK);
 	}
 	
 }

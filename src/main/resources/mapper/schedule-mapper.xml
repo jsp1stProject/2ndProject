@@ -16,14 +16,36 @@
         ORDER BY p.sche_end ASC)
    WHERE ROWNUM &lt;= 5    
 </select>
+<select id="scheduleGroupList" parameterType="map" resultType="com.sist.web.feed.vo.ScheduleVO">
+SELECT 
+  s.sche_no, s.sche_title, s.sche_content,
+  TO_CHAR(s.sche_start, 'YYYY-MM-DD HH24:MI') AS sche_start_str,
+  TO_CHAR(s.sche_end, 'YYYY-MM-DD HH24:MI') AS sche_end_str,
+  s.is_important, s.alarm, s.type
+FROM 
+  p_schedule s
+WHERE 
+  s.group_no = #{group_no}
+  AND (s.is_public = 1 OR EXISTS (
+    SELECT 1 FROM p_schedule_member sm 
+     WHERE sm.sche_no = s.sche_no AND sm.user_no = #{user_no}
+  ))
+ORDER BY s.sche_start
+</select>
+<select id="scheduleParticipants" parameterType="list" resultType="com.sist.web.user.vo.UserVO">
+SELECT 
+  sm.sche_no, u.user_no, u.nickname, u.profile
+FROM 
+  p_schedule_member sm
+JOIN 
+  p_users u ON sm.user_no = u.user_no
+WHERE 
+  sm.sche_no IN
+  <foreach collection="list" item="sche_no" open="(" separator="," close=")">
+    #{sche_no}
+  </foreach>
+</select>
 <!-- 
-@Select("SELECT sche_no, user_no, type, sche_title, sche_content, TO_CHAR(sche_start,'YYYY-MM-DD HH24:MI') as sche_start_str, "
-			+ "TO_CHAR(sche_end,'YYYY-MM-DD HH24:MI') as sche_end_str, is_public "
-			+ "FROM p_schedule "
-			+ "WHERE group_no=#{group_no} "
-			+ "ORDER BY sche_start ASC ")
-public List<ScheduleVO> scheduleGroupList(int group_no);
- -->
 <select id="scheduleGroupList" parameterType="map" resultType="com.sist.web.feed.vo.ScheduleVO">
   SELECT s.sche_no, s.user_no, s.type, s.sche_title, s.sche_content,
          TO_CHAR(s.sche_start, 'YYYY-MM-DD HH24:MI') AS sche_start_str,
@@ -41,4 +63,5 @@ public List<ScheduleVO> scheduleGroupList(int group_no);
     )
   ORDER BY s.sche_start ASC
 </select>
+ -->
 </mapper>
