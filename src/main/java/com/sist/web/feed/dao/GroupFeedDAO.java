@@ -1,5 +1,6 @@
 package com.sist.web.feed.dao;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -89,4 +90,23 @@ public class GroupFeedDAO {
 		mapper.feedCommentDelete(map);
 	}
 	
+	public void feedReplyInsert	(FeedCommentVO vo)
+	{
+		mapper.feedReplyInsert(vo);
+	}
+	
+	public int hasUserLike(@Param("user_no") long user_no, @Param("feed_no") int feed_no)
+	{
+		return mapper.hasUserLike(user_no, feed_no);
+	}
+	
+	public void likeInsert(@Param("user_no") long user_no, @Param("feed_no") int feed_no)
+	{
+		mapper.likeInsert(user_no, feed_no);
+	}
+	
+	public void likeDelete(@Param("user_no") long user_no, @Param("feed_no") int feed_no)
+	{
+		mapper.likeDelete(user_no, feed_no);
+	}
 }

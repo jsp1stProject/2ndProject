@@ -77,6 +77,20 @@ public interface GroupFeedMapper {
 	public void feedCommentUpdate(@Param("msg") String msg, @Param("no") int no);
 	
 	public void feedCommentDelete(Map map);
-
+	
+	//피드-대댓글
+	@Insert("INSERT INTO p_feed_comment(no,user_no,feed_no,msg,group_id,group_step) "
+			+ "VALUES(p_feedcom_seq.nextval,#{user_no}, #{feed_no}, #{msg},#{group_id},1)")
+	public void feedReplyInsert	(FeedCommentVO vo);
+	
+	//좋아요
+	@Select("SELECT COUNT(*) FROM p_feed_like WHERE user_no = #{user_no} AND feed_no = #{feed_no}")
+	public int hasUserLike(@Param("user_no") long user_no, @Param("feed_no") int feed_no);
+	
+	@Insert("INSERT INTO p_feed_like(user_no, feed_no) VALUES(#{user_no}, #{feed_no})")
+	public void likeInsert(@Param("user_no") long user_no, @Param("feed_no") int feed_no);
+	
+	@Delete("DELETE FROM p_feed_like WHERE user_no = #{user_no} AND feed_no = #{feed_no}")
+	public void likeDelete(@Param("user_no") long user_no, @Param("feed_no") int feed_no);
 }
 

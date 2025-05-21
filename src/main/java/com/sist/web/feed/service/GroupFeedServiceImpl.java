@@ -284,17 +284,7 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		// TODO Auto-generated method stub
 		dao.feedCommentDelete(map);
 	}
-	/*
-	<select id="feedCommentDelete" parameterType="hashmap">
-	   DELETE FROM p_feed_comment WHERE 
-	   <if test="group_step==0">
-	    group_id=#{group_id}
-	   </if>
-	   <if test="group_step!=0">
-	    no=#{no}
-	   </if>
-	  </select>
-	 */
+	
 	@Override 
 	public Map feedCommentDeleteData(FeedCommentVO vo)
 	{
@@ -317,6 +307,40 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		return map;
 	}
 
+	@Override
+	public void feedReplyInsert(FeedCommentVO vo) {
+		// TODO Auto-generated method stub
+		dao.feedReplyInsert(vo);
+	}
+
+	@Override
+	public int hasUserLike(long user_no, int feed_no) {
+		// TODO Auto-generated method stub
+		return dao.hasUserLike(user_no, feed_no);
+	}
+
+	@Override
+	public void likeInsert(long user_no, int feed_no) {
+		// TODO Auto-generated method stub
+		dao.likeInsert(user_no, feed_no);
+	}
+
+	@Override
+	public void likeDelete(long user_no, int feed_no) {
+		// TODO Auto-generated method stub
+		dao.likeDelete(user_no, feed_no);
+	}
+
+	@Override
+	public void selectLike(long user_no, int feed_no)
+	{
+		
+	    if (dao.hasUserLike(user_no, feed_no) > 0) {
+	        dao.likeDelete(user_no, feed_no);;
+	    } else {
+	    	dao.likeInsert(user_no, feed_no);
+	    }
+	}
 
 
 	

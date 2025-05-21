@@ -5,6 +5,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,5 +34,10 @@ public interface GroupFeedService {
 	public Map feedCommentUpdateData(FeedCommentVO vo);
 	public void feedCommentDelete(Map map);
 	public Map feedCommentDeleteData(FeedCommentVO vo);
+	public void feedReplyInsert	(FeedCommentVO vo);
+	public int hasUserLike(@Param("user_no") long user_no, @Param("feed_no") int feed_no);
+	public void likeInsert(@Param("user_no") long user_no, @Param("feed_no") int feed_no);
+	public void likeDelete(@Param("user_no") long user_no, @Param("feed_no") int feed_no);
+	public void selectLike(long user_no, int feed_no);
 	
 }

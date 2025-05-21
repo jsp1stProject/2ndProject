@@ -119,7 +119,9 @@
 
     <!-- 좋아요 / 댓글 수 -->
     <div class="d-flex gap-3 mt-2 text-muted fs-6">
-      <span>❤️ {{ feed_data.like_count }}</span>
+      <button @click="selectLike">
+		  ❤️ {{ liked ? '취소' : '좋아요' }}
+		</button>
       <span>💬 {{ feed_data.comment_count }}</span>
     </div>
 	<!-- 댓글 입력 -->
@@ -136,7 +138,7 @@
 
     <!-- 댓글 목록 -->
     <div class="mt-4">
-      <div v-for="comment in comment_list" :key="comment.no" class="comment-box">
+      <div v-for="comment in comment_list.filter(c => c.group_step === 0)" :key="comment.no" class="comment-box">
         <div class="d-flex justify-content-between">
           <div>
             <strong>{{ comment.nickname }}</strong>
@@ -157,59 +159,51 @@
           </div>
         </div>
         <div v-else class="mt-2">{{ comment.msg }}</div>
-        <!-- 대댓글 부분 -->
-        <!-- <div v-if="comment.replies && comment.replies.length" class="reply-box mt-2">
-		    <div v-for="reply in comment.replies" :key="reply.no" class="mt-2">
-		      <strong>{{ reply.nickname }}</strong>
-		      <small class="text-muted ms-2">{{ reply.dbday }}</small>
-		      <div>{{ reply.msg }}</div>
-		    </div>
-		  </div>
-		
-		  ✅ [2] 대댓글 입력창
-		  <div class="reply-box mt-2" v-if="replyInputVisible[comment.no]">
-		    <textarea v-model="replyInput[comment.no]" class="form-control" rows="2" placeholder="대댓글을 입력하세요"></textarea>
-		    <div class="mt-2 text-end">
-		      <button class="btn btn-sm btn-secondary me-2" @click="replyInputVisible[comment.no] = false">취소</button>
-		      <button class="btn btn-sm btn-primary" @click="submitReply(comment.no)">등록</button>
-		    </div>
-		  </div>
-		
-		  ✅ [3] 대댓글 버튼
-		  <div class="mt-2">
-		    <button class="btn btn-sm btn-outline-success" @click="replyInputVisible[comment.no] = true">답글</button>
-		  </div>
-		</div> -->
-		<div class="reply-box mt-2">
-		    <div class="mt-2">
-		      <strong>홍길동</strong>
-		      <small class="text-muted ms-2">25.05.21</small>
-		      <div>대대대대대대대대대대대대대대대대대대대댓글</div>
-		    </div>
-		  </div>
-		
-		  <!-- ✅ [2] 대댓글 입력창 -->
-		  <div class="reply-box mt-2">
-		    <textarea class="form-control" rows="2" placeholder="대댓글을 입력하세요"></textarea>
-		    <div class="mt-2 text-end">
-		      <button class="btn btn-sm btn-secondary me-2">취소</button>
-		      <button class="btn btn-sm btn-primary">등록</button>
-		    </div>
-		  </div>
-		
-		  <!-- ✅ [3] 대댓글 버튼 -->
-		  <div class="mt-2">
-		    <button class="btn btn-sm btn-outline-success">답글</button>
-		  </div>
+		<div class="mt-2">
+		  <button class="btn btn-sm btn-outline-success" @click="toggleReplyInput(comment.no)">
+		    답글
+		  </button>
 		</div>
-        
+        <!-- 대댓글모드 -->
+	    <div class="reply-box mt-2" v-if="replyInputVisible[comment.no]">
+	      <textarea v-model="replyInput[comment.no]" class="form-control" rows="2" placeholder="대댓글을 입력하세요"></textarea>
+	      <div class="mt-2 text-end">
+	        <button class="btn btn-sm btn-secondary me-2" @click="cancelReply(comment.no)">취소</button>
+	        <button class="btn btn-sm btn-primary" @click="submitReply(comment.group_id,comment.no)">등록</button>
+	      </div>
+	    </div>
+	
+	    <!-- 해당 댓글의 대댓글 리스트 -->
+	    <div class="reply-box mt-2" v-for="reply in comment_list.filter(r => r.group_id === comment.group_id && r.group_step === 1 && r.no !== comment.no)" :key="reply.no">
+	      <div class="d-flex justify-content-between">
+	        <div>
+	          <strong>{{ reply.nickname }}</strong>
+	          <small class="text-muted ms-2">{{ reply.dbday }}</small>
+	        </div>
+	        <div>
+	          <button class="btn btn-sm btn-outline-secondary me-1" @click="toggleEdit(reply.no, reply.msg)">수정</button>
+	          <button class="btn btn-sm btn-outline-danger me-1" @click="deleteComment(reply.no, reply.group_id, reply.group_step)">삭제</button>
+	        </div>														
+	      </div>
+	
+	      <div v-if="editingComment === reply.no">
+	        <textarea v-model="reply.editMsg" class="form-control mt-2"></textarea>
+	        <div class="mt-2 text-end">
+	          <button class="btn btn-sm btn-outline-primary me-1" @click="updateComment(reply.no, reply.editMsg)">수정 완료</button>
+	          <button class="btn btn-sm btn-outline-secondary" @click="CommentCancelUpdate(reply.no)">취소</button>
+	        </div>
+	      </div>
+	      <div v-else class="mt-2">{{ reply.msg }}</div>
+
+	     </div>
+ 
       </div>
-       
       <!-- 더보기 -->
       <div v-if="list.length > visibleComments.length" class="text-center mt-3">
         <button class="btn btn-outline-dark btn-sm" @click="loadMore">댓글 더보기</button>
       </div>
     </div>
+    
   </div>
 </div>
 	
@@ -229,7 +223,10 @@
 		page:1,
 		newComment: '',
 		editingComment:null,
-        isExpanded: false
+		liked: false,
+        isExpanded: false,
+		replyInput: {}, // 대댓글 입력 내용 저장
+    	replyInputVisible: {} // 대댓글 입력창 표시 여부
       }
     },
 	computed: {
@@ -247,6 +244,15 @@
 		this.commentDataRecv();
 	},
     methods: {
+		selectLike() {
+    		axios.post('../api/feed/'+this.feed_no+'/like')
+      		.then(() => {
+        		this.liked = !this.liked;
+      		})
+      		.catch(err => {
+        		console.log(err);
+      		});
+  		},
 	    async dataRecv(){
 			console.log("dataRecv 실행")
 			console.log(this.feed_no)
@@ -285,6 +291,13 @@
         this.isExpanded = false;
         this.newComment = '';
       },
+ 	  cancelReply(commentNo) {
+  		this.replyInputVisible[commentNo] = false;
+  		this.replyInput = {
+    		...this.replyInput,
+    		[commentNo]: ''
+  		};
+	  },
       submitComment() {
         if (this.newComment.trim() !== '') {
           axios.post('../api/feed/'+this.feed_no+'/comments',null,{
@@ -303,12 +316,39 @@
 			 this.dataRecv();
 			 this.commentDataRecv();
 		  }).catch(error=> {
-			 console.log(error.res)
+			 console.log(error)
 		  })
           
         }
 		
       },
+	  submitReply(groupId,comment_no) {
+    	console.log("등록하기버튼")
+		const msg = this.replyInput[comment_no];
+		console.log("msg"+msg)
+    	if (!msg || msg.trim() === '') 
+		{	
+			alert("메시지를 입력하세요")	
+			return;
+		}	
+
+    	axios.post('../api/feed/reply/'+comment_no, {
+			no:comment_no,
+      		feed_no: this.feed_no,
+      		group_id: groupId,
+      		msg: msg,
+    		}, {
+  				headers: {
+    				'Content-Type': 'application/json'
+  				}
+			}).then(() => {
+      		this.replyInput[comment_no] = '';
+      		this.replyInputVisible[comment_no] = false;
+			this.commentDataRecv();
+    	}).catch(error=> {
+			 console.log("대댓글 등록 오류:", error)
+		});
+  	  },
       replyUpdateForm(no){
 		 console.log("수정버튼 클릭")
          console.log("no값은 "+no)
@@ -334,6 +374,9 @@
         const comment = this.list.find(c => c.no === no);
         if (comment) comment.editMsg = msg;
       },
+	  toggleReplyInput(commentNo) {
+    	this.replyInputVisible[commentNo] = true;
+  	  },
 	  updateComment(comment_no, editMsg){
 		 if(editMsg.trim() !== '')
 		 {
@@ -343,7 +386,7 @@
 					no:comment_no
 				}
 			}).then(res=> {
-				const comment = this.list.find(c => c.no === no)
+				const comment = this.list.find(c => c.no === comment_no)
  		 		if (comment) {
  		   			comment.msg = editMsg // 입력값 초기화
 					comment.editMsg='';
@@ -352,7 +395,7 @@
 				this.commentDataRecv();
 			 	this.dataRecv();
 			}).catch(error => {
-				console.log(error.res)
+				console.log(error)
 			})	
 		 }
 	  },
@@ -367,7 +410,7 @@
 				this.commentDataRecv();
 			 	this.dataRecv();
 			}).catch(error => {
-				console.log(error.res)
+				console.log(error)
 			})	
       }
     }

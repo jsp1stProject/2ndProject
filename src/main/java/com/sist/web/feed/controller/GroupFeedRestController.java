@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -157,4 +158,39 @@ public class GroupFeedRestController {
 		return new ResponseEntity<Map>(map, HttpStatus.OK);
 	}
 	
+	//대댓글 작성
+	@PostMapping("api/feed/reply/{comment_no}")
+	public ResponseEntity<String> feed_reply_insert(@PathVariable("comment_no") int comment_no, HttpServletRequest request, 
+					@RequestBody FeedCommentVO vo)
+	{
+		System.out.println("##############################대댓글 등록#######################");
+		System.out.println(vo);
+		
+		String result="";
+		try {
+			long user_no=(long)request.getAttribute("userno");
+			System.out.println(user_no);
+			vo.setUser_no(user_no);
+			System.out.println(vo);
+			service.feedReplyInsert(vo);
+			result="성공";
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<String>(result, HttpStatus.OK);
+	}
+	
+	@PostMapping("api/feed/{feed_no}/like")
+	public ResponseEntity<String> selectLike(@PathVariable("feed_no") int feed_no, HttpServletRequest request)
+	{
+		String result ="";
+		long user_no = (long)request.getAttribute("userno");
+		System.out.println("#############################################");
+		System.out.println(user_no);
+		System.out.println(feed_no);
+	    service.selectLike(user_no, feed_no);
+	    return new ResponseEntity<String>(result, HttpStatus.OK);
+	}
 }
