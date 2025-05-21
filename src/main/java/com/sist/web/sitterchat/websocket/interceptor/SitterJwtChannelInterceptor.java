@@ -27,13 +27,24 @@ public class SitterJwtChannelInterceptor implements ChannelInterceptor {
         StompCommand command = accessor.getCommand();
 
         if (StompCommand.CONNECT.equals(command)) {
+            String token = null;
+
             String authHeader = accessor.getFirstNativeHeader("Authorization");
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                throw new IllegalArgumentException("Authorization 헤더가 누락 또는 잘못됨");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.substring(7);
+            } else {
+                String cookieHeader = accessor.getFirstNativeHeader("cookie");
+                if (cookieHeader != null) {
+                    for (String cookie : cookieHeader.split(";")) {
+                        String[] parts = cookie.trim().split("=");
+                        if (parts.length == 2 && parts[0].equals("accesstoken")) {
+                            token = parts[1];
+                        }
+                    }
+                }
             }
 
-            String token = authHeader.substring(7);
-            if (!jwt.validateToken(token)) {
+            if (token == null || !jwt.validateToken(token)) {
                 throw new IllegalArgumentException("JWT 토큰 유효하지 않음");
             }
 

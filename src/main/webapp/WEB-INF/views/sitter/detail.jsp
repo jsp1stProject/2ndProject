@@ -26,7 +26,7 @@
           <strong>경력:</strong> {{ sitter.sitterApp.history }}
         </li>
       </ul>
-      <a :href="`/web/sitter/reserve?sitter_no=${sitter.sitter_no}&user_no=${myUserNo}`" class="btn btn-primary">예약하기</a>
+     <button class="btn btn-info mt-3" @click="goReserve(sitter.sitter_no)">예약하기</button>
      <button v-if="parseInt(sitter.user_no) === myUserNo" class="btn btn-warning mt-3" @click="goUpdate(sitter.sitter_no)">수정하기</button>
       <button v-if="parseInt(sitter.user_no) === parseInt(myUserNo)" class="btn btn-danger mt-3" @click="deletePost">삭제하기</button>
     </div>
@@ -120,7 +120,6 @@ createApp({
   axios.get(`/web/sitter/detail_vue`, { params: { sitter_no },withCredentials: true })
        .then(res => {
   if (res.data.code === '200') {
-    console.log("🐾 sitter 데이터:", res.data.data)
     this.sitter = res.data.data.sitter
     this.myUserNo = res.data.data.myUserNo
   }
@@ -130,6 +129,9 @@ createApp({
   methods: {
     goUpdate(sitter_no) {
       location.href = '/web/sitter/update?sitter_no=' + sitter_no
+    },
+	goReserve(sitter_no) {
+      location.href = '/web/sitter/reserve?sitter_no=' + sitter_no
     },
     async deletePost() {
       if (!confirm("정말 삭제하시겠습니까?")) return

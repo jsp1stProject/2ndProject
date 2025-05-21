@@ -11,6 +11,7 @@
   <div v-if="unauthorized">접근 권한이 없습니다.</div>
   <div v-else-if="res">
     <h3>예약 상세</h3>
+    <p>펫시터 닉네임: {{ res.sitterVO.user.nickname }}</p>
     <p>예약일: {{ formatDate(res.res_date) }}</p>
     <p>시간: {{ res.start_time }} ~ {{ res.end_time }}</p>
     <p>총액: {{ res.total_price.toLocaleString() }}원</p>
@@ -21,6 +22,8 @@
     <ul>
       <li v-for="pet in res.petsList" :key="pet.pet_no">{{ pet.pet_name }}</li>
     </ul>
+<button class="btn btn-primary" @click="goToChat(res_no)">채팅하기</button>
+
   </div>
 </div>
 
@@ -37,6 +40,9 @@ createApp({
     }
   },
 methods: {
+	goToChat(reserve_no) {
+    window.location.href = '/web/sitterchat/chat?reserve_no=' + reserve_no;
+  },
   formatDate(ts) {
     const date = new Date(ts);
     return date.toISOString().slice(0, 10); // yyyy-MM-dd

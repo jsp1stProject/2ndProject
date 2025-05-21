@@ -18,8 +18,11 @@ public interface SitterResMapper {
 	// 예약 상세
 	@Select("SELECT r.*, "
 			+ "u.user_no AS user_user_no, u.nickname AS user_nickname, u.profile AS user_profile_pic, "
-			+ "s.sitter_no AS sitter_sitter_no, s.pet_first_price AS sitter_pet_first_price " + "FROM p_sitter_res r "
+			+ "s.sitter_no AS sitter_sitter_no, s.pet_first_price AS sitter_pet_first_price, " 
+			+ "pu.nickname AS sitter_nickname "
+			+ "FROM p_sitter_res r "
 			+ "JOIN p_users u ON r.user_no = u.user_no " + "JOIN p_sitter s ON r.sitter_no = s.sitter_no "
+			+ "JOIN p_users pu ON s.user_no = pu.user_no "
 			+ "WHERE r.res_no = #{res_no}")
 	@Results(id = "sitterResResultMap", value = { @Result(property = "res_no", column = "res_no"),
 			@Result(property = "user_no", column = "user_no"), @Result(property = "sitter_no", column = "sitter_no"),
@@ -37,6 +40,7 @@ public interface SitterResMapper {
 			@Result(property = "userVO.profile", column = "user_profile_pic"),
 			@Result(property = "sitterVO.sitter_no", column = "sitter_sitter_no"),
 			@Result(property = "sitterVO.pet_first_price", column = "sitter_pet_first_price") })
+			@Result(property = "sitterVO.user.nickname", column = "sitter_nickname")
 	public SitterResVO sitterReservation(@Param("res_no") int res_no);
 
 	// 예약 목록
@@ -48,6 +52,10 @@ public interface SitterResMapper {
 	@ResultMap("sitterResResultMap")
 	public List<SitterResVO> sitterReservationList(@Param("user_no") int user_no);
 
+	// 채팅방용 user2 가져오기
+    @Select("SELECT user_no FROM p_sitter WHERE sitter_no = #{sitter_no}")
+    public int getSitterUserNoBySitterNo(@Param("sitter_no") int sitter_no);
+    
 	// 결제 완료
 	@Update("UPDATE p_sitter_res SET pay_status = #{status}, imp_uid = #{imp_uid} WHERE res_no = #{res_no}")
 	public void updatePayStatus(@Param("res_no") int res_no, @Param("status") String status,

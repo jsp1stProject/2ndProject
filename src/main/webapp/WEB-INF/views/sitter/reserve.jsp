@@ -6,15 +6,6 @@
 <head>
   <meta charset="UTF-8">
   <title>펫시터 예약하기</title>
-  <script type="module" src="https://unpkg.com/vue@3/dist/vue.esm-browser.js"></script>
-  <script type="module" src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    .time-btn.active {
-      background-color: #0d6efd;
-      color: white;
-    }
-  </style>
 </head>
 <body>
 <div id="app" class="container mt-4">
