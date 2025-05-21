@@ -36,9 +36,6 @@ public interface GroupMapper {
 		@Select("SELECT p_group_no_seq.currval FROM DUAL")
 		public int groupCurrentNodata();
 		
-		@Insert("INSERT INTO p_group (group_no, group_name, description, owner) "
-				+ "VALUES(p_group_no_seq.nextval, #{group_name}, #{description}, #{owner})")
-		@SelectKey(statement = "SELECT p_group_no_seq.currval FROM dual", keyProperty = "group_no", before = false, resultType = Integer.class)
 		public void insertGroup(GroupDTO dto);
 		
 		public void insertGroupMember(GroupMemberDTO dto);
@@ -86,4 +83,10 @@ public interface GroupMapper {
 			  + "WHERE g.group_no = #{group_no} "
 			  + "AND u.user_no = #{user_no}")
 		public GroupMemberInfoDTO selectGroupMemberInfo(@Param("group_no") int groupNo, @Param("user_no") int userNo);
+		
+		@Update("UPDATE p_group_member SET viewing = #{viewing} WHERE group_no = #{groupNo} AND user_no = #{userNo}")
+		public void updateViewingStatus(@Param("groupNo") int groupNo, @Param("userNo") int userNo, @Param("viewing") int viewing);
+		
+		@Update("UPDATE p_group_member SET viewing = 0, last_read_message = #{lastReadMessageNo} WHERE group_no = #{groupNo} AND user_no = #{userNo}")
+		public void updateExitStatus(@Param("groupNo") int groupNo, @Param("userNo") int userNo, @Param("lastReadMessageNo") Long lastReadMessageNo);
 }

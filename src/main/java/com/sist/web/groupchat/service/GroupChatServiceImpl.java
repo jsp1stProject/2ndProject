@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.sist.web.common.exception.code.GroupErrorCode;
 import com.sist.web.common.exception.domain.GroupException;
+import com.sist.web.group.dao.GroupDAO;
 import com.sist.web.groupchat.dao.GroupChatDAO;
 import com.sist.web.groupchat.dto.GroupChatDTO;
 import com.sist.web.groupchat.dto.MessageSearchFilterDTO;
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GroupChatServiceImpl implements GroupChatService {
 
 	private final GroupChatDAO cDao;
+	private final GroupDAO gDao;
 	private final SimpMessagingTemplate messagingTemplate;
 	private final UserMapper userMapper;
 	
@@ -51,27 +53,24 @@ public class GroupChatServiceImpl implements GroupChatService {
 
 	@Override
 	public List<GroupChatDTO> getLatestMessageByGroupNo(int groupNo, Long lastMessageNo) {
-		List<GroupChatDTO> list;
+		List<GroupChatDTO> list = Collections.emptyList();
 		try {
 			list = cDao.selectLatestMessageByGroupNo(groupNo, lastMessageNo);
 			
-			if (list == null || list.isEmpty()) {
-				throw new GroupException(GroupErrorCode.GROUP_NOT_FOUND);
-				// 채팅 내역 비어있을 시 분기 작성 필요.
-			}
-			
-			for (GroupChatDTO dto : list) {
-				if (dto.getProfile() != null && !dto.getProfile().isBlank()) {
-					dto.setProfile(a3BaseUrl + dto.getProfile());
+			if (list != null || !list.isEmpty()) {
+				for (GroupChatDTO dto : list) {
+					if (dto.getProfile() != null && !dto.getProfile().isBlank()) {
+						dto.setProfile(a3BaseUrl + dto.getProfile());
+					}
 				}
+				Collections.reverse(list);
 			}
+			return list;
+			
 		} catch (Exception ex) {
 			log.error("이미지 불러오기 실패", ex);
 			throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
 		}
-		 
-		Collections.reverse(list);
-		return list;
 	}
 	
 	@Override
@@ -87,4 +86,22 @@ public class GroupChatServiceImpl implements GroupChatService {
 		param.put("messageNo", messageNo);
 		return cDao.selectMessagesAround(param);
 	}
+	
+	@Override
+	@Transactional
+	public void markViewing(int groupNo, int userNo, boolean isViewing) {
+		int viewing = isViewing ? 1 : 0;
+		gDao.updateViewingStatus(groupNo, userNo, viewing);
+	}
+	
+	@Override
+	@Transactional
+	public void markExitAndUpdateLastRead(int groupNo, int userNo) {
+		Long latestMessageNo = cDao.selectLatestMessageNo(groupNo);
+		if (latestMessageNo != null) {
+			gDao.updateExitStatus(groupNo, userNo, latestMessageNo);
+		}
+		
+	}
+	
 }

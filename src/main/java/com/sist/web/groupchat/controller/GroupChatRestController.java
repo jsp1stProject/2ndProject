@@ -3,6 +3,7 @@ package com.sist.web.groupchat.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
@@ -12,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +22,7 @@ import com.sist.web.groupchat.dto.GroupChatDTO;
 import com.sist.web.groupchat.dto.MessageSearchFilterDTO;
 import com.sist.web.groupchat.service.GroupChatService;
 import com.sist.web.common.exception.code.CommonErrorCode;
+import com.sist.web.common.exception.code.GroupErrorCode;
 import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.common.exception.domain.GroupException;
 import com.sist.web.common.response.ApiResponse;
@@ -66,4 +69,32 @@ public class GroupChatRestController {
 		List<GroupChatDTO> list = chatService.getMessagesAround(groupNo, messageNo);
 		return ResponseEntity.ok(ApiResponse.success(list));
 	}
+	@PatchMapping("/{groupNo}/viewing")
+	public ResponseEntity<ApiResponse<Void>> updateViewingStatus(
+			@PathVariable int groupNo,
+			@RequestParam("viewing") boolean viewing, 
+			HttpServletRequest req) {
+		Long userNoObj = (Long) req.getAttribute("userno");
+		if (userNoObj == null) {
+			throw new GroupException(GroupErrorCode.USER_NOT_FOUND);
+		}
+		int userNo = userNoObj.intValue();
+		chatService.markViewing(groupNo, userNo, viewing);
+		return ResponseEntity.ok(ApiResponse.success(null));
+	}
+	
+	@PatchMapping("/{groupNo}/exit")
+	public ResponseEntity<ApiResponse<Void>> exitGroupChat(
+			@PathVariable int groupNo,
+			HttpServletRequest req) {
+		Long userNoObj = (Long) req.getAttribute("userno");
+		if (userNoObj == null) {
+			throw new GroupException(GroupErrorCode.USER_NOT_FOUND);
+		}
+		int userNo = userNoObj.intValue();
+		
+		chatService.markExitAndUpdateLastRead(groupNo, userNo);
+		return ResponseEntity.ok(ApiResponse.success(null));
+	}
+	
 }

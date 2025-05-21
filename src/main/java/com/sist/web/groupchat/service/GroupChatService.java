@@ -11,4 +11,6 @@ public interface GroupChatService {
 	List<GroupChatDTO> getLatestMessageByGroupNo(int groupNo, Long lastMessageNo);
 	List<GroupChatDTO> getMessagesByFilters(MessageSearchFilterDTO dto);
 	List<GroupChatDTO> getMessagesAround(int groupNo, int messageNo);
+	void markViewing(int groupNo, int userNo, boolean isViewing);
+	void markExitAndUpdateLastRead(int groupNo, int userNo);
 }

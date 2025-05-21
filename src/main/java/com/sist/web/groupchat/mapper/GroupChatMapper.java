@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectKey;
+import org.apache.ibatis.annotations.Update;
+
 import com.sist.web.groupchat.dto.GroupChatDTO;
 import com.sist.web.groupchat.dto.MessageSearchFilterDTO;
 
@@ -28,7 +30,6 @@ public interface GroupChatMapper {
 	@Select("SELECT nickname FROM p_group_member WHERE group_no = #{groupNo} AND user_no = #{userNo}")
 	public String selectGroupNickname(@Param("groupNo") int groupNo, @Param("userNo") int userNo);
 	
-	
-	
-	
+	@Select("SELECT MAX(message_no) FROM p_group_msg WHERE group_no = #{groupNo}")
+	public Long selectLatestMessageNo(@Param("groupNo") int groupNo);
 }

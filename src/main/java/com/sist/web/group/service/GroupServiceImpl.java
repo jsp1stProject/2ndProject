@@ -25,6 +25,7 @@ import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.dto.GroupMemberDTO;
 import com.sist.web.group.dto.GroupMemberInfoDTO;
+import com.sist.web.groupchat.dao.GroupChatDAO;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserVO;
 
@@ -36,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class GroupServiceImpl implements GroupService{
 	private final GroupDAO gDao;
+	private final GroupChatDAO cDao;
 	private final AwsS3Service awsS3;
 	private final UserMapper userMapper;
 	
@@ -236,6 +238,4 @@ public class GroupServiceImpl implements GroupService{
 			throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
 		}
 	}
-	
-	
 }

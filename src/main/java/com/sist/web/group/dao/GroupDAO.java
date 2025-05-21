@@ -104,4 +104,14 @@ public class GroupDAO {
 	public GroupMemberInfoDTO selectGroupMemberInfo(int groupNo, int userNo) {
 		return mapper.selectGroupMemberInfo(groupNo, userNo);
 	}
+	
+	/** 채팅방 입장시 viewing 열람 중 컬럼 1 update */
+	public void updateViewingStatus(int groupNo, int userNo, int viewing) {
+		mapper.updateViewingStatus(groupNo, userNo, viewing);
+	}
+	
+	/** 채팅방 나갈 시 viewing 열람 중 컬럼 0 update, lastReadMessageNo 최신 메세지로 update */
+	public void updateExitStatus(int groupNo, int userNo, Long lastReadMessagesNo) {
+		mapper.updateExitStatus(groupNo, userNo, lastReadMessagesNo);
+	}
 }

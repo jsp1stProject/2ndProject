@@ -43,4 +43,9 @@ public class GroupChatDAO {
 		return mapper.selectGroupNickname(groupNo, userNo);
 	}
 	
+	/** 그룹별 가장 최신 메시지 조회 */
+	public Long selectLatestMessageNo(int groupNo) {
+		return mapper.selectLatestMessageNo(groupNo);
+	}
+	
 }

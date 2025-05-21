@@ -43,6 +43,14 @@ export function initGroupChat(contextPath, createApp) {
       ...searchMethods,
 
       async joinGroup(groupNo) {
+        const prevGroupNo = this.group_no;
+
+        if (prevGroupNo && prevGroupNo !== groupNo) {
+          await this.markExit(prevGroupNo);
+        }
+
+        await this.markViewing(groupNo, true);
+
         const selected = this.availableGroups.find(g => g.group_no === groupNo);
         this.currentGroupName = selected?.group_name || '그룹';
         this.group_no = groupNo;
@@ -129,7 +137,6 @@ export function initGroupChat(contextPath, createApp) {
         const m = this.members.find(m => m.user_no === userNo);
         return m?.nickname || '알 수 없음';
       }
-
     }
   }).mount('#app');
 }

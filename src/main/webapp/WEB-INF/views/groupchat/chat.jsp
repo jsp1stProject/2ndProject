@@ -76,8 +76,7 @@
                     </button>
                     <div class="dropdown-menu" aria-labelledby="groupdrop">
                         <button type="button" class="dropdown-item" @click="openGroupSettingsModal">그룹 프로필</button>
-                        <button type="button" class="dropdown-item">그룹 설정</button>
-                        <button type="button" class="dropdown-item">그룹 추가</button>
+                        <button type="button" class="dropdown-item" @click="openCreateGroupModal">그룹 추가</button>
                     </div>
                 </div>
             </div>
@@ -210,6 +209,7 @@
             </div>
         </div>
     </div>
+    <!-- 그룹 프로필 모달 -->
     <div class="modal fade" id="groupSettingsModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -288,6 +288,51 @@
             </div>
         </div>
     </div>
+    <!-- 그룹 추가 모달 -->
+    <div class="modal fade" id="createGroupModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">새 그룹 만들기</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+            <label class="form-label">그룹명</label>
+            <input type="text" class="form-control" v-model="groupDetail.group_name">
+            </div>
+            <div class="mb-3">
+            <label class="form-label">설명</label>
+            <textarea class="form-control" v-model="groupDetail.description"></textarea>
+            </div>
+            <div class="mb-3">
+            <label class="form-label">정원</label>
+            <input type="number" class="form-control" v-model="groupDetail.capacity" min="1">
+            </div>
+            <div class="mb-3">
+            <label class="form-label">공개 여부</label>
+            <select class="form-select" v-model="groupDetail.is_public">
+                <option value="Y">공개</option>
+                <option value="N">비공개</option>
+            </select>
+            </div>
+            <div class="mb-3">
+            <label class="form-label">프로필 이미지</label>
+            <input type="file" class="form-control" @change="handleProfileImgChange" ref="profileImgInput">
+            </div>
+            <div class="mb-3" v-if="groupDetail.profile_img">
+            <label class="form-label">미리보기</label><br>
+            <img :src="groupDetail.profile_img" alt="미리보기" style="height: 100px">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+            <button class="btn btn-primary" @click="submitCreateGroup">생성</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
     </div>
 </body>
     <script type="module">
