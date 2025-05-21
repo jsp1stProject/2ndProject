@@ -51,20 +51,20 @@ public interface GroupFeedMapper {
 	@Insert("INSERT INTO p_feed_fileInfo VALUES(p_feed_fileinfo_seq.nextval,#{feed_no},#{filename},#{filesize})")
 	public void feedFileInsert(FeedFileInfoVO vo);	
 	
-	@Select("SELECT f.feed_no, f.group_no, f.user_no, u.nickname, f.title, f.content, f.filecount,"
-			+ "TO_CHAR(f.regdate,'YYYY-MM-DD') as dbday, f.update_time "
+	@Select("SELECT f.feed_no, f.group_no, f.user_no, gm.nickname,"
+			+ "(SELECT u.profile FROM p_users u WHERE u.user_no = f.user_no) as profile,"
+			+ "f.title, f.content, f.filecount,"
+			+ "TO_CHAR(f.regdate,'YYYY-MM-DD') as dbday, f.update_time, "
+			+ "(SELECT COUNT(*) FROM p_feed_comment c WHERE c.feed_no = f.feed_no) AS comment_count, "
+			+ "(SELECT COUNT(*) FROM p_feed_like l WHERE l.feed_no = f.feed_no) AS like_count ,"
+			+ "(SELECT COUNT(*) FROM p_feed_like l WHERE l.feed_no = f.feed_no AND l.user_no = #{user_no}) AS is_liked "
 			+ "FROM p_feed f "
-			+ "JOIN p_users u "
-			+ "ON f.user_no=u.user_no "
+			+ "JOIN p_group_member gm "
+			+ "ON f.user_no=gm.user_no AND f.group_no=gm.group_no "
 			+ "WHERE f.feed_no=#{feed_no}")
-	public FeedVO feedDetailData(int feed_no);
+	public FeedVO feedDetailData(@Param("feed_no") int feed_no, @Param("user_no") long user_no);
 	
 	//피드-댓글
-	@Select("SELECT no, user_no, feed_no, msg, group_step, group_id, TO_CHAR(regdate,'YYYY-MM-DD HH24:MI:SS') as dbday, num "
-			+ "FROM (SELECT no, user_no, feed_no, msg, group_step, group_id, regdate, rownum as num "
-			+ "FROM (SELECT no, user_no, feed_no, msg, group_step, group_id, regdate "
-			+ "FROM p_feed_comment WHERE feed_no=#{feed_no} ORDER BY group_id DESC, group_step ASC)) "
-			+ "WHERE num BETWEEN #{start} AND #{end}")
 	public List<FeedCommentVO> feedCommentListData(Map map);
 	
 	@Select("SELECT CEIL(COUNT(*)/10.0) FROM p_feed_comment WHERE feed_no={feed_no}")

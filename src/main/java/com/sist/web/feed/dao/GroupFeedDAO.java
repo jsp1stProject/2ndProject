@@ -51,9 +51,9 @@ public class GroupFeedDAO {
 		mapper.feedFileInsert(vo);;
 	}
 	
-	public FeedVO feedDetailData(int feed_no)
+	public FeedVO feedDetailData(int feed_no, long user_no)
 	{
-		return mapper.feedDetailData(feed_no);
+		return mapper.feedDetailData(feed_no,user_no);
 	}
 	/*
 	 * 

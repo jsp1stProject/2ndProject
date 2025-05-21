@@ -170,17 +170,17 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 	}
 
 	@Override
-	public FeedVO feedDetailData(int feed_no) {
+	public FeedVO feedDetailData(int feed_no, long user_no) {
 		// TODO Auto-generated method stub
 		
 		
-		return dao.feedDetailData(feed_no);
+		return dao.feedDetailData(feed_no,user_no);
 	}
 	
 	@Override
-	public FeedVO feedData(int feed_no)
+	public FeedVO feedData(int feed_no, long user_no)
 	{
-		FeedVO vo = dao.feedDetailData(feed_no);
+		FeedVO vo = dao.feedDetailData(feed_no, user_no);
 		List<FeedFileInfoVO> flist = dao.fileListData(vo.getFeed_no());
 		List<String> filenames = new ArrayList<String>();
 		for(FeedFileInfoVO ffvo : flist)
@@ -208,18 +208,12 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		// TODO Auto-generated method stub
 		return 0;
 	}
-		/*
-	@Select("SELECT no, user_no, feed_no, msg, grou_step, group_id, TO_CHAR(regdate,'YYYY-MM-DD HH24:MI:SS') as dbday, num "
-			+ "FROM (SELECT no, user_no, feed_no, msg, grou_step, group_id, regdate, rownum as num "
-			+ "FROM (SELECT SELECT no, user_no, feed_no, msg, grou_step, group_id, regdate "
-			+ "FROM p_feed_comment WHERE feed_no={feed_no} ORDER BY group_id DESC, group_step ASC)) "
-			+ "WHERE num BETWEEN #{start} AND #{end}")
-	 */
+
 	@Override
 	public Map FeedCommentTotalList(int page, int feed_no)
 	{
 		Map map = new HashMap();
-		int rowSize=10;
+		int rowSize=5;
 		map.put("start", (page-1)*rowSize);
 		map.put("end", page*rowSize);
 		map.put("feed_no", feed_no);
@@ -304,13 +298,21 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 	@Override 
 	public Map feedCommentDeleteData(FeedCommentVO vo)
 	{
+		
 		Map map = new HashedMap();
-		map.put("group_id", vo.getGroup_id());
-		map.put("no", vo.getNo());
+		try {
+			System.out.println("vo는 "+vo);
+			map.put("group_id", vo.getGroup_id());
+			map.put("no", vo.getNo());
+			System.out.println(map);
+			dao.feedCommentDelete(map);
+			System.out.println("");
+			map = FeedCommentTotalList(1, vo.getFeed_no());
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 		
-		dao.feedCommentDelete(map);
-		
-		map = FeedCommentTotalList(1, vo.getFeed_no());
 		
 		return map;
 	}

@@ -21,7 +21,19 @@
   )
   WHERE num BETWEEN #{start} AND #{end}
 </select>
-  <!-- <select id="feedCommentDelete" parameterType="hashmap" resultType="ScheduleMapper">
+<select id="feedCommentListData" resultType="com.sist.web.feed.vo.FeedCommentVO" parameterType="hashmap">
+SELECT sub.no, sub.user_no, sub.feed_no, sub.msg, sub.group_step, sub.group_id, 
+       TO_CHAR(sub.regdate,'YYYY-MM-DD HH24:MI:SS') AS dbday,
+       (SELECT gm.nickname FROM p_group_member gm WHERE gm.user_no = sub.user_no AND gm.group_no = sub.group_no) AS nickname,
+       (SELECT u.profile FROM p_users u WHERE u.user_no = sub.user_no) AS profile, rownum AS num
+FROM ( SELECT c.*, f.group_no FROM p_feed_comment c 
+       JOIN p_feed f ON c.feed_no = f.feed_no 
+       WHERE c.feed_no = #{feed_no} 
+       ORDER BY group_id DESC, group_step ASC
+    ) sub
+WHERE rownum BETWEEN #{start} AND #{end}
+</select>
+<select id="feedCommentDelete" parameterType="hashmap">
    DELETE FROM p_feed_comment WHERE 
    <if test="group_step==0">
     group_id=#{group_id}
@@ -29,5 +41,5 @@
    <if test="group_step!=0">
     no=#{no}
    </if>
-  </select> -->
+</select>
 </mapper>

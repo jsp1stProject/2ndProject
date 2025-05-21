@@ -21,8 +21,8 @@ public interface GroupFeedService {
 	public int feedInsertData(FeedVO vo);
 	public void feedFileInsert(FeedFileInfoVO vo);
 	public String feedInserDataTotal(int group_no, long user_no, String title, String content, List<MultipartFile> files);
-	public FeedVO feedDetailData(int feed_no);
-	public FeedVO feedData(int feed_no);
+	public FeedVO feedDetailData(int feed_no, long user_no);
+	public FeedVO feedData(int feed_no, long user_no);
 	//public int groupInsertData(GroupVO vo);
 	public List<FeedCommentVO> feedCommentListData(Map map);
 	public int feedCommentTotalPage(int feed_no);

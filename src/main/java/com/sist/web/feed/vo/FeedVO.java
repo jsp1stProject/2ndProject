@@ -19,7 +19,7 @@ import lombok.Data;
 
 @Data
 public class FeedVO {
-	private int feed_no, group_no,filecount,comment_count, is_liked;
+	private int feed_no, group_no,filecount,comment_count, like_count, is_liked;
 	private long user_no;
 	private String title,content,dbday,nickname,profile;
 	private Date regdate, update_time;
