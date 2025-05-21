@@ -63,10 +63,12 @@ public class GroupServiceImpl implements GroupService{
 		
 		List<GroupDTO> group_list = gDao.selectGroupAllList();
 		List<Map<String, Object>> states_list = gDao.selectGroupMemberStates(user_no);
+		List<GroupDTO> joinedgroup_list = gDao.selectGroup(String.valueOf(user_no));
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("group_list", group_list);
 		map.put("states_list", states_list);
 		map.put("user_no", user_no);
+		map.put("joinedgroup_list", joinedgroup_list);
 		return map;
 	}
 	@Override

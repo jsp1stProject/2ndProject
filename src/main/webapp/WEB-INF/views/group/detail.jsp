@@ -30,19 +30,20 @@
 			  </ul>
 			</div>
           </div>
-          <ul class="list-unstyled mb-0 accordion-collapse collapse show" id="collapseOne">
+           
+           <ul class="list-unstyled mb-0 accordion-collapse collapse show" id="collapseOne">
             <li v-for="(item, idx) in schedule_list" :key="idx" class="py-10 border-bottom">
               <h6 class="mb-1 fs-3">{{ item.sche_title }}</h6>
               <div class="fs-2 d-flex gap-2">
                 <div class="d-flex align-items-center gap-1">
                   <iconify-icon icon="solar:clock-circle-broken" class="fs-4 text-primary"></iconify-icon>
-                  <span>{{ item.sche_start_str }} - {{ item.sche_start_end }}</span>
+                  <span>{{ item.sche_start_str }} - {{ item.sche_start_end_str }}</span>
                 </div>
                 <div class="d-flex align-items-center gap-1">
                   <iconify-icon icon="solar:users-group-rounded-broken" class="fs-4 text-primary"></iconify-icon>
-                  <!-- <span v-for="(user idx) in schedule_list.participaints" :key="idx" >
-                  	{{user.nickname}}
-                  </span> -->
+                  <span v-for="(user, idx) in item.participants" :key="idx">
+					  {{ user.nickname }}
+					</span>
                 </div>
               </div>
             </li>
@@ -119,7 +120,7 @@
 	                <span>작성일</span><span class="text-dark">{{ vo.dbday }}</span>
 	              </div>
 	            </div>
-	            <a class="d-block fs-4 text-dark fw-semibold link-primary" :href="'../group/feed?feed_no='+vo.feed_no" >  <!-- @click="feed_detail(vo.feed_no)" -->
+	            <a class="d-block fs-4 text-dark fw-semibold link-primary" :href="'../group/feed?feed_no='+vo.feed_no" >
 	              {{ vo.title }}
 	            </a>
 	          </div>
@@ -143,7 +144,12 @@
 	        </div>
 	
 	        <div class="d-flex justify-content-end fs-3">
-	          <button type="button" class="btn btn-link">더보기</button>
+	          <div class="d-flex gap-3 mt-2 text-muted fs-6">
+			      <button @click="selectLike(vo.feed_no)">
+					  ❤️ {{ liked[vo.feed_no] ? '취소' : '좋아요' }}
+					</button>
+			       <a class="d-block fs-4 text-dark fw-semibold link-primary" :href="'../group/feed?feed_no='+vo.feed_no" ><span >💬</span></a>
+			    </div>
 	        </div>
 	      </div>
 	    </div>
@@ -270,6 +276,7 @@ createApp({
 		alarm:false
       },
 	  curpage: 1,
+	  liked: {}
 	  
     }
   },
@@ -284,6 +291,15 @@ createApp({
     this.scheduleRecv();
   },
   methods: {
+	selectLike(feed_no) {
+    		axios.post('../api/feed/'+feed_no+'/like')
+      		.then(() => {
+        		this.liked[feed_no] = !this.liked[feed_no];
+      		})
+      		.catch(err => {
+        		console.log(err);
+      		});
+  	},
     feed_detail(feed_no) {
       location.href = '../group/feed?feed_no=' + feed_no;
     },

@@ -2,6 +2,14 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+   <style>
+	.description-line {
+	  max-width: 100%;         /* 부모 컨테이너에 맞게 제한 */
+	  overflow: hidden;
+	  text-overflow: ellipsis;
+	  white-space: nowrap;     /* 줄바꿈 방지 */
+	}
+	</style>
     <div class="container pt-header">
         <div class="row pt-3">
             <div class="col-lg-4">
@@ -48,6 +56,22 @@
                             </div>
                         </div>
                     </form>
+                    <div class="filter-item mt-4">
+					  <h6 class="mb-3">✅ 내가 가입한 그룹</h6>
+					  <div v-if="joinedgroup_list.length > 0">					  
+					    <div v-for="vo in joinedgroup_list" :key="vo.group_no" class="card mb-2">
+					      <div class="card-body p-2">
+					        <div class="d-flex justify-content-between align-items-center">
+					          <div>
+					            <strong>{{ vo.group_name }}</strong>
+					            </div>
+					          <button class="btn btn-sm btn-outline-primary" @click="detail(vo.group_no)">입장</button>
+					        </div>
+					      </div>
+					    </div>
+					  </div>
+					  <div v-else class="text-muted">가입한 그룹이 없습니다.</div>
+					</div>
                 </div>
             </div>
             <div class="col-lg-8">
@@ -115,7 +139,7 @@
 	            <input type="text" class="form-control" v-model="newPost.group_name" required>
 	          </div>
 	          <div class="mb-3">
-	            <label class="form-label">그룹 설명</label>
+	            <label class="form-label">설명</label>
 	            <textarea class="form-control" v-model="newPost.description" rows="3" required></textarea>
 	          </div>
 	          <div class="mb-3">
@@ -130,10 +154,15 @@
 	            </select>
 	          </div>
 	          <div class="mb-3">
-	            <label class="form-label">프로필 사진 URL</label>
-	            <input type="file" class="form-control" accept="image/*" @change="handleFileChange">
+	            <label class="form-label">프로필 사진</label>
+	            <input type="file" class="form-control" accept="image/*" @change="handleFileChange" ref="profileImgInput">
 	          </div>
+	          <div class="mb-3" v-if="groupDetail.profile_img">
+	            <label class="form-label">미리보기</label><br>
+	            <img :src="groupDetail.profile_img" alt="미리보기" style="height: 100px">
+	            </div>
 	          <div class="text-end">
+	            <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
 	            <button type="submit" class="btn btn-success">생성하기</button>
 	          </div>
 	        </form>
@@ -162,6 +191,7 @@
         return {
           list: [],
 		  states_list:[],
+		  joinedgroup_list:[],
 		  user_no : '',
           selectedFiles: [],
           newPost: {
@@ -234,6 +264,7 @@
 		  this.list = res.data.data.group_list;
 		  this.state_list = res.data.data.states_list
 		  this.user_no = res.data.data.user_no;
+		  this.joinedgroup_list=res.data.data.joinedgroup_list;
 		  this.stateMap = {};
 		  this.state_list.forEach(state => {
         	  this.stateMap[state.GROUP_NO] = state;
