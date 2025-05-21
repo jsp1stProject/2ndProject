@@ -255,7 +255,7 @@ public class MypageServiceImpl implements MypageService {
         String userno=getValidUserNo(token);
         SitterDTO origApp= mypageMapper.getAppSitter(userno);
         if(origApp==null){
-            throw new CommonException(CommonErrorCode.INVALID_PARAMETER);
+            throw new PetException(PetErrorCode.NO_APPLY);
         }
         return origApp;
     }

@@ -54,13 +54,13 @@
             </ul>
         </div>
     </nav>
-    <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+    <aside class="app-sidebar bg-success-subtle shadow" data-bs-theme="">
         <!--begin::Sidebar Brand-->
         <div class="sidebar-brand">
             <!--begin::Brand Link-->
-            <a href="./index.html" class="brand-link">
-                <img src="${pageContext.request.contextPath}/assets/images/logos/favicon.png" alt="Pet4U Logo" class="brand-image opacity-75 shadow" />
-                <span class="brand-text fw-light">Pet4U</span>
+            <a href="${pageContext.request.contextPath}/admin/" class="brand-link">
+                <img src="${pageContext.request.contextPath}/assets/images/logos/favicon.png" alt="Pet4U Logo" class="brand-image opacity-75 shadow rounded-circle bg-light" />
+                <span class="brand-text fw-light">관리자 페이지</span>
             </a>
         </div>
         <div class="sidebar-wrapper">
@@ -71,8 +71,16 @@
                         role="menu"
                         data-accordion="false"
                 >
-                    <li class="nav-item menu-open">
-                        <a href="#" class="nav-link active">
+                    <li class="nav-item">
+                        <a href="${pageContext.request.contextPath}/admin/users" class="nav-link active" data-menu="1">
+                            <i class="nav-icon bi bi-speedometer"></i>
+                            <p>
+                                회원
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-menu="2">
                             <i class="nav-icon bi bi-speedometer"></i>
                             <p>
                                 펫시터
@@ -80,16 +88,16 @@
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="${pageContext.request.contextPath}/admin/petsitters/list" class="nav-link">
+                            <li class="nav-item ps-2">
+                                <a href="${pageContext.request.contextPath}/admin/petsitters" class="nav-link" data-menu="2-1">
                                     <i class="nav-icon bi bi-circle"></i>
                                     <p>펫시터 목록</p>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a href="${pageContext.request.contextPath}/admin/petsitters/application" class="nav-link active">
+                            <li class="nav-item ps-2">
+                                <a href="${pageContext.request.contextPath}/admin/petsitters/applications" class="nav-link" data-menu="2-2">
                                     <i class="nav-icon bi bi-circle"></i>
-                                    <p>펫시터 신청 확인</p>
+                                    <p>펫시터 신청</p>
                                 </a>
                             </li>
                         </ul>
@@ -100,69 +108,15 @@
                             <p>Theme Generate</p>
                         </a>
                     </li>
-                    <li class="nav-header">EXAMPLES</li>
+                    <li class="nav-header">링크</li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/main" class="nav-link">
                             <i class="nav-icon bi bi-box-arrow-in-right"></i>
                             <p>
-                                Auth
+                                펫포유 사용자 페이지
                                 <i class="nav-arrow bi bi-chevron-right"></i>
                             </p>
                         </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon bi bi-box-arrow-in-right"></i>
-                                    <p>
-                                        Version 1
-                                        <i class="nav-arrow bi bi-chevron-right"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="./examples/login.html" class="nav-link">
-                                            <i class="nav-icon bi bi-circle"></i>
-                                            <p>Login</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="./examples/register.html" class="nav-link">
-                                            <i class="nav-icon bi bi-circle"></i>
-                                            <p>Register</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon bi bi-box-arrow-in-right"></i>
-                                    <p>
-                                        Version 2
-                                        <i class="nav-arrow bi bi-chevron-right"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="./examples/login-v2.html" class="nav-link">
-                                            <i class="nav-icon bi bi-circle"></i>
-                                            <p>Login</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="./examples/register-v2.html" class="nav-link">
-                                            <i class="nav-icon bi bi-circle"></i>
-                                            <p>Register</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="./examples/lockscreen.html" class="nav-link">
-                                    <i class="nav-icon bi bi-circle"></i>
-                                    <p>Lockscreen</p>
-                                </a>
-                            </li>
-                        </ul>
                     </li>
                 </ul>
             </nav>
@@ -187,5 +141,18 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous" ></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 <script src="${pageContext.request.contextPath}/assets/libs/AdminLTE/dist/js/adminlte.js"></script>
+<script src="${pageContext.request.contextPath}/assets/libs/jquery/dist/jquery.js"></script>
+<script>
+    $(function(){
+        $("a.nav-link").removeClass("active");
+        const active=$("a.nav-link[data-menu='${menu}']");
+        const active_menu=active.closest("ul.nav-treeview").closest("li");
+        active.addClass("active");
+        active_menu.addClass("menu-open");
+        active_menu.children("a.nav-link").addClass("active");
+        console.log('${requestScope.menu}');
+        console.log('${requestScope.title}');
+    })
+</script>
 </body>
 </html>

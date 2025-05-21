@@ -34,7 +34,7 @@
                     <tbody>
                     <c:forEach items="${result.list}" var="i" varStatus="c">
                         <tr>
-                            <td><a href="${pageContext.request.contextPath}/admin/petsitters/${i.user_no}" class="stretched-link"></a>${i.user_no}</td>
+                            <td><a href="${pageContext.request.contextPath}/admin/users/${i.user_no}" class="stretched-link"></a>${i.user_no}</td>
                             <td>${i.user_mail}</td>
                             <td>${i.user_name}</td>
                             <td>${i.nickname}</td>

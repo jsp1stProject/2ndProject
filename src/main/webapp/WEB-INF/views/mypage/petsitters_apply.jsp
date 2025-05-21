@@ -94,7 +94,9 @@
 
                 }catch (e) {
                     console.log(e);
-                    toast(e.response.data.message);
+                    if(e.status!=404){
+                        toast(e.response.data.message);
+                    }
                 }
             }
 

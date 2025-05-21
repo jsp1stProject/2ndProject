@@ -61,15 +61,15 @@
 		</where>
 	</select>
 	<select id="getSitterApps" resultType="com.sist.web.mypage.vo.SitterDTO" parameterType="HashMap">
-		SELECT APP_NO,s.USER_NO,HISTORY,LICENSE,INFO,STATUS,TO_CHAR(s.REGDATE,'YYYY.mm.DD') as dbday, u.USER_NAME, u.USER_MAIL, u.NICKNAME
+		SELECT APP_NO,s.USER_NO,LICENSE,STATUS,TO_CHAR(s.REGDATE,'YYYY.mm.DD HH:MI') as dbday, u.USER_MAIL, u.NICKNAME
 		FROM P_SITTER_APP s JOIN P_USERS u
 		ON s.USER_NO = u.USER_NO
 		<where>
-			<if test="user_name != null">
-				AND regexp_like(user_name, #{user_name}, 'i')
+			<if test="user_mail != null">
+				AND regexp_like(user_mail, #{user_mail}, 'i')
 			</if>
 		</where>
-		ORDER BY APP_NO DESC
+		ORDER BY s.REGDATE DESC
 		OFFSET #{start, jdbcType=INTEGER} ROWS FETCH NEXT #{rowsize, jdbcType=INTEGER } ROWS ONLY
 	</select>
 

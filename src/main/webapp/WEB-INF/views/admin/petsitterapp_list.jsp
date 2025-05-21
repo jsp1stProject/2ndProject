@@ -22,28 +22,33 @@
                 <table class="table table-hover table-linked text-nowrap">
                     <thead>
                     <tr>
+                        <th>신청번호</th>
                         <th>회원번호</th>
                         <th>이메일</th>
-                        <th>이름</th>
                         <th>닉네임</th>
                         <th>신청일</th>
+                        <th>자격증</th>
                         <th>상태</th>
                     </tr>
                     </thead>
                     <tbody>
                     <c:forEach items="${result.list}" var="i" varStatus="c">
                         <tr>
-                            <td><a href="${pageContext.request.contextPath}/admin/petsitters/${i.user_no}" class="stretched-link"></a>${i.user_no}</td>
+                            <td><a href="${pageContext.request.contextPath}/admin/petsitters/${i.user_no}/applications" class="stretched-link"></a>${i.app_no}</td>
+                            <td>${i.user_no}</td>
                             <td>${i.user_mail}</td>
-                            <td>${i.user_name}</td>
                             <td>${i.nickname}</td>
                             <td>${i.dbday}</td>
+                            <td>${i.license eq null?'':'보유'}</td>
                             <td class="py-1">
                                 <c:if test="${i.status eq 0}">
-                                    <button type="button" class="btn btn-sm btn-info">허가</button>
+                                    <button type="button" class="btn btn-sm btn-info">대기</button>
                                 </c:if>
                                 <c:if test="${i.status eq 1}">
-                                    <button type="button" class="btn btn-sm btn-dark" disabled>완료</button>
+                                    <button type="button" class="btn btn-sm btn-success" disabled>허가</button>
+                                </c:if>
+                                <c:if test="${i.status eq 2}">
+                                    <button type="button" class="btn btn-sm btn-dark" disabled>반려</button>
                                 </c:if>
                             </td>
                         </tr>

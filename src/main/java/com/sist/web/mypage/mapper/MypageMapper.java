@@ -38,6 +38,6 @@ public interface MypageMapper {
     @Select("select APP_NO,USER_NO,HISTORY,LICENSE,INFO FROM P_SITTER_APP where USER_NO=#{user_no}")
     public SitterDTO getAppSitter(@Param("user_no")String Userno);
 
-    @Update("UPDATE P_SITTER_APP set HISTORY=#{history}, LICENSE=#{license}, INFO=#{info} where USER_NO=#{user_no}")
+    @Update("UPDATE P_SITTER_APP set HISTORY=#{history}, LICENSE=#{license}, INFO=#{info}, REGDATE=SYSDATE where USER_NO=#{user_no}")
     public void updateAppSitter(SitterDTO dto);
 }
