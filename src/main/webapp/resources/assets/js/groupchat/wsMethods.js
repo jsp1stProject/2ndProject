@@ -18,7 +18,10 @@ export const wsMethods = {
 
       this.stompClient.connect(
         { Authorization: 'Bearer ' + this.token },
-        this.loadGroups,
+        async () => {
+          await this.loadGroups();
+          this.subscribeNotify();
+        },
         err => console.error('STOMP 연결 실패', err)
       );
     } catch (e) {
@@ -66,5 +69,24 @@ export const wsMethods = {
       ...m,
       isOnline: set.has(Number(m.user_no))
     }));
+  },
+
+  subscribeNotify() {
+    console.log('subscribNotify', this);
+    this.stompClient.subscribe('/user/queue/notify', msg => {
+      console.log('알림 수신 성공', msg.body);
+
+      const payload = JSON.parse(msg.body);
+      const { groupNo } = payload;
+      console.log('알림 수신된 groupNo', groupNo);
+
+      const group = this.availableGroups.find(g => g.group_no === groupNo);
+      if (group) {
+        console.log('해당 그룹 찾음', group.group_name);
+        group.hasUnread = true;
+      } else {
+        console.log('그룹 못찾음');
+      }
+    }, { id: 'notify-sub'});
   }
 };

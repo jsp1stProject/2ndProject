@@ -49,6 +49,12 @@ export function initGroupChat(contextPath, createApp) {
           await this.markExit(prevGroupNo);
         }
 
+        const group = this.availableGroups.find(g => g.group_no === groupNo);
+        if (group) {
+          console.log('알림 초기화', group.group_name);
+          group.hasUnread = false;
+        }
+
         await this.markViewing(groupNo, true);
 
         const selected = this.availableGroups.find(g => g.group_no === groupNo);

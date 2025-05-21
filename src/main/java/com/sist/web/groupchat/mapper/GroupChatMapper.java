@@ -32,4 +32,12 @@ public interface GroupChatMapper {
 	
 	@Select("SELECT MAX(message_no) FROM p_group_msg WHERE group_no = #{groupNo}")
 	public Long selectLatestMessageNo(@Param("groupNo") int groupNo);
+	
+	@Select("SELECT user_no "
+		  + "FROM p_group_member "
+		  + "WHERE group_no = #{groupNo} "
+		  + "AND viewing = 0 "
+		  + "AND (last_read_message IS NULL OR last_read_message < #{messageNo}) "
+		  + "AND user_no <> #{senderNo}")
+	List<Long> selectUserToNotify(@Param("groupNo") int groupNo, @Param("messageNo") Long messageNo, @Param("senderNo") int senderNo);
 }

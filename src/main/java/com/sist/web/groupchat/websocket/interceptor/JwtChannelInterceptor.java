@@ -36,6 +36,8 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
             }
 
             String userNo = jwt.getUserNoFromToken(token);
+            
+            /*
             List<String> roles = jwt.getRoles(token);
             List<SimpleGrantedAuthority> authorities = roles.stream()
                     .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
@@ -44,7 +46,8 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
             User principal = new User(userNo, "", authorities);
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(principal, null, authorities);
-            accessor.setUser(authentication);
+            */
+            accessor.setUser(new StompPrincipal(userNo));
         }
 
         if (StompCommand.SUBSCRIBE.equals(command) || StompCommand.SEND.equals(command)) {

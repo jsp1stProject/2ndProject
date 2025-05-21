@@ -15,6 +15,7 @@ import com.sist.web.group.dao.GroupDAO;
 import com.sist.web.groupchat.dao.GroupChatDAO;
 import com.sist.web.groupchat.dto.GroupChatDTO;
 import com.sist.web.groupchat.dto.MessageSearchFilterDTO;
+import com.sist.web.groupchat.dto.NotificationDTO;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserVO;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,13 @@ public class GroupChatServiceImpl implements GroupChatService {
 		} catch (Exception ex) {
 			log.error("STOMP 메세지 전송 실패 - groupNo: {}, error: {}", saved.getGroup_no(), ex.getMessage());
 			throw new RuntimeException("STOMP 전송 실패", ex);
+		}
+		
+		List<Long> notifyUserNos = cDao.selectUsersToNotify(saved.getGroup_no(), saved.getMessage_no(), saved.getSender_no());
+		
+		for (Long userNo : notifyUserNos) {
+			messagingTemplate.convertAndSendToUser(String.valueOf(userNo), "/queue/notify", new NotificationDTO("새 메시지 도착", saved.getGroup_no(), saved.getSender_nickname()));
+			log.info("알림 전송 userNo: {}, groupNo: {}", userNo, saved.getGroup_no());
 		}
 	}
 
@@ -103,5 +111,7 @@ public class GroupChatServiceImpl implements GroupChatService {
 		}
 		
 	}
+	
+	
 	
 }

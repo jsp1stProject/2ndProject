@@ -48,5 +48,5 @@ export const groupChatData = {
     senderNickname: '',
     startDate: '',
     endDate: ''
-  }
+  },
 };

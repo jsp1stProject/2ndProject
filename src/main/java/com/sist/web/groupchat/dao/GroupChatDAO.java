@@ -48,4 +48,9 @@ public class GroupChatDAO {
 		return mapper.selectLatestMessageNo(groupNo);
 	}
 	
+	/** 알림 보낼 유저 조회 */
+	public List<Long> selectUsersToNotify(int groupNo, Long messageNo, int senderNo) {
+		return mapper.selectUserToNotify(groupNo, messageNo, senderNo);
+	}
+	
 }

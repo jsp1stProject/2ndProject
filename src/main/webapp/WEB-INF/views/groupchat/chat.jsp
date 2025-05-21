@@ -58,12 +58,18 @@
         <div class="group-list d-flex flex-column justify-content-between" id="glist">
         	<!-- 그룹 목록 -->
             <ul class="p-2 m-0">
-                <li v-for="group in availableGroups" :key="group.group_no">
-                    <a href="#" @click.prevent="joinGroup(group.group_no)">
-                        <img v-if="group.profile_img" :src="group.profile_img" alt="thumbnail" class="group-thumbnail"/>
-                    	<div v-else class="group-initial" :style="getGroupFontSize(group.group_name)">
+                <li v-for="group in availableGroups" :key="group.group_no" class="position-relative">
+                    <a href="#" @click.prevent="joinGroup(group.group_no)" class="d-inline-block position-relative">
+                        <img v-if="group.profile_img" :src="group.profile_img" alt="thumbnail" class="group-thumbnail rounded-circle"/>
+
+                    	<div v-else class="group-initial rounded-circle d-flex align-items-center justify-content-center" :style="getGroupFontSize(group.group_name)">
                     		{{ group.group_name.substring(0, 4) }}
                     	</div>
+
+                        <span v-if="group.hasUnread" 
+                            class="position-absolute top-0 start-0 translate-middle rounded-circle bg-white border" 
+                            style="width: 10px; height: 10px; background-color: darkred; border: 1px solid white;">
+                    </span>
                     </a>
                 </li>
             </ul>

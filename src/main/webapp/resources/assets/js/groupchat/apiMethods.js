@@ -1,7 +1,11 @@
 export const apiMethods = {
   async loadGroups() {
     const res = await axios.get(`${this.contextPath}/api/groups/${this.sender_no}`);
-    this.availableGroups = res.data.data;
+    console.log('res', res.data.data);
+    this.availableGroups = res.data.data.map(g => ({
+      ...g,
+      hasUnread: false
+    }));
     if (this.availableGroups.length > 0) {
       await this.joinGroup(this.availableGroups[0].group_no);
     }
