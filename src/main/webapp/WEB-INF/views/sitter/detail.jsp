@@ -4,8 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <title>펫시터 상세보기</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 <div class="container mt-4" id="app">
@@ -17,7 +15,7 @@
       <p class="card-text">{{ sitter.content }}</p>
       <ul class="list-group list-group-flush">
         <li class="list-group-item"><strong>태그:</strong> {{ sitter.tag }}</li>
-        <li class="list-group-item"><strong>돌봄 횟수:</strong> {{ sitter.carecount }}</li>
+        <li class="list-group-item"><strong>지난 돌봄 횟수:</strong> {{ sitter.carecount }}</li>
         <li class="list-group-item"><strong>평점:</strong> {{ sitter.score }}</li>
         <li class="list-group-item"><strong>지역:</strong> {{ sitter.care_loc }}</li>
         <li class="list-group-item"><strong>시작가:</strong> {{ sitter.pet_first_price }}</li>
@@ -28,9 +26,9 @@
           <strong>경력:</strong> {{ sitter.sitterApp.history }}
         </li>
       </ul>
-      <a href="/web/sitter/reserve?sitter_no=${vo.sitter_no}&user_no=${user_no}" class="btn btn-primary">예약하기</a>
-      <button v-if="sitter.user_no === myUserNo" class="btn btn-warning mt-3" @click="goUpdate(sitter.sitter_no)">수정하기</button>
-      <button v-if="sitter.user_no === myUserNo" class="btn btn-danger mt-3" @click="deletePost">삭제하기</button>
+      <a :href="`/web/sitter/reserve?sitter_no=${sitter.sitter_no}&user_no=${myUserNo}`" class="btn btn-primary">예약하기</a>
+     <button v-if="parseInt(sitter.user_no) === myUserNo" class="btn btn-warning mt-3" @click="goUpdate(sitter.sitter_no)">수정하기</button>
+      <button v-if="parseInt(sitter.user_no) === parseInt(myUserNo)" class="btn btn-danger mt-3" @click="deletePost">삭제하기</button>
     </div>
   </div>
   <div v-else class="text-muted">불러오는 중입니다...</div>
@@ -45,10 +43,8 @@
     </div>
   </div>
 
-  <!-- 리뷰 + 대댓글 출력 -->
-  <div v-for="review in reviews" :key="review.review_no"
-       :style="{ marginLeft: review.group_step > 0 ? '2rem' : '0' }"
-       class="border rounded p-3 mb-3">
+  <!-- 리뷰 출력 -->
+  <div v-for="review in reviews" :key="review.review_no" class="border rounded p-3 mb-3">
     <div class="d-flex align-items-center mb-2">
       <strong>{{ review.user.nickname }}</strong>
       <span class="ms-2 text-warning" v-if="review.group_step === 0">
@@ -78,7 +74,6 @@
       </div>
     </div>
 
-    <!-- 대댓글 입력창도 작성자만 -->
     <div v-if="replyTarget === review.review_no && sitter.user_no === myUserNo" class="mt-3">
       <textarea v-model="replyComment" class="form-control mb-2" placeholder="답글을 입력하세요"></textarea>
       <button @click="submitReply(review)" class="btn btn-sm btn-dark me-2">답글 등록</button>
@@ -88,7 +83,6 @@
 
   <button class="btn btn-dark position-fixed bottom-0 end-0 m-3" @click="scrollTop">🔝</button>
 </div>
-
 <script type="module">
 import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 import axios from 'https://cdn.skypack.dev/axios'
@@ -99,8 +93,8 @@ createApp({
       sitter: null,
       sitter_no: null,
       myUserNo: null,
-      reviews: [],
       newReview: { rev_comment: '', rev_score: 5 },
+      reviews: [],
       editTarget: null,
       editReview: { rev_comment: '', rev_score: 5 },
       replyTarget: null,
@@ -108,24 +102,31 @@ createApp({
     }
   },
   mounted() {
-    const sitter_no = new URLSearchParams(location.search).get("sitter_no")
-    if (!sitter_no) return
-    this.sitter_no = sitter_no
-    this.fetchReviews(sitter_no)
+  const sitter_no = new URLSearchParams(location.search).get("sitter_no")
+  if (!sitter_no) return
+  this.sitter_no = sitter_no
 
-    const token = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1]
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]))
-        this.myUserNo = parseInt(payload.user_no)
-      } catch (e) {
-        this.myUserNo = null
-      }
+  const token = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1]
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      this.myUserNo = parseInt(payload.user_no) 
+    } catch (e) {
+      this.myUserNo = null
+      console.log("❌ 사용자 번호 파싱 실패")
     }
+  }
 
-    axios.get(`/web/sitter/detail_vue`, { params: { sitter_no } })
-         .then(res => this.sitter = res.data)
-  },
+  axios.get(`/web/sitter/detail_vue`, { params: { sitter_no },withCredentials: true })
+       .then(res => {
+  if (res.data.code === '200') {
+    console.log("🐾 sitter 데이터:", res.data.data)
+    this.sitter = res.data.data.sitter
+    this.myUserNo = res.data.data.myUserNo
+  }
+})
+  this.fetchReviews(sitter_no)
+},
   methods: {
     goUpdate(sitter_no) {
       location.href = '/web/sitter/update?sitter_no=' + sitter_no
@@ -133,16 +134,22 @@ createApp({
     async deletePost() {
       if (!confirm("정말 삭제하시겠습니까?")) return
       const res = await axios.delete('/web/sitter/delete', { params: { sitter_no: this.sitter_no } })
-      if (res.data === 'success') {
+      if (res.data.code === '200' && res.data.data === 'success') {
         alert("삭제 완료")
         location.href = "/web/sitter/list"
       } else {
-        alert("삭제 실패")
+        alert("삭제 실패: " + res.data.message)
       }
     },
     fetchReviews(sitter_no) {
       axios.get(`/web/sitter/review`, { params: { sitter_no } })
-           .then(res => this.reviews = res.data)
+           .then(res => {
+             if (res.data.code === '200') {
+               this.reviews = res.data.data
+             } else {
+               alert(res.data.message)
+             }
+           })
     },
     submitReview() {
       if (!this.newReview.rev_comment.trim()) {
@@ -154,11 +161,13 @@ createApp({
         rev_comment: this.newReview.rev_comment,
         rev_score: this.newReview.rev_score
       }).then(res => {
-        if (res.data === 'success') {
+        if (res.data.code === '200' && res.data.data === 'success') {
           alert("등록 완료")
           this.newReview.rev_comment = ''
           this.newReview.rev_score = 5
           this.fetchReviews(this.sitter_no)
+        } else {
+          alert("등록 실패: " + res.data.message)
         }
       })
     },
@@ -179,10 +188,12 @@ createApp({
         rev_comment: this.editReview.rev_comment,
         rev_score: this.editReview.rev_score
       }).then(res => {
-        if (res.data === 'success') {
+        if (res.data.code === '200' && res.data.data === 'success') {
           alert("수정 완료")
           this.editTarget = null
           this.fetchReviews(this.sitter_no)
+        } else {
+          alert("수정 실패: " + res.data.message)
         }
       })
     },
@@ -190,9 +201,11 @@ createApp({
       if (!confirm("정말 삭제하시겠습니까?")) return
       axios.delete('/web/sitter/review', { params: { review_no } })
            .then(res => {
-             if (res.data === 'success') {
+             if (res.data.code === '200' && res.data.data === 'success') {
                alert("삭제 완료")
                this.fetchReviews(this.sitter_no)
+             } else {
+               alert("삭제 실패: " + res.data.message)
              }
            })
     },
@@ -215,10 +228,12 @@ createApp({
         group_id: review.group_id,
         group_step: review.group_step + 1
       }).then(res => {
-        if (res.data === 'success') {
+        if (res.data.code === '200' && res.data.data === 'success') {
           alert("답글 등록 완료")
           this.replyTarget = null
           this.fetchReviews(this.sitter_no)
+        } else {
+          alert("답글 실패: " + res.data.message)
         }
       })
     },
