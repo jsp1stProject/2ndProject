@@ -5,7 +5,9 @@
   <meta charset="UTF-8">
   <title>1:1 실시간 채팅</title>
   <script src="https://unpkg.com/vue@3.3.4/dist/vue.global.js"></script>
-  
+  <script src="https://unpkg.com/vue@3"></script>
+	<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 	
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
@@ -81,16 +83,6 @@ createApp({
       this.userNo = res.data.userNo;
       console.log("userNo:", this.userNo);
 
-      // 채팅방 리스트 불러오기
-      return axios.get('/web/sitterchat/list_vue');
-    })
-    .then(res => {
-      if (!res) return;
-      this.rooms = res.data.list;
-      if (this.rooms.length > 0) {
-        this.enterRoom(this.rooms[0]);
-      }
-
       // WebSocket 연결
       const socket = new SockJS('/ws-s');
       this.stompClient = new Client({
@@ -101,6 +93,17 @@ createApp({
         }
       });
       this.stompClient.activate();
+
+      // ✅ 반드시 return 해줘야 아래 then으로 전달됨
+      return axios.get('/web/sitterchat/list_vue');
+    })
+    .then(res => {
+      if (!res) return;
+      this.rooms = res.data.list;
+      if (this.rooms.length > 0) {
+        this.enterRoom(this.rooms[0]);
+      }
+      console.log("1");
     })
     .catch(err => {
       console.error("❌ 인증 또는 채팅 로딩 실패", err);
@@ -129,7 +132,7 @@ if (!token) return null;
       this.currentRoom = room;
       this.messages = [];
 
-      axios.get('/sitterchat/msglist', { params: { room_no: room.room_no } }).then(res => {
+      axios.get('/web/sitterchat/msglist', { params: { room_no: room.room_no } }).then(res => {
         this.messages = res.data;
       });
 
