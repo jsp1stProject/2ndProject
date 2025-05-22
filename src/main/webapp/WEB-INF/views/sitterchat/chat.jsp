@@ -109,7 +109,7 @@ Vue.createApp({
   methods: {
 	  async initWebSocket() {
 		    try {
-		      const res = await axios.get('/web/auth/me');
+		      const res = await axios.get('<%= request.getContextPath() %>/auth/me');
 		      if (!res.data.valid) {
 		        alert('로그인이 필요한 서비스입니다.');
 		        return;
@@ -141,7 +141,7 @@ Vue.createApp({
 		    }
 		  },
     loadRooms() {
-      axios.get('/web/sitterchat/list_vue').then(res => {
+      axios.get('${pageContext.request.contextPath}/sitterchat/list_vue').then(res => {
         this.rooms = res.data.list;
         if (this.rooms.length > 0) {
           this.enterRoom(this.rooms[0]);
@@ -165,7 +165,7 @@ Vue.createApp({
       this.currentRoom = room;
       this.messages = [];
 
-      axios.get('/web/sitterchat/msglist', {
+      axios.get('${pageContext.request.contextPath}/sitterchat/msglist', {
         params: { room_no: room.room_no }
       }).then(res => {
         this.messages = res.data;
