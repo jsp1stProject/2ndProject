@@ -19,8 +19,7 @@ public class SitterWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-s")
-                .setAllowedOrigins("*")
-                .withSockJS();
+                .setAllowedOrigins("*");
     }
 
     @Override

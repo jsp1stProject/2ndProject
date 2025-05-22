@@ -1,15 +1,47 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.sist.web.security.JwtTokenProvider" %>
+<%@ page import="javax.servlet.http.Cookie" %>
+<%
+    String accessToken = null;
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+        for (Cookie c : cookies) {
+            if ("accessToken".equals(c.getName())) {
+                accessToken = c.getValue();
+                break;
+            }
+        }
+    }
+
+    if (accessToken == null || accessToken.isEmpty()) {
+        response.sendRedirect("/user/login");
+        return;
+    }
+
+    JwtTokenProvider jwt = new JwtTokenProvider();
+    String userNo = null;
+    try {
+        userNo = jwt.getUserNoFromToken(accessToken);
+        if (userNo == null || userNo.isEmpty()) {
+            response.sendRedirect("/user/login");
+            return;
+        }
+    } catch (Exception e) {
+        response.sendRedirect("/user/login");
+        return;
+    }
+%>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <title>1:1 실시간 채팅</title>
-  <script src="https://unpkg.com/vue@3.3.4/dist/vue.global.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://unpkg.com/vue@3"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-	
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script> -->
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
     body { margin: 0; }
@@ -20,8 +52,8 @@
     .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; }
     .chat-input { padding: 1rem; border-top: 1px solid #202225; background: #2f3136; }
     .chat-input textarea { width: 100%; resize: none; height: 60px; padding: 0.5rem; border-radius: 4px; border: none; }
-    .message { margin-bottom: 0.75rem; }
-    .message.mine { text-align: right; }
+    .message { margin-bottom: 0.75rem; padding: 0.5rem; border-radius: 8px; max-width: 70%; background-color: #40444b; }
+    .message.mine { margin-left: auto; background-color: #7289da; text-align: right; }
     .chat-room { cursor: pointer; padding: 0.5rem; border-radius: 4px; }
     .chat-room:hover { background: #40444b; }
   </style>
@@ -42,8 +74,10 @@
     </div>
     <div class="chat-messages">
       <div v-for="msg in messages" :key="msg.chat_no" :class="['message', msg.sender_no === userNo ? 'mine' : '']">
-        <div>{{ msg.content }}</div>
-        <small>{{ msg.send_time }}</small>
+        <div>
+          <strong v-if="msg.sender_no !== userNo">{{ msg.sender_nick }}: </strong>{{ msg.content }}
+        </div>
+        <small>{{ formatTime(msg.send_time) }}</small>
       </div>
     </div>
     <div class="chat-input">
@@ -69,51 +103,25 @@ Vue.createApp({
     };
   },
   mounted() {
-	  axios.get('/web/auth/me')
-	    .then(res => {
-	      if (!res.data.valid) {
-	        alert("로그인이 필요한 서비스입니다.");
-	        return;
-	      }
+    axios.get('/web/auth/me', { withCredentials: true })
+      .then(res => {
+        if (!res.data.valid) {
+          alert("로그인이 필요한 서비스입니다.");
+          return;
+        }
 
-	      this.userNo = res.data.userNo;
-	      console.log("✅ userNo:", this.userNo);
+        this.userNo = res.data.userNo;
+        const socket = new WebSocket("ws://localhost:8080/web/ws-s");
+        this.stompClient = Stomp.over(socket);
+        this.stompClient.reconnect_delay = 5000;
 
-	      const token = this.getAccessToken();
-	      console.log("✅ 가져온 토큰:", token);
-
-	      if (!token) {
-	        alert("토큰이 없어서 채팅 연결이 불가능합니다.");
-	        return;
-	      }
-
-	      const socket = new SockJS('/web/ws-s');
-	      this.stompClient = Stomp.over(socket);
-	      this.stompClient.reconnect_delay = 5000;
-
-	      this.stompClient.connect(
-	        { Authorization: `Bearer ${token}` },
-	        () => {
-	          console.log("✅ WebSocket connected");
-	          this.loadRooms();
-	        },
-	        (err) => {
-	          console.error("❌ WebSocket 연결 실패", err);
-	        }
-	      );
-	    })
-	    .catch(err => {
-	      console.error("❌ 인증 또는 채팅 로딩 실패", err);
-	    });
-	},
+        this.stompClient.connect({}, () => {
+          console.log(" WebSocket connected");
+          this.loadRooms();
+        });
+      });
+  },
   methods: {
-    getAccessToken() {
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('accessToken='))
-        ?.split('=')[1];
-      return token || '';
-    },
     loadRooms() {
       axios.get('/web/sitterchat/list_vue').then(res => {
         this.rooms = res.data.list;
@@ -123,6 +131,7 @@ Vue.createApp({
       });
     },
     formatTime(timestamp) {
+      if (!timestamp) return '';
       const date = new Date(timestamp);
       return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     },
@@ -142,11 +151,21 @@ Vue.createApp({
         params: { room_no: room.room_no }
       }).then(res => {
         this.messages = res.data;
+
+        this.$nextTick(() => {
+          const msgBox = document.querySelector('.chat-messages');
+          if (msgBox) msgBox.scrollTop = msgBox.scrollHeight;
+        });
       });
 
       this.stompClient.subscribe('/ssub/chat/' + room.room_no, msg => {
         const newMsg = JSON.parse(msg.body);
         this.messages.push(newMsg);
+
+        this.$nextTick(() => {
+          const msgBox = document.querySelector('.chat-messages');
+          if (msgBox) msgBox.scrollTop = msgBox.scrollHeight;
+        });
       });
     },
     sendMessage() {
@@ -159,7 +178,7 @@ Vue.createApp({
         chatType: 'text'
       };
 
-      this.stompClient.send("/spub/chatSend", {}, JSON.stringify(msg));
+      this.stompClient.send("/spub/Send", {}, JSON.stringify(msg));
       this.chatContent = '';
     }
   }
