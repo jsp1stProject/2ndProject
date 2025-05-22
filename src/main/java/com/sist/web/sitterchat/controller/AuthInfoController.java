@@ -32,6 +32,7 @@ public class AuthInfoController {
             String userNo = jwt.getUserNoFromToken(token);
             map.put("userNo", Long.parseLong(userNo));
             map.put("valid", true);
+            map.put("token", token);
         } catch (Exception e) {
             map.put("valid", false);
         }
