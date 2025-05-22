@@ -117,8 +117,15 @@ Vue.createApp({
 
 		      this.token = res.data;
 		      this.userNo = res.data.userNo;
-
-		      const socket = new WebSocket("ws://localhost:8080/web/ws-sitter");
+		      
+		      const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+		      const socketUrl = protocol + '://' + location.host + '<%= request.getContextPath() %>/ws-sitter';
+		      const socket = new WebSocket(socketUrl);
+		      console.log("protocol=",protocol)
+		      console.log("location.host=",location.host)
+		      console.log("socketUrl",socketUrl)
+		      
+		      
 		      this.stompClient = Stomp.over(socket);
 		      this.stompClient.reconnect_delay = 5000;
 

@@ -113,7 +113,7 @@ createApp({
       this.myUserNo = parseInt(payload.user_no) 
     } catch (e) {
       this.myUserNo = null
-      console.log("❌ 사용자 번호 파싱 실패")
+      console.log("사용자 번호 파싱 실패")
     }
   }
 
@@ -128,10 +128,10 @@ createApp({
 },
   methods: {
     goUpdate(sitter_no) {
-      location.href = '/web/sitter/update?sitter_no=' + sitter_no
+      location.href = '/${this.contextPath}/sitter/update?sitter_no=' + sitter_no
     },
 	goReserve(sitter_no) {
-      location.href = '/web/sitter/reserve?sitter_no=' + sitter_no
+      location.href = '/${this.contextPath}/sitter/reserve?sitter_no=' + sitter_no
     },
     async deletePost() {
       if (!confirm("정말 삭제하시겠습니까?")) return
