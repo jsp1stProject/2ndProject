@@ -29,4 +29,11 @@ public class GroupFeedController {
 		return "main/main";
 	}
 	
+	@GetMapping("/schedule/list")
+	public String schedule_list(Model model)
+	{
+		model.addAttribute("main_jsp","../schedule/schedule_list.jsp");
+		return "main/main";
+	}
+	
 }
