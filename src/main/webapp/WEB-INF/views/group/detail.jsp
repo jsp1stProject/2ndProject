@@ -1,7 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 <div class="container pt-header" id="group-detail-app">
  <div class="row pt-3">
     <!-- ⬅️ 좌측 일정 영역 -->
@@ -143,14 +144,19 @@
 	          </div>
 	        </div>
 	
-	        <div class="d-flex justify-content-end fs-3">
-	          <div class="d-flex gap-3 mt-2 text-muted fs-6">
-			      <button @click="selectLike(vo.feed_no)">
-					  ❤️ {{ liked[vo.feed_no] ? '취소' : '좋아요' }}
-					</button>
-			       <a class="d-block fs-4 text-dark fw-semibold link-primary" :href="'../group/feed?feed_no='+vo.feed_no" ><span >💬</span></a>
-			    </div>
-	        </div>
+	        <div class="d-flex justify-content-end">
+			  <div class="d-flex align-items-center gap-3 mt-2 text-muted fs-5">
+			    <!-- 좋아요 아이콘 버튼 -->
+			    <button @click="selectLike(vo.feed_no)" class="btn btn-sm p-0 border-0 bg-transparent">
+			      <i :class="liked[vo.feed_no] ? 'bi bi-heart-fill text-danger fs-4' : 'bi bi-heart fs-4 text-muted'"></i>
+			    </button>
+			
+			    <!-- 댓글 아이콘 버튼 (링크로 이동) -->
+			    <a :href="'../group/feed?feed_no=' + vo.feed_no" class="text-muted">
+			      <i class="bi bi-chat-dots fs-4"></i>
+			    </a>
+			  </div>
+			</div>
 	      </div>
 	    </div>
 	  </div>
@@ -234,7 +240,7 @@
 				           v-model="newSchedule.participants_no"
 				           @change="convertParticipantToNumbers">
 				    <label class="form-check-label" :for="'member-' + member.user_no">
-				      {{ member.user_no }} ({{ member.role }})
+				      {{ member.nickname }}
 				    </label>
 				  </div>
 				</div>

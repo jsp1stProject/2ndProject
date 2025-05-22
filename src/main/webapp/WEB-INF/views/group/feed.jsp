@@ -3,6 +3,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 <style>
     body {
       background-color: #f6f7f8;
@@ -18,6 +20,8 @@
       border-radius: 12px;
       padding: 24px;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      max-width: 600px;  /* ✅ 추가 */
+  	  margin: 0 auto;     /* ✅ 가운데 정렬 */
     }
     .feed-header {
       display: flex;
@@ -118,12 +122,18 @@
     </div>
 
     <!-- 좋아요 / 댓글 수 -->
-    <div class="d-flex gap-3 mt-2 text-muted fs-6">
-      <button @click="selectLike">
-		  ❤️ {{ liked ? '취소' : '좋아요' }}
-		</button>
-      <span>💬 {{ feed_data.comment_count }}</span>
-    </div>
+    <div class="d-flex align-items-center gap-3 mt-3">
+	  <!-- 좋아요 버튼: 클릭 여부에 따라 아이콘 변경 -->
+	  <button @click="selectLike" class="btn btn-sm p-0 border-0 bg-transparent">
+	    <i :class="liked ? 'bi bi-heart-fill text-danger fs-4' : 'bi bi-heart fs-4 text-muted'"></i>
+	  </button>
+	
+	  <!-- 댓글 수: 동일한 스타일로 맞춤 -->
+	  <div class="d-flex align-items-center text-muted fs-5">
+	    <i class="bi bi-chat-dots me-1"></i>
+	    <span>{{ feed_data.comment_count }}</span>
+	  </div>
+	</div>
 	<!-- 댓글 입력 -->
     <div class="mt-4">
       <textarea v-model="newComment" 
@@ -145,8 +155,8 @@
             <small class="text-muted ms-2">{{ comment.dbday }}</small>
           </div>
           <div>
-            <button class="btn btn-sm btn-outline-secondary" @click="toggleEdit(comment.no, comment.msg)">수정</button>
-            <button class="btn btn-sm btn-outline-danger" @click="deleteComment(comment.no, comment.group_id,comment.group_step)">삭제</button>
+            <button class="btn btn-sm btn-outline-secondary" v-if="comment.user_no === user_no" @click="toggleEdit(comment.no, comment.msg)">수정</button>
+            <button class="btn btn-sm btn-outline-danger" v-if="comment.user_no === user_no" @click="deleteComment(comment.no, comment.group_id,comment.group_step)">삭제</button>
           </div>
         </div>
 
@@ -181,8 +191,8 @@
 	          <small class="text-muted ms-2">{{ reply.dbday }}</small>
 	        </div>
 	        <div>
-	          <button class="btn btn-sm btn-outline-secondary me-1" @click="toggleEdit(reply.no, reply.msg)">수정</button>
-	          <button class="btn btn-sm btn-outline-danger me-1" @click="deleteComment(reply.no, reply.group_id, reply.group_step)">삭제</button>
+	          <button class="btn btn-sm btn-outline-secondary me-1" v-if="reply.user_no === user_no" @click="toggleEdit(reply.no, reply.msg)">수정</button>
+	          <button class="btn btn-sm btn-outline-danger me-1" v-if="reply.user_no === user_no" @click="deleteComment(reply.no, reply.group_id, reply.group_step)">삭제</button>
 	        </div>														
 	      </div>
 	
@@ -242,8 +252,21 @@
     	}
 		this.dataRecv();
 		this.commentDataRecv();
+		this.fetchLoginUser();
 	},
     methods: {
+		async fetchLoginUser() {
+			
+			const contextPath = "${pageContext.request.contextPath}";
+			console.log('contextPath:', contextPath);
+			try{
+				const res=await axios.get(contextPath+'/api/token');
+				this.user_no = res.data.userNo;
+				console.log('로그인 유저 번호:', this.user_no);
+			} catch(err) {
+				console.error("로그인 사용자 정보 가져오기 실패",err)
+			}
+		},
 		selectLike() {
     		axios.post('../api/feed/'+this.feed_no+'/like')
       		.then(() => {
