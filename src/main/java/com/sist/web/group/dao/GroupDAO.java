@@ -34,6 +34,11 @@ public class GroupDAO {
 		return mapper.selectGroupDetail(group_no);
 	}
 	
+	/** 그룹 상세데이터(그룹장닉네임, 현재참여인원 포함) */
+	public GroupDTO selectGroupDetailTotal(int group_no)
+	{
+		return mapper.selectGroupDetailTotal(group_no);
+	}
 	public int groupInsertData(GroupDTO dto)
 	{
 		mapper.groupInsertData(dto);

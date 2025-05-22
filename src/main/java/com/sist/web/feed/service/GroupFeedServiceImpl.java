@@ -13,10 +13,18 @@ import org.apache.commons.collections.map.HashedMap;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.sist.web.aws.AwsS3Service;
+import com.sist.web.common.exception.code.CommonErrorCode;
+import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.feed.dao.*;
 import com.sist.web.feed.vo.*;
+import com.sist.web.group.dao.GroupDAO;
+import com.sist.web.group.dto.GroupDTO;
+import com.sist.web.group.dto.GroupMemberDTO;
 
 @Service
 public class GroupFeedServiceImpl implements GroupFeedService{
@@ -24,24 +32,27 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 	@Autowired
 	private GroupFeedDAO dao;
 	
-	@Override
-	public List<GroupVO> groupListData() {
-		// TODO Auto-generated method stub
-		return dao.groupListData();
-	}
-
-	@Override
-	public GroupVO groupDetailData(int group_no) {
-		// TODO Auto-generated method stub
-		return dao.groupDetailData(group_no);
-	}
+	@Autowired
+	private GroupDAO gdao;
 	
+	@Autowired
+	private AwsS3Service service;
+	
+	@Value("${aws.url}")
+	private String awsUrl;
+	/*
+	 * @Override public List<GroupVO> groupListData() { // TODO Auto-generated
+	 * method stub return dao.groupListData(); }
+	 * 
+	 * @Override public GroupVO groupDetailData(int group_no) { // TODO
+	 * Auto-generated method stub return dao.groupDetailData(group_no); }
+	 */
 	@Override
-	public List<FeedVO> feedListData(int group_no) {
+	public List<FeedVO> feedListData(Map map) {
 		// TODO Auto-generated method stub
+		//group_no, start, end
 		
-		
-		return dao.feedListData(group_no);
+		return dao.feedListData(map);
 	}
 
 	@Override
@@ -51,42 +62,55 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		
 		return dao.fileListData(no);
 	}
-
+/*
 	@Override
 	public List<GroupMemberVO> joined_groupmember(int group_no) {
 		// TODO Auto-generated method stub
 		return dao.joined_groupmember(group_no);
 	}
-	
+	*/
 	@Override
-	public Map groupFeedData(int group_no)
+	public Map<String, Object> groupFeedTotalData(int group_no, int page, long user_no)
 	{
-		Map map = new HashMap();
-		GroupVO gvo = dao.groupDetailData(group_no);
-		
-		List<FeedVO> feedList = dao.feedListData(group_no);
-		
-		for(FeedVO vo : feedList)
-		{
-			List<FeedFileInfoVO> flist = dao.fileListData(vo.getFeed_no());
-			List<String> filenames = new ArrayList<String>();
-			for(FeedFileInfoVO ffvo : flist)
-			{
-				filenames.add(ffvo.getFilename());
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			GroupDTO gvo = gdao.selectGroupDetailTotal(group_no);
+			
+			int rowSize=5;
+			map.put("user_no", user_no);
+			map.put("group_no", group_no);
+			map.put("start", (page-1)*rowSize);
+			map.put("end", page*rowSize);
+			
+			
+			List<FeedVO> feedList = dao.feedListData(map);
+			for(FeedVO vo : feedList)
+  			{
+				List<FeedFileInfoVO> flist = dao.fileListData(vo.getFeed_no());
+				List<String> filenames = new ArrayList<String>();
+				for(FeedFileInfoVO ffvo : flist)
+				{
+					filenames.add(ffvo.getFilename());
+				}
+				vo.setImages(filenames);	
+				/*
+				List<String> filenames = fvo.stream()
+					    .map(FeedFileInfoVO::getFilename)
+					    .collect(Collectors.toList());
+				*/
+				//stream으로 하면 코드는 간편한데 아직 공부못한부분
 			}
-			vo.setImages(filenames);	
-			/*
-			List<String> filenames = fvo.stream()
-				    .map(FeedFileInfoVO::getFilename)
-				    .collect(Collectors.toList());
-			*/
-			//stream으로 하면 코드는 간편한데 아직 공부못한부분
-		}
-		List<GroupMemberVO> mvo = joined_groupmember(group_no);
-		System.out.println("mvo"+mvo);
-		map.put("mvo", mvo);
-		map.put("list", feedList);
-		map.put("gvo", gvo);
+			List<GroupMemberDTO> mvo = gdao.selectGroupMemberAllByGroupNo(group_no);
+			System.out.println("mvo"+mvo);
+			map = new HashMap<String, Object>();
+			map.put("mvo", mvo);
+			map.put("list", feedList);
+			map.put("gvo", gvo);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		}		
 		
 		return map;
 		
@@ -98,8 +122,47 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		return dao.feedInsertData(vo);
 		
 	}
-
-
+	
+	@Override
+	public String feedInserDataTotal(int group_no, long user_no, String title, String content, List<MultipartFile> files)
+	{
+		FeedVO vo = new FeedVO();
+		System.out.println("입력된 title은 ="+title);
+		System.out.println("입력된 content은 ="+content);
+		System.out.println("입력된 files는 ="+files);
+		System.out.println("입력된 group_no는 "+group_no);
+		
+		int fileCount = (files == null || files.isEmpty()) ? 0 : files.size();
+		vo.setTitle(title);
+        vo.setContent(content);
+        vo.setFilecount(fileCount);
+        vo.setGroup_no(group_no);    
+        vo.setUser_no(user_no);   
+		String path="c:\\download\\";
+		
+		int no=dao.feedInsertData(vo);
+		System.out.println("입력된 새글의 번호"+no);
+			
+		if(files != null && !files.isEmpty())
+		{
+			for (MultipartFile file : files) {
+			    try {
+			    	String s3Path = service.uploadFile(file, "feeds/");
+			    	String fullUrl = awsUrl + s3Path;
+			        FeedFileInfoVO fileVO = new FeedFileInfoVO();
+			        fileVO.setFeed_no(no);
+			        fileVO.setFilename(fullUrl);
+			        fileVO.setFilesize(file.getSize());
+			        dao.feedFileInsert(fileVO);
+			    } catch (Exception e) {
+			        
+			        // 실패한 파일만 스킵하거나 전체 트랜잭션 롤백 등 판단 필요
+			        throw new RuntimeException("파일 업로드 실패");
+			    }
+			}
+		}
+		return "파일 업로드 완료";
+	}
 	@Override
 	public void feedFileInsert(FeedFileInfoVO vo) {
 		// TODO Auto-generated method stub
@@ -107,17 +170,17 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 	}
 
 	@Override
-	public FeedVO feedDetailData(int feed_no) {
+	public FeedVO feedDetailData(int feed_no, long user_no) {
 		// TODO Auto-generated method stub
 		
 		
-		return dao.feedDetailData(feed_no);
+		return dao.feedDetailData(feed_no,user_no);
 	}
 	
 	@Override
-	public FeedVO feedData(int feed_no)
+	public FeedVO feedData(int feed_no, long user_no)
 	{
-		FeedVO vo = dao.feedDetailData(feed_no);
+		FeedVO vo = dao.feedDetailData(feed_no, user_no);
 		List<FeedFileInfoVO> flist = dao.fileListData(vo.getFeed_no());
 		List<String> filenames = new ArrayList<String>();
 		for(FeedFileInfoVO ffvo : flist)
@@ -130,12 +193,10 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		return vo;	
 	}
 
-	@Override
-	public int groupInsertData(GroupVO vo) {
-		// TODO Auto-generated method stub
-		return dao.groupInsertData(vo);
-	}
-	
+	/*
+	 * @Override public int groupInsertData(GroupVO vo) { // TODO Auto-generated
+	 * method stub return dao.groupInsertData(vo); }
+	 */
 	@Override
 	public List<FeedCommentVO> feedCommentListData(Map map) {
 		// TODO Auto-generated method stub
@@ -147,18 +208,12 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		// TODO Auto-generated method stub
 		return 0;
 	}
-		/*
-	@Select("SELECT no, user_no, feed_no, msg, grou_step, group_id, TO_CHAR(regdate,'YYYY-MM-DD HH24:MI:SS') as dbday, num "
-			+ "FROM (SELECT no, user_no, feed_no, msg, grou_step, group_id, regdate, rownum as num "
-			+ "FROM (SELECT SELECT no, user_no, feed_no, msg, grou_step, group_id, regdate "
-			+ "FROM p_feed_comment WHERE feed_no={feed_no} ORDER BY group_id DESC, group_step ASC)) "
-			+ "WHERE num BETWEEN #{start} AND #{end}")
-	 */
+
 	@Override
 	public Map FeedCommentTotalList(int page, int feed_no)
 	{
 		Map map = new HashMap();
-		int rowSize=10;
+		int rowSize=5;
 		map.put("start", (page-1)*rowSize);
 		map.put("end", page*rowSize);
 		map.put("feed_no", feed_no);
@@ -181,6 +236,7 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		
 		return map;
 	}
+	
 	
 	/*
 	@Insert("INSERT INTO p_feed_comment(no,user_no,feed_no,msg, group_id) VALUES(p_feedcom_seq.nextval, #{user_no}, #{feed_no}, #{msg}, #{group_id})")
@@ -228,31 +284,63 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		// TODO Auto-generated method stub
 		dao.feedCommentDelete(map);
 	}
-	/*
-	<select id="feedCommentDelete" parameterType="hashmap">
-	   DELETE FROM p_feed_comment WHERE 
-	   <if test="group_step==0">
-	    group_id=#{group_id}
-	   </if>
-	   <if test="group_step!=0">
-	    no=#{no}
-	   </if>
-	  </select>
-	 */
+	
 	@Override 
 	public Map feedCommentDeleteData(FeedCommentVO vo)
 	{
+		
 		Map map = new HashedMap();
-		map.put("group_id", vo.getGroup_id());
-		map.put("no", vo.getNo());
+		try {
+			System.out.println("vo는 "+vo);
+			map.put("group_id", vo.getGroup_id());
+			map.put("no", vo.getNo());
+			System.out.println(map);
+			dao.feedCommentDelete(map);
+			System.out.println("");
+			map = FeedCommentTotalList(1, vo.getFeed_no());
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 		
-		dao.feedCommentDelete(map);
-		
-		map = FeedCommentTotalList(1, vo.getFeed_no());
 		
 		return map;
 	}
 
+	@Override
+	public void feedReplyInsert(FeedCommentVO vo) {
+		// TODO Auto-generated method stub
+		dao.feedReplyInsert(vo);
+	}
+
+	@Override
+	public int hasUserLike(long user_no, int feed_no) {
+		// TODO Auto-generated method stub
+		return dao.hasUserLike(user_no, feed_no);
+	}
+
+	@Override
+	public void likeInsert(long user_no, int feed_no) {
+		// TODO Auto-generated method stub
+		dao.likeInsert(user_no, feed_no);
+	}
+
+	@Override
+	public void likeDelete(long user_no, int feed_no) {
+		// TODO Auto-generated method stub
+		dao.likeDelete(user_no, feed_no);
+	}
+
+	@Override
+	public void selectLike(long user_no, int feed_no)
+	{
+		
+	    if (dao.hasUserLike(user_no, feed_no) > 0) {
+	        dao.likeDelete(user_no, feed_no);;
+	    } else {
+	    	dao.likeInsert(user_no, feed_no);
+	    }
+	}
 
 
 	

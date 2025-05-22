@@ -1,404 +1,402 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title>그룹상세페이지 피드출력</title>
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<style>
-body {
-	background-color: #f6f7f8;
-	font-family: 'Segoe UI', sans-serif;
-	padding: 20px;
-}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-.custom-container {
-	width: 70%;
-	margin: 0 auto;
-}
-
-.post-card {
-	margin-bottom: 20px;
-}
-
-.post-body {
-	margin-top: 10px;
-}
-
-.preview-img {
-	max-width: 100px;
-	max-height: 100px;
-	margin: 5px;
-	border-radius: 6px;
-	object-fit: cover;
-}
-
-@media ( max-width : 768px) {
-	.custom-container {
-		width: 95%;
-	}
-}
-</style>
-</head>
-<body>
-	<div class="container-fluid custom-container">
-		<div class="row">
-			
-			<!-- 왼쪽 일정 영역 -->
-			<div class="col-md-3 mb-4">
-				<div class="card">
-					<div class="card-header">📅 그룹 일정</div>
-					<div class="card-body">
-						<!-- 그룹 일정 추가 버튼 (상단에 위치) -->
-			<div class="mb-3 text-end">
-			  <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newScheduleModal">
-			    📅 그룹 일정 추가
+<div class="container pt-header" id="group-detail-app">
+ <div class="row pt-3">
+    <!-- ⬅️ 좌측 일정 영역 -->
+    <div class="col-lg-4">
+      <div class="card w-100">
+        <div class="card-body accordion">
+          <div class="d-flex justify-content-between align-items-center">
+            <button class="mb-0 card-title accordion-button w-auto p-0 inline-accordion" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              <span class="me-2">그룹 일정</span>
+            </button>
+            <div class="dropdown">
+			  <button id="dropdownMenuButton1"
+			          data-bs-toggle="dropdown"
+			          aria-expanded="false"
+			          class="rounded-circle btn-transparent btn-sm px-1 btn shadow-none">
+			    <i class="ti ti-dots-vertical fs-6"></i>
 			  </button>
+			
+			  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+			    <!-- 일정 추가 모달 열기 -->
+			    <li>
+			      <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#newScheduleModal">
+			        📅 일정 추가
+			      </button>
+			    </li>
+			  </ul>
 			</div>
+          </div>
+           
+           <ul class="list-unstyled mb-0 accordion-collapse collapse show" id="collapseOne">
+            <li v-for="(item, idx) in schedule_list" :key="idx" class="py-10 border-bottom">
+              <h6 class="mb-1 fs-3">{{ item.sche_title }}</h6>
+              <div class="fs-2 d-flex gap-2">
+                <div class="d-flex align-items-center gap-1">
+                  <iconify-icon icon="solar:clock-circle-broken" class="fs-4 text-primary"></iconify-icon>
+                  <span>{{ item.sche_start_str }} - {{ item.sche_start_end_str }}</span>
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <iconify-icon icon="solar:users-group-rounded-broken" class="fs-4 text-primary"></iconify-icon>
+                  <span v-for="(user, idx) in item.participants" :key="idx">
+					  {{ user.nickname }}
+					</span>
+                </div>
+              </div>
+            </li>
+            <a href="javascript:void(0)" class="fs-3 mt-3 text-center d-block">더보기</a>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- ➡️ 우측: 피드 카드 리스트 -->
+	<div class="col-lg-8">
+	<!-- 그룹 정보 카드 (우측 피드 영역 상단) -->
+	<div class="card mb-3 overflow-hidden">
+	  <div class="row g-0">
+	    <div class="col-sm-3 d-none d-sm-block">
+		  <img 
+		    :src="gvo.profile_img ? gvo.profile_img : '/assets/images/noimage.png'" 
+		    class="card-img-top h-100" 
+		    alt="그룹 이미지" 
+		    style="object-fit: cover;">
+		</div>
+	    <div class="card-body col-sm-9 p-3">
+	      <div class="d-flex gap-2">
+	        <div class="d-sm-none d-flex align-items-center">
+	          <img :src="gvo.profile_img || '/assets/images/profile/default.png'" width="42" height="42" class="rounded-circle fs-1">
+	        </div>
+	        <div>
+	          <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm mb-2">그룹 정보</span>
+	          <h4 class="fs-4 fw-semibold text-dark mb-2">{{ gvo.group_name }}</h4>
+	          <p class="text-muted mb-2">{{ gvo.description }}</p>
+	          <div class="d-flex align-items-center flex-wrap gap-2 fs-3">
+	            <div class="d-flex align-items-center gap-1">
+	              <span>방장</span><span class="text-dark">{{gvo.owner_name}}</span>
+	            </div>
+	            <div class="d-flex align-items-center gap-1">
+	              <span>참여자</span><span class="text-dark">{{gvo.current_member_count}} / {{ gvo.capacity }}</span>
+	            </div>
+	          </div>
+	          <div class="d-flex align-items-center flex-wrap gap-2 fs-3">
+	            <div class="d-flex align-items-center gap-1">
+	              <span>개설일</span><span class="text-dark">{{gvo.created_at}}</span>
+	            </div>
+	            <div class="d-flex align-items-center gap-1">
+	              <span>공개 여부</span>
+	              <span class="text-dark">{{ gvo.is_public === 'Y' ? '공개' : '비공개' }}</span>
+	            </div>
+	          </div>
+	        </div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	  <div class="d-flex justify-content-end">
+	    <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#newPostModal">
+	      <iconify-icon icon="solar:pen-2-broken" class="fs-6 align-middle"></iconify-icon>
+	      새 글
+	    </button>
+	  </div>
+	
+	  <!-- 피드 목록 -->
+	  <div v-for="(vo, index) in list" :key="vo.feed_no" class="card overflow-hidden mb-3">
+	    <div class="row g-0">
+	      <div class="card-body col-3 p-3">
+	        <div class="d-flex gap-2">
+	          <div class="d-flex align-items-center">
+	            <img src="https://pet4u.s3.ap-northeast-2.amazonaws.com/profile/21ef189e-a172-4649-ae01-cb37381b61b3.jpg">
+	          </div>
+	          <div class="">
+	            
+	            <div class="d-flex align-items-center flex-wrap gap-2 fs-3">
+	              <div class="d-flex align-items-center gap-1">
+	                <span>닉네임</span><span class="text-dark">{{ vo.nickname }}</span>
+	              </div>
+	              <div class="d-flex align-items-center gap-1">
+	                <span>작성일</span><span class="text-dark">{{ vo.dbday }}</span>
+	              </div>
+	            </div>
+	            <a class="d-block fs-4 text-dark fw-semibold link-primary" :href="'../group/feed?feed_no='+vo.feed_no" >
+	              {{ vo.title }}
+	            </a>
+	          </div>
+	        </div>
+
+	        <!-- 이미지가 있을 경우에만 출력 -->
+	        <div v-if="vo.images && vo.images.length">
+	          <div :id="'carousel-' + index" class="carousel slide my-2" data-bs-ride="carousel">
+	            <div class="carousel-inner">
+	              <div class="carousel-item" v-for="(img, i) in vo.images" :class="{ active: i === 0 }">
+	                <img :src="img" class="d-block w-100 rounded" style="max-height: 300px; object-fit: cover;">
+	              </div>
+	            </div>
+	            <button class="carousel-control-prev" type="button" :data-bs-target="'#carousel-' + index" data-bs-slide="prev">
+	              <span class="carousel-control-prev-icon"></span>
+	            </button>
+	            <button class="carousel-control-next" type="button" :data-bs-target="'#carousel-' + index" data-bs-slide="next">
+	              <span class="carousel-control-next-icon"></span>
+	            </button>
+	          </div>
+	        </div>
+	
+	        <div class="d-flex justify-content-end">
+			  <div class="d-flex align-items-center gap-3 mt-2 text-muted fs-5">
+			    <!-- 좋아요 아이콘 버튼 -->
+			    <button @click="selectLike(vo.feed_no)" class="btn btn-sm p-0 border-0 bg-transparent">
+			      <i :class="liked[vo.feed_no] ? 'bi bi-heart-fill text-danger fs-4' : 'bi bi-heart fs-4 text-muted'"></i>
+			    </button>
 			
-			<!-- 일정 추가 모달 -->
-			<div class="modal fade" id="newScheduleModal" tabindex="-1" aria-labelledby="newScheduleModalLabel" aria-hidden="true">
-			  <div class="modal-dialog">
-			    <div class="modal-content">
-			      <div class="modal-header">
-			        <h5 class="modal-title" id="newScheduleModalLabel">📅 새 일정 추가</h5>
-			        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			      </div>
-			      <div class="modal-body">
-			        <form @submit.prevent="addSchedule">
-			          <div class="mb-3">
-			            <label class="form-label">제목</label>
-			            <input type="text" class="form-control" v-model="newSchedule.title" required>
-			          </div>
-			
-			          <div class="mb-3">
-			            <label class="form-label">내용</label>
-			            <textarea class="form-control" rows="3" v-model="newSchedule.content" required></textarea>
-			          </div>
-			
-			          <div class="mb-3">
-			            <label class="form-label">시작일</label>
-			            <input type="datetime-local" class="form-control" v-model="newSchedule.start" required>
-			          </div>
-			
-			          <div class="mb-3">
-			            <label class="form-label">종료일</label>
-			            <input type="datetime-local" class="form-control" v-model="newSchedule.end" required>
-			          </div>
-			
-			          <!-- 참여자 선택 UI (예시) -->
-			          <div class="mb-3">
-			            <label class="form-label">참여자 선택</label>
-			            <div v-for="member in mvo" :key="mvo.user_no" class="form-check">
-			              <input class="form-check-input" type="checkbox" :id="'member-' + member.user_no" :value="member.user_no" v-model="newSchedule.participants">
-			              <label class="form-check-label" :for="'member-' + member.user_no">
-			                {{ member.user_no }} ({{ member.role }})
-			              </label>
-			            </div>
-			          </div>
-			
-			          <div class="mt-3 text-end">
-			            <button type="submit" class="btn btn-success">일정 등록</button>
-			          </div>
-			        </form>
-			      </div>
-			    </div>
+			    <!-- 댓글 아이콘 버튼 (링크로 이동) -->
+			    <a :href="'../group/feed?feed_no=' + vo.feed_no" class="text-muted">
+			      <i class="bi bi-chat-dots fs-4"></i>
+			    </a>
 			  </div>
 			</div>
-						<ul class="list-unstyled">
-						  <li v-for="(item, index) in schedulelist" :key="index">
-						    <strong>{{ item.sche_start_str }}</strong> {{ item.sche_title }}
-						  </li>
-						</ul>
-					</div>
-				</div>
-			</div>
-
-			<!-- 중앙 피드 영역 -->
-			<div class="col-sm-9">
-				<div class="col-md-9">
-					<div class="card mb-3">
-						<div class="card-body d-flex align-items-center">
-							<img :src="gvo.profile_img" class="rounded-circle me-3"
-								style="width: 100px; height: 100px; object-fit: cover;">
-							<div>
-								<h4>{{ gvo.group_name }}</h4>
-								<p class="text-muted">{{ gvo.description }}</p>
-								<span class="badge bg-secondary">비공개 그룹</span>
-								<p class="mt-2">최대 인원: {{ gvo.capacity }}명</p>
-							</div>
-						</div>
-					</div>
-					<!-- 상단 새 피드 쓰기 버튼 -->
-					<div class="mb-3">
-						<button class="btn btn-primary" data-bs-toggle="modal"
-							data-bs-target="#newPostModal">✏️ 새 글 쓰기</button>
-					</div>
-					<!--  상단 새 일정 쓰기 버튼 -->
-					<!-- <div class="text-right" style="margin-bottom: 15px;">
-        <button class="btn btn-primary" data-toggle="modal" data-target="#newPostModal">
-          <span class="glyphicon glyphicon-pencil"></span> 일정 추가
-        </button>
-      </div> -->
-
-					<div class="modal fade" id="newPostModal" tabindex="-1"
-						aria-labelledby="newPostModalLabel" aria-hidden="true">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title">새 글 작성</h5>
-									<button type="button" class="btn-close" data-bs-dismiss="modal"
-										aria-label="Close"></button>
-								</div>
-								<div class="modal-body">
-									<form @submit.prevent="addPost"> <!-- .prevent는 새로고침 막아줌 -->
-										<div class="mb-3">
-											<label class="form-label">제목</label> <input type="text"
-												class="form-control" v-model="newPost.title" required>
-										</div>
-										<div class="mb-3">
-											<label class="form-label">내용</label>
-											<textarea class="form-control" rows="4"
-												v-model="newPost.content" required></textarea>
-										</div>
-										<div class="mb-3">
-											<label class="form-label">이미지 첨부</label> <input type="file"
-												class="form-control" multiple @change="handleFileChange"
-												accept="image/*">
-										</div>
-										<div class="row">
-											<div class="col-3" v-for="(preview, index) in imagePreviews"
-												:key="index">
-												<img :src="preview" class="preview-img">
-											</div>
-										</div>
-										<div class="mt-3 text-end">
-											<button type="submit" class="btn btn-primary">게시하기</button>
-										</div>
-									</form>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- 게시글 반복 렌더링 -->
-					<div v-for="(vo, index) in list" :key="vo.feed_no"
-						class="card mb-4">
-						<div class="card-body" >
-							<!-- 제목 -->
-							<h5 class="card-title" @click="feed_detail(vo.feed_no)">{{ vo.title }}</h5>
-							<!-- 작성일 -->
-							<h6 class="card-subtitle mb-2 text-muted">{{ vo.dbday }}</h6>
-
-							<!-- 이미지 슬라이드 -->
-							<div v-if="vo.images && vo.images.length"
-								:id="'carousel-' + index" class="carousel slide my-3"
-								data-bs-ride="carousel">
-								<div class="carousel-inner">
-									<div class="carousel-item" v-for="(img, imgIndex) in vo.images"
-										:class="{ active: imgIndex === 0 }" :key="imgIndex">
-										<img :src="'/web/images/' + img" class="d-block w-100 rounded"
-											style="max-height: 100%; max-width: 100%; object-fit: contain;">
-									</div>
-								</div>
-								<button class="carousel-control-prev" type="button"
-									:data-bs-target="'#carousel-' + index" data-bs-slide="prev">
-									<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-									<span class="visually-hidden">Previous</span>
-								</button>
-								<button class="carousel-control-next" type="button"
-									:data-bs-target="'#carousel-' + index" data-bs-slide="next">
-									<span class="carousel-control-next-icon" aria-hidden="true"></span>
-									<span class="visually-hidden">Next</span>
-								</button>
-							</div>
-
-							<!-- 내용 -->
-							<p class="card-text mt-3">{{ vo.content }}</p>
-
-							<!-- 버튼들 -->
-							<div class="d-flex justify-content-start gap-2">
-								<button type="button" class="btn btn-outline-primary btn-sm">
-									<i class="bi bi-chat-dots"></i> 댓글
-								</button>
-								<button type="button" class="btn btn-outline-success btn-sm">
-									<i class="bi bi-share"></i> 공유
-								</button>
-								<button type="button" class="btn btn-outline-warning btn-sm">
-									<i class="bi bi-star"></i> 저장
-								</button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+	      </div>
+	    </div>
+	  </div>
+	</div> <!-- col-lg-8 -->
+	<div class="modal fade" id="newPostModal" tabindex="-1" aria-labelledby="newPostModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <form @submit.prevent="addPost">
+	        <div class="modal-header">
+	          <h5 class="modal-title" id="newPostModalLabel">✏️ 새 글 작성</h5>
+	          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+	        </div>
+	        <div class="modal-body">
+	          <div class="mb-3">
+	            <label class="form-label">제목</label>
+	            <input type="text" class="form-control" v-model="newPost.title" required>
+	          </div>
+	          <div class="mb-3">
+	            <label class="form-label">내용</label>
+	            <textarea class="form-control" rows="3" v-model="newPost.content" required></textarea>
+	          </div>
+	          <div class="mb-3">
+	            <label class="form-label">이미지 첨부</label>
+	            <input type="file" class="form-control" multiple @change="handleFileChange" accept="image/*">
+	          </div>
+	          <div class="row">
+	            <div class="col-4" v-for="(preview, index) in imagePreviews" :key="index">
+	              <img :src="preview" class="img-fluid rounded">
+	            </div>
+	          </div>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="submit" class="btn btn-primary">게시하기</button>
+	        </div>
+	      </form>
+	    </div>
+	  </div>
 	</div>
-	<script type="module">
-  import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+	
+	<!-- 📅 새 일정 작성 모달 -->
+	<div class="modal fade" id="newScheduleModal" tabindex="-1" aria-labelledby="newScheduleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <form @submit.prevent="addSchedule">
+	        <div class="modal-header">
+	          <h5 class="modal-title" id="newScheduleModalLabel">📅 새 일정 추가</h5>
+	          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+	        </div>
+	        <div class="modal-body">
+	          <div class="mb-3">
+	            <label class="form-label">제목</label>
+	            <input type="text" class="form-control" v-model="newSchedule.title" required>
+	          </div>
+	          <div class="mb-3">
+	            <label class="form-label">내용</label>
+	            <textarea class="form-control" rows="3" v-model="newSchedule.content" required></textarea>
+	          </div>
+	          <div class="mb-3">
+	            <label class="form-label">시작일</label>
+	            <input type="datetime-local" class="form-control" v-model="newSchedule.start" required>
+	          </div>
+	          <div class="mb-3">
+	            <label class="form-label">종료일</label>
+	            <input type="datetime-local" class="form-control" v-model="newSchedule.end" required>
+	          </div>
+	          <div class="form-check mb-3">
+	            <input class="form-check-input" type="checkbox" v-model="newSchedule.is_important" id="importantCheck">
+	            <label class="form-check-label" for="importantCheck">⭐️ 중요 일정</label>
+	          </div>
+	          <div class="form-check mb-3">
+				  <input class="form-check-input" type="checkbox" v-model="newSchedule.alarm" id="alarmCheck">
+				  <label class="form-check-label" for="alarmCheck">🔔 일정 전에 알림 받기</label>
+				</div>
+	          <div class="mb-3">
+				  <label class="form-label">참여자 선택</label>
+				  <div v-for="member in mvo" :key="member.user_no" class="form-check">
+				    <input class="form-check-input"
+				           type="checkbox"
+				           :id="'member-' + member.user_no"
+				           :value="member.user_no"
+				           v-model="newSchedule.participants_no"
+				           @change="convertParticipantToNumbers">
+				    <label class="form-check-label" :for="'member-' + member.user_no">
+				      {{ member.nickname }}
+				    </label>
+				  </div>
+				</div>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="submit" class="btn btn-success">일정 등록</button>
+	        </div>
+	      </form>
+	    </div>
+	  </div>
+	</div>
+</div>
+</div>
+<script type="module">
+import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
 
-  createApp({
-	data(){
-      return {
-         list:[],
-		 gvo:{},
-		 group_no:1,
-		 
-		 newPost: {
-         			title: '',
-         			content: '',
-      			   },
-		 selectedFiles: [],
-    	 imagePreviews: [],
-		 schedulelist:[],
-		 newSchedule: {
-				title:'',
-				content:'',
-				start:'',
-				end:'',
-				participants:[],
-				type:1
-			},
-		  groupMembers:[]
-      }
+createApp({
+  data() {
+    return {
+      list: [],
+      gvo: {},
+      mvo: [],
+      group_no: 1,
+      newPost: {
+        title: '',
+        content: ''
+      },
+      selectedFiles: [],
+      imagePreviews: [],
+      schedule_list: [],
+      newSchedule: {
+        title: '',
+        content: '',
+        start: '',
+        end: '',
+        participants_no: [],
+        type: 1,
+		is_important: false,
+		alarm:false
+      },
+	  curpage: 1,
+	  liked: {}
+	  
+    }
+  },
+  mounted() {
+    const params = new URLSearchParams(window.location.search);
+    const groupNoParam = params.get('group_no');
+    if (groupNoParam) {
+      this.group_no = parseInt(groupNoParam);
+    }
+	console.log("dataRecv실행전")
+    this.dataRecv();
+    this.scheduleRecv();
+  },
+  methods: {
+	selectLike(feed_no) {
+    		axios.post('../api/feed/'+feed_no+'/like')
+      		.then(() => {
+        		this.liked[feed_no] = !this.liked[feed_no];
+      		})
+      		.catch(err => {
+        		console.log(err);
+      		});
+  	},
+    feed_detail(feed_no) {
+      location.href = '../group/feed?feed_no=' + feed_no;
     },
-	mounted(){
-		const params = new URLSearchParams(window.location.search);
-  		const groupNoParam = params.get('group_no');
+    handleFileChange(event) {
+      const files = Array.from(event.target.files);
+      this.selectedFiles = files;
+      this.imagePreviews = [];
 
-  if (groupNoParam) {
-    this.group_no = parseInt(groupNoParam);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreviews.push(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      });
+    },
+    addPost() {
+      const formData = new FormData();
+      formData.append('title', this.newPost.title);
+      formData.append('content', this.newPost.content);
+      this.selectedFiles.forEach(file => {
+        formData.append('files', file);
+      });
+
+      axios.post('../api/groups/'+this.group_no+'/feeds', formData)
+        .then(() => {
+          bootstrap.Modal.getInstance(document.getElementById('newPostModal')).hide();
+          this.newPost.title = '';
+          this.newPost.content = '';
+          this.selectedFiles = [];
+          this.imagePreviews = [];
+          this.dataRecv();
+        })
+        .catch(err => {
+          console.error("게시 실패", err);
+        });
+    },
+    addSchedule() {
+      const formData = new FormData();
+      formData.append('group_no', this.group_no);
+      formData.append('sche_title', this.newSchedule.title);
+      formData.append('sche_content', this.newSchedule.content);
+      formData.append('sche_start_str', this.newSchedule.start);
+      formData.append('sche_end_str', this.newSchedule.end);
+      formData.append('type', this.newSchedule.type);
+	  formData.append('is_important',this.newSchedule.is_important ? 1 : 0);
+	  formData.append('alarm',this.newSchedule.alarm ? 1 : 0);
+      this.newSchedule.participants_no.forEach(p => {
+        formData.append('participants_no', p);
+      });
+	  axios.post('../api/schedules/group/'+this.group_no,formData)
+		.then(res => {
+			console.log("성공")
+			const schedulemodal = bootstrap.Modal.getInstance(document.getElementById('newScheduleModal'));
+  			schedulemodal.hide();
+    		this.scheduleRecv()
+		})
+		.catch(err => {
+     		 console.log("일정 등록 실패", err);
+    	});
+     
+    },
+	convertParticipantsToNumbers() {
+    this.newSchedule.participants_no = this.newSchedule.participants_no.map(p => Number(p));
+    },
+    async dataRecv() {
+	  console.log("dataRecv실행전")
+      await axios.get('../api/groups/'+this.group_no+'/feeds', {
+        params: { page : this.curpage }
+      }).then(res => {
+		console.log(res.data)
+        this.list = res.data.list;
+        this.gvo = res.data.gvo;
+        this.mvo = res.data.mvo;
+	  }).catch(error => {
+		 console.err(error);
+	  })
+	  
+    },
+    async scheduleRecv() {
+	  await axios.get('../api/schedules/group/'+this.group_no)
+		.then(res => {
+		console.log("스케쥴 그룹일정")
+		console.log(res.data)
+        this.schedule_list = res.data;
+
+	  }).catch(error => {
+		 console.err(error);
+	  })
+     
+    }
   }
-		this.dataRecv()
-		this.scheduleRecv()
-	},
-    methods:{
-		addSchedule(){
-			console.log("일정추가")
-			const scheduleformData = new FormData();
-			scheduleformData.append('group_no', this.group_no)
-			scheduleformData.append('sche_title',this.newSchedule.title)
-			scheduleformData.append('sche_content',this.newSchedule.content)
-			scheduleformData.append('sche_start_str',this.newSchedule.start)
-			scheduleformData.append('sche_end_str',this.newSchedule.end)
-			scheduleformData.append('type',this.newSchedule.type)
-			this.newSchedule.participants.forEach(p => {
-   				 scheduleformData.append('participants', p);
-			});
-			axios.post('../api/schedules',scheduleformData)	
-			.then(res => {
-				const schedulemodal = bootstrap.Modal.getInstance(document.getElementById('newScheduleModal'));
-  				schedulemodal.hide();
-    			//this.scheduleresetForm();
-    			//this.scheduleRecv();
-			})
-			.catch(err => {
-     			 console.error("일정 등록 실패", err);
-    		});
-		},
-		feed_detail(feed_no)
-		{
-			location.href='../group/feed?feed_no='+feed_no
-		},
-		handleFileChange(event) {
-  		  const files = Array.from(event.target.files);
-  		  this.selectedFiles = files;
-  		  this.imagePreviews = [];
-
-  		  files.forEach(file => {
-   		   const reader = new FileReader();
-  	 	   reader.onload = (e) => {
-   		     this.imagePreviews.push(e.target.result);
-   		   };
-   		   reader.readAsDataURL(file);
-   		 	});
- 		 },
-
-		resetForm() {
-	    this.newPost.title = '';
-  		this.newPost.content = '';
-   	 	this.selectedFiles = [];
-   	 	this.imagePreviews = [];
-  		},
-		addPost() {
-			console.log("데이터 등록 시작")
-			const formData = new FormData();
- 			formData.append('title', this.newPost.title);
-  			formData.append('content', this.newPost.content);
-			formData.append('group_no',this.group_no);
-  			this.selectedFiles.forEach(file => {
-    			formData.append('files', file);
-  			});
-			console.log("데이터 등록 시작2")
-  			axios.post('../group/feeds', formData, {
-    			headers: {
-      			'Content-Type': 'multipart/form-data'
-    			}
-  			}).then(response => {
-    			alert("게시글이 등록되었습니다!");
-			    const modal = bootstrap.Modal.getInstance(document.getElementById('newPostModal'));
-  				modal.hide();
-    			this.resetForm();
-    			this.dataRecv();
-  			}).catch(error => { 
-  				console.error(error);
-  				alert("1에서 오류가 발생했습니다!");
-			});
-			console.log("데이터 등록 시작3")
-			/*
-			console.log("등록하는 파일들"+this.newPost.files)
-			const res = axios.post('../group/feeds',{
-					title : this.newPost.title,
-					content : this.newPost.content,
-					files : this.newPost.files,
-					group_no : this.group_no
-					
-			}).then(response=> {
-				console.log("데이터 등록 성공")
-				
-			}).catch(error => { 
-  				console.error(error);
-  				alert("2에서 오류가 발생했습니다!");
-			});
-			*/
-			
-		},
-		async dataRecv(){
-			console.log("dataRecv 실행")
-			console.log(this.group_no)
-			const res = await axios.get('../group/feeds',{
-					params:{
-							group_no:this.group_no
-					}
-			})
-            this.list=res.data.list
-			this.gvo=res.data.gvo
-			this.mvo=res.data.mvo
-			console.log(res.data)
-		},
-		async scheduleRecv(){
-			console.log("스케쥴리스트출력 실행")
-			const res = await axios.get('../api/schedules',{
-					params:{
-							group_no:this.group_no
-					}
-			})
-			this.schedulelist=res.data.list
-			console.log(res.data)
-		}
-
-	}
-  }).mount('.container-fluid')
+}).mount('#group-detail-app');
 </script>
-
-</body>
-</html>
