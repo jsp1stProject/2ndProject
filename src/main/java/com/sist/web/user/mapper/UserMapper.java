@@ -25,7 +25,7 @@ public interface UserMapper {
     public void insertDefaultUser(UserVO vo);
 
     @Insert("insert into p_users(user_no,user_mail,user_name,nickname,SOCIAL_ID,profile) " +
-            "values(#{user_no},#{user_mail},#{user_name},#{nickname},#{social_id},#{profile})")
+            "values(#{user_no},#{user_mail},#{user_name},#{nickname},#{social_id},#{profile, jdbcType=VARCHAR})")
     public void insertKakaoUser(UserVO vo);
 
     @Insert("insert into P_AUTHORITIES(user_no, AUTHORITY) values(#{user_no},#{authority})")

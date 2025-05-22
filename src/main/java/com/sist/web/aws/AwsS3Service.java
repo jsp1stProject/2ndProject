@@ -67,9 +67,8 @@ public class AwsS3Service {
     public void deleteFile(String storedFileName) {
         try {
             amazonS3.deleteObject(new DeleteObjectRequest(bucketName, storedFileName));
-        } catch (AmazonServiceException e) {
-            log.error(e.getMessage());
-            throw new CommonException(CommonErrorCode.INVALID_PARAMETER);
+        } catch (AmazonServiceException | IllegalStateException e) {
+            log.error("can't delete orignal file: {}",e.getMessage());
         }
     }
 

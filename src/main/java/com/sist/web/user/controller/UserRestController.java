@@ -26,10 +26,8 @@ public class UserRestController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/auth/kakao/join")
-    public ResponseEntity<Void> kakaoJoin(@RequestBody Map<String, String> data, HttpServletResponse res, HttpServletRequest request) {
-        StringBuffer fullUrl = request.getRequestURL();
-        String uri = request.getRequestURI();
-        String baseUrl = fullUrl.substring(0, fullUrl.length() - uri.length());
+    public ResponseEntity<Void> kakaoJoin(@RequestBody Map<String, String> data, HttpServletResponse res) {
+        String baseUrl = data.get("url");
 
         String kakaoAccessToken = userService.getKakaoAccessToken(data.get("code"),baseUrl);
         userService.insertOrLoginKakaoUser(kakaoAccessToken, res);
