@@ -5,9 +5,10 @@
   <meta charset="UTF-8">
   <title>1:1 실시간 채팅</title>
   <script src="https://unpkg.com/vue@3.3.4/dist/vue.global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://unpkg.com/vue@3"></script>
-	<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 	
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
@@ -55,13 +56,8 @@
   </div>
 </div>
 
-<script type="module">
-import { createApp } from 'https://unpkg.com/vue@3.3.4/dist/vue.esm-browser.js';
-import axios from 'https://esm.sh/axios';
-import SockJS from 'https://esm.sh/sockjs-client';
-import { Client } from 'https://esm.sh/@stomp/stompjs';
-
-createApp({
+<script>
+Vue.createApp({
   data() {
     return {
       rooms: [],
@@ -73,53 +69,58 @@ createApp({
     };
   },
   mounted() {
-  axios.get('/web/auth/me')
-    .then(res => {
-      if (!res.data.valid) {
-        alert("로그인이 필요한 서비스입니다.");
-        return;
-      }
+	  axios.get('/web/auth/me')
+	    .then(res => {
+	      if (!res.data.valid) {
+	        alert("로그인이 필요한 서비스입니다.");
+	        return;
+	      }
 
-      this.userNo = res.data.userNo;
-      console.log("userNo:", this.userNo);
+	      this.userNo = res.data.userNo;
+	      console.log("✅ userNo:", this.userNo);
 
-      // WebSocket 연결
-      const socket = new SockJS('/ws-s');
-      this.stompClient = new Client({
-        webSocketFactory: () => socket,
-        reconnectDelay: 5000,
-        onConnect: () => {
-          console.log("✅ WebSocket connected");
+	      const token = this.getAccessToken();
+	      console.log("✅ 가져온 토큰:", token);
+
+	      if (!token) {
+	        alert("토큰이 없어서 채팅 연결이 불가능합니다.");
+	        return;
+	      }
+
+	      const socket = new SockJS('/web/ws-s');
+	      this.stompClient = Stomp.over(socket);
+	      this.stompClient.reconnect_delay = 5000;
+
+	      this.stompClient.connect(
+	        { Authorization: `Bearer ${token}` },
+	        () => {
+	          console.log("✅ WebSocket connected");
+	          this.loadRooms();
+	        },
+	        (err) => {
+	          console.error("❌ WebSocket 연결 실패", err);
+	        }
+	      );
+	    })
+	    .catch(err => {
+	      console.error("❌ 인증 또는 채팅 로딩 실패", err);
+	    });
+	},
+  methods: {
+    getAccessToken() {
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('accessToken='))
+        ?.split('=')[1];
+      return token || '';
+    },
+    loadRooms() {
+      axios.get('/web/sitterchat/list_vue').then(res => {
+        this.rooms = res.data.list;
+        if (this.rooms.length > 0) {
+          this.enterRoom(this.rooms[0]);
         }
       });
-      this.stompClient.activate();
-
-      // ✅ 반드시 return 해줘야 아래 then으로 전달됨
-      return axios.get('/web/sitterchat/list_vue');
-    })
-    .then(res => {
-      if (!res) return;
-      this.rooms = res.data.list;
-      if (this.rooms.length > 0) {
-        this.enterRoom(this.rooms[0]);
-      }
-      console.log("1");
-    })
-    .catch(err => {
-      console.error("❌ 인증 또는 채팅 로딩 실패", err);
-    });
-},
-  methods: {
-    getUserNoFromToken() {
-      const token = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
-	console.log("🔍 token:", token);      
-if (!token) return null;
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return parseInt(payload.sub);
-      } catch (e) {
-        return null;
-      }
     },
     formatTime(timestamp) {
       const date = new Date(timestamp);
@@ -129,30 +130,41 @@ if (!token) return null;
       return (room.user1_no === this.userNo) ? room.user2_no : room.user1_no;
     },
     enterRoom(room) {
+      if (!this.stompClient || !this.stompClient.connected) {
+        console.warn("❗ stompClient 연결 안 됨");
+        return;
+      }
+
       this.currentRoom = room;
       this.messages = [];
 
-      axios.get('/web/sitterchat/msglist', { params: { room_no: room.room_no } }).then(res => {
+      axios.get('/web/sitterchat/msglist', {
+        params: { room_no: room.room_no }
+      }).then(res => {
         this.messages = res.data;
       });
 
       this.stompClient.subscribe('/ssub/chat/' + room.room_no, msg => {
-        this.messages.push(JSON.parse(msg.body));
+        const newMsg = JSON.parse(msg.body);
+        this.messages.push(newMsg);
       });
     },
     sendMessage() {
       if (!this.chatContent.trim()) return;
+
       const msg = {
         roomId: this.currentRoom.room_no,
         receiverNo: this.getOpponentNo(this.currentRoom),
         chatContent: this.chatContent,
         chatType: 'text'
       };
+
       this.stompClient.send("/spub/chatSend", {}, JSON.stringify(msg));
       this.chatContent = '';
     }
   }
 }).mount('#app');
 </script>
+
 </body>
 </html>

@@ -33,7 +33,7 @@ public class SitterChatRestController {
         }
     }
 
-    // ✅ 1. 채팅방 목록 조회 (좌측 사이드바)
+    // 1. 채팅방 목록 조회 (좌측 사이드바)
     @GetMapping("/list_vue")
     public ResponseEntity<Map<String, Object>> chat_list(
         @CookieValue(name = "accessToken", required = false) String token,
@@ -69,9 +69,9 @@ public class SitterChatRestController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    // ✅ 2. 메시지 목록 조회 (채팅방 진입 시)
+    // 2. 메시지 목록 조회 (채팅방 진입 시)
     @GetMapping("/msglist")
-    public ResponseEntity<?> msg_list(@RequestParam int room_no,
+    public ResponseEntity<?> msg_list(@RequestParam("room_no") int room_no,
         @CookieValue(name = "accessToken", required = false) String token) {
 
         int userNo = parseUserNo(token);
@@ -86,14 +86,14 @@ public class SitterChatRestController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    // ✅ 3. 메시지 저장 (fallback 또는 WebSocket 사용 시 함께 저장)
+    // 3. 메시지 저장 (fallback 또는 WebSocket 사용 시 함께 저장)
     @PostMapping("/send")
     public ResponseEntity<String> msg_insert(@RequestBody SitterChatVO vo) {
         service.insertChat(vo);
         return new ResponseEntity<>("SENT", HttpStatus.OK);
     }
 
-    // ✅ 4. 메시지 키워드 검색
+    // 4. 메시지 키워드 검색
     @GetMapping("/search")
     public ResponseEntity<List<SitterChatVO>> msg_search(
         @RequestParam int room_id,

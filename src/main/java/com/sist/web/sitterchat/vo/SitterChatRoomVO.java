@@ -9,7 +9,7 @@ public class SitterChatRoomVO {
     private int room_no;
     private int user1_no;
     private int user2_no;
-    private int reserve_no;
+    private int res_no;
     private Timestamp create_date;
     private String is_active;
 

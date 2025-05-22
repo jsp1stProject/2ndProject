@@ -44,7 +44,11 @@ public class SitterJwtChannelInterceptor implements ChannelInterceptor {
                 }
             }
 
-            if (token == null || !jwt.validateToken(token)) {
+            if (token == null || token.isBlank()) {
+                throw new IllegalArgumentException("JWT 토큰이 null이거나 비어 있음");
+            }
+
+            if (!jwt.validateToken(token)) {
                 throw new IllegalArgumentException("JWT 토큰 유효하지 않음");
             }
 
@@ -60,12 +64,12 @@ public class SitterJwtChannelInterceptor implements ChannelInterceptor {
             accessor.setUser(authentication);
         }
 
-        if (StompCommand.SUBSCRIBE.equals(command) || StompCommand.SEND.equals(command)) {
-            if (accessor.getUser() == null) {
-                throw new SecurityException("인증되지 않은 사용자의 메세지 전송/구독 시도");
-            }
+        if ((StompCommand.SEND.equals(command) || StompCommand.SUBSCRIBE.equals(command))
+                && accessor.getUser() == null) {
+            System.out.println("⚠️ 인증 없이 메시지 전송/구독 시도");
         }
 
         return message;
     }
+
 }

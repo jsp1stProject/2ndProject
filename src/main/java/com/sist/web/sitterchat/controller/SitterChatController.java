@@ -26,7 +26,7 @@ public class SitterChatController {
 	    private JwtTokenProvider jwtTokenProvider;
 
 	    @GetMapping("/chat")
-	    public String chatRoomPage(@RequestParam("reserve_no") int reserve_no,
+	    public String chatRoomPage(@RequestParam("res_no") int res_no,
 	                               @CookieValue(name = "accessToken", required = false) String token,
 	                               Model model) {
 	    	System.out.println("chat 시작");
@@ -39,7 +39,7 @@ public class SitterChatController {
 	        }
 
 	        // 예약 정보에서 상대방 유저(sitter) 가져오기
-	        SitterResVO reserve = sitterResService.sitterReservation(reserve_no);
+	        SitterResVO reserve = sitterResService.sitterReservation(res_no);
 	        int sitter_no = reserve.getSitter_no();
 
 	        int sitterUserNo = sitterResService.getSitterUserNoBySitterNo(sitter_no);
@@ -48,24 +48,24 @@ public class SitterChatController {
 	        System.out.println("user"+user1);
 	        System.out.println("user2"+user2);
 	        // 기존 채팅방 존재 여부 확인
-	        SitterChatRoomVO room = sitterChatService.selectChatRoom(user1, user2, reserve_no);
+	        SitterChatRoomVO room = sitterChatService.selectChatRoom(user1, user2, res_no);
 
 	        // 없으면 새로 생성
 	        if (room == null) {
 	            SitterChatRoomVO newRoom = new SitterChatRoomVO();
 	            newRoom.setUser1_no(user1);
 	            newRoom.setUser2_no(user2);
-	            newRoom.setReserve_no(reserve_no);
+	            newRoom.setRes_no(res_no);
 	            sitterChatService.insertChatRoom(newRoom);
 
 	            // 다시 조회해서 room_no 확보
-	            room = sitterChatService.selectChatRoom(user1, user2, reserve_no);
+	            room = sitterChatService.selectChatRoom(user1, user2, res_no);
 	        }
 
 	        // JSP에서 사용할 정보 전달
 	        //model.addAttribute("room_no", room.getRoom_no());
-	        //model.addAttribute("reserve_no", reserve_no);
-
+	        model.addAttribute("res_no", res_no);
+	        System.out.println("res_no"+res_no);
 	        return "sitterchat/chat";
 	    }
 

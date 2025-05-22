@@ -13,23 +13,23 @@ public interface SitterChatMapper {
     @Select("SELECT scr.*, " +
             "CASE WHEN scr.user1_no = #{user_no} THEN u2.nickname ELSE u1.nickname END AS opponent_nick, " +
             "CASE WHEN scr.user1_no = #{user_no} THEN u2.profile ELSE u1.profile END AS opponent_profile, " +
-            "sr.start_time AS reserve_start_time " +
+            "sr.start_time AS res_start_time " +
             "FROM p_sitter_chat_room scr " +
             "JOIN p_users u1 ON scr.user1_no = u1.user_no " +
             "JOIN p_users u2 ON scr.user2_no = u2.user_no " +
-            "JOIN p_sitter_res sr ON scr.reserve_no = sr.res_no " +
+            "JOIN p_sitter_res sr ON scr.res_no = sr.res_no " +
             "WHERE scr.user1_no = #{user_no} OR scr.user2_no = #{user_no} " +
             "ORDER BY scr.create_date DESC")
     @Results({
         @Result(property = "room_no", column = "room_no"),
         @Result(property = "user1_no", column = "user1_no"),
         @Result(property = "user2_no", column = "user2_no"),
-        @Result(property = "reserve_no", column = "reserve_no"),
+        @Result(property = "res_no", column = "res_no"),
         @Result(property = "create_date", column = "create_date"),
         @Result(property = "is_active", column = "is_active"),
         @Result(property = "opponent_nick", column = "opponent_nick"),
         @Result(property = "opponent_profile", column = "opponent_profile"),
-        @Result(property = "reserve_start_time", column = "reserve_start_time")
+        @Result(property = "res_start_time", column = "res_start_time")
     })
     public List<SitterChatRoomVO> selectChatRoomList(@Param("user_no") int user_no);
     
@@ -43,14 +43,14 @@ public interface SitterChatMapper {
     
     // 채팅방 단건 조회 (중복 생성 방지용)
     @Select("SELECT * FROM p_sitter_chat_room " +
-            "WHERE user1_no = #{user1_no} AND user2_no = #{user2_no} AND reserve_no = #{reserve_no}")
+            "WHERE user1_no = #{user1_no} AND user2_no = #{user2_no} AND res_no = #{res_no}")
     public SitterChatRoomVO selectChatRoom(@Param("user1_no") int user1_no,
                                            @Param("user2_no") int user2_no,
-                                           @Param("reserve_no") int reserve_no);
+                                           @Param("res_no") int res_no);
 
     // 채팅방 생성
-    @Insert("INSERT INTO p_sitter_chat_room (room_no, user1_no, user2_no, reserve_no) " +
-            "VALUES (p_sitchat_roomno_seq.NEXTVAL, #{user1_no}, #{user2_no}, #{reserve_no})")
+    @Insert("INSERT INTO p_sitter_chat_room (room_no, user1_no, user2_no, res_no) " +
+            "VALUES (p_sitchat_roomno_seq.NEXTVAL, #{user1_no}, #{user2_no}, #{res_no})")
     @Options(useGeneratedKeys = true, keyProperty = "room_no")
     public int insertChatRoom(SitterChatRoomVO vo);
 
@@ -105,7 +105,7 @@ public interface SitterChatMapper {
             "WHEN (sr.res_end_time + (1/24)) > SYSDATE THEN 'Y' ELSE 'N' " +
             "END AS chat_enabled " +
             "FROM p_sitter_chat_room scr " +
-            "JOIN p_sitter_res sr ON scr.reserve_no = sr.res_no " +
+            "JOIN p_sitter_res sr ON scr.res_no = sr.res_no " +
             "WHERE scr.room_no = #{room_no}")
     public String isChatEnabled(@Param("room_no") int room_no);
 

@@ -22,7 +22,7 @@
     <ul>
       <li v-for="pet in res.petsList" :key="pet.pet_no">{{ pet.pet_name }}</li>
     </ul>
-<button class="btn btn-primary" @click="goToChat(res_no)">채팅하기</button>
+<button class="btn btn-primary" @click="goToChat(resNo)">채팅하기</button>
 
   </div>
 </div>
@@ -40,8 +40,8 @@ createApp({
     }
   },
 methods: {
-	goToChat(reserve_no) {
-    window.location.href = '/web/sitterchat/chat?reserve_no=' + reserve_no;
+	goToChat(resNo) {
+    window.location.href = '/web/sitterchat/chat?res_no=' + resNo;
   },
   formatDate(ts) {
     const date = new Date(ts);
