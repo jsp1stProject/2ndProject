@@ -157,7 +157,6 @@
                     <!-- 채팅 내역 검색 -->
                     <div class="dropdown-menu" aria-labelledby="searchdrop">
                         <button type="button" class="dropdown-item" @click="setSearchMode('keyword')">메시지 내용</button>
-                        <button type="button" class="dropdown-item" @click="setSearchMode('date')">날짜</button>
                         <button type="button" class="dropdown-item" @click="setSearchMode('sender')">사용자</button>
                     </div>
                 </div>
