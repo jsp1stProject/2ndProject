@@ -205,7 +205,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 		String result="";
 		try {
 	        //String pattern = "yyyy-MM-ddTHH:mm";
-	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	        if (vo.getSche_start_str() != null && !vo.getSche_start_str().isEmpty()) {
 	            vo.setSche_start(sdf.parse(vo.getSche_start_str()));
