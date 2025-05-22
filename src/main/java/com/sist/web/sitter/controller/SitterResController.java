@@ -50,7 +50,7 @@ public class SitterResController {
 	    }
 	    model.addAttribute("userNo", user_no); 
 	    model.addAttribute("main_jsp", "../sitter/resList.jsp");
-	    return "sitter/resList"; 
+	    return "main/main"; 
 	}
 
 	// 예약 상세 페이지
@@ -58,7 +58,7 @@ public class SitterResController {
 	public String sitter_res_detail(@RequestParam int res_no, Model model) {
 	    model.addAttribute("resNo", res_no);
 	    model.addAttribute("main_jsp", "../sitter/resDetail.jsp");
-	    return "sitter/resDetail";
+	    return "main/main";
 	}
 	// 예약하기
 	@GetMapping("/sitter/reserve")
@@ -95,7 +95,7 @@ public class SitterResController {
 	    model.addAttribute("impCode",impCode);
 
 	    model.addAttribute("main_jsp", "../sitter/reserve.jsp");
-	    return "sitter/reserve";
+	    return "main/main";
 	}
 
 }
