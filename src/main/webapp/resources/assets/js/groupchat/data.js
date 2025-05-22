@@ -38,5 +38,15 @@ export const groupChatData = {
     '대형견', '고양이', '중성화', '혼종사랑'
   ],
   selectedTags: [],
-  groupEditMode: false
+  groupEditMode: false,
+
+  searchMode: '',
+  searchInput: '',
+  searchResults: [],
+  filters: {
+    keyword: '',
+    senderNickname: '',
+    startDate: '',
+    endDate: ''
+  },
 };

@@ -54,3 +54,30 @@
   border-top: 1px solid #ccc;
   padding-top: 10px;
 }
+
+.search-results {
+  display: block !important;
+  position: relative;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 9999;
+}
+
+.search-results-overlay {
+  position: absolute;
+  top: 45px; 
+  left: 0;
+  width: 100%;
+  background: #fff;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.highlight {
+  background-color: #ffe58a;
+  transition: background-color 1s ease;
+}

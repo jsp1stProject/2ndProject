@@ -58,12 +58,18 @@
         <div class="group-list d-flex flex-column justify-content-between" id="glist">
         	<!-- 그룹 목록 -->
             <ul class="p-2 m-0">
-                <li v-for="group in availableGroups" :key="group.group_no">
-                    <a href="#" @click.prevent="joinGroup(group.group_no)">
-                        <img v-if="group.profile_img" :src="group.profile_img" alt="thumbnail" class="group-thumbnail"/>
-                    	<div v-else class="group-initial" :style="getGroupFontSize(group.group_name)">
+                <li v-for="group in availableGroups" :key="group.group_no" class="position-relative">
+                    <a href="#" @click.prevent="joinGroup(group.group_no)" class="d-inline-block position-relative">
+                        <img v-if="group.profile_img" :src="group.profile_img" alt="thumbnail" class="group-thumbnail rounded-circle"/>
+
+                    	<div v-else class="group-initial rounded-circle d-flex align-items-center justify-content-center" :style="getGroupFontSize(group.group_name)">
                     		{{ group.group_name.substring(0, 4) }}
                     	</div>
+
+                        <span v-if="group.hasUnread" 
+                            class="position-absolute top-0 start-0 translate-middle rounded-circle bg-white border" 
+                            style="width: 10px; height: 10px; background-color: darkred; border: 1px solid white;">
+                    </span>
                     </a>
                 </li>
             </ul>
@@ -76,8 +82,7 @@
                     </button>
                     <div class="dropdown-menu" aria-labelledby="groupdrop">
                         <button type="button" class="dropdown-item" @click="openGroupSettingsModal">그룹 프로필</button>
-                        <button type="button" class="dropdown-item">그룹 설정</button>
-                        <button type="button" class="dropdown-item">그룹 추가</button>
+                        <button type="button" class="dropdown-item" @click="openCreateGroupModal">그룹 추가</button>
                     </div>
                 </div>
             </div>
@@ -101,7 +106,7 @@
                     <div class="chat-body" id="chat-body" ref="scrollContainer">
                         <div v-for="(msgList, date) in groupMessagesByDate(messages)" :key="date">
                             <div class="date-divider">{{ date }}</div>
-                            <div class="msg d-flex" v-for="msg in msgList" :key="msg.message_no">
+                            <div class="msg d-flex" :id="'msg-' + msg.message_no" v-for="msg in msgList" :key="msg.message_no">
                                 <a href="#" class="user-profile">
                                     <img :src="msg.profile_img || '${pageContext.request.contextPath}/assets/images/profile/default_pf.png'" alt="" width="35" height="35" class="rounded-circle">
                                 </a>
@@ -135,23 +140,49 @@
                 </div>
             </div>
         </div>
-        <div class="group-side" id="gside">
-            <div class="group-header d-flex">
+        <div class="group-side" id="gside" style="position: relative;">
+            <div class="group-header d-flex flex-column position-relative">
                 <div class="dropdown d-flex flex-grow-1 h-100 p-2">
                     <div class="search-wrap d-flex flex-grow-1 h-100 gap-1 align-items-center" id="searchdrop" data-bs-toggle="dropdown" aria-expanded="false">
                         <iconify-icon icon="solar:magnifer-broken" class="fs-6 align-middle"></iconify-icon>
-                        <input type="text"  class="search-input w-100" placeholder="검색하기">
+                        <input type="text"  
+                            class="search-input w-100" 
+                            ref="searchInput" 
+                            v-model="searchInput" 
+                            @keydown.backspace="handleBackspace" 
+                            @keyup.enter="searchMessages" 
+                            @focus="searchResults = []" 
+                            :placeholder="searchModelLabel || '검색하기'">
                     </div>
                     <!-- 채팅 내역 검색 -->
                     <div class="dropdown-menu" aria-labelledby="searchdrop">
-                        <button type="button" class="dropdown-item">메시지 내용</button>
-                        <button type="button" class="dropdown-item">날짜</button>
-                        <button type="button" class="dropdown-item">사용자</button>
+                        <button type="button" class="dropdown-item" @click="setSearchMode('keyword')">메시지 내용</button>
+                        <button type="button" class="dropdown-item" @click="setSearchMode('date')">날짜</button>
+                        <button type="button" class="dropdown-item" @click="setSearchMode('sender')">사용자</button>
                     </div>
                 </div>
-                <button type="button" class="px-2 chatclose d-block d-md-none" data-target="gside">
-                    <iconify-icon icon="solar:close-circle-line-duotone" class="fs-10 d-flex align-items-center"></iconify-icon>
-                </button>
+
+                <div v-if="searchResults.length > 0"
+                        class="search-results-overlay position-absolute w-100 px-2 pt-2"
+                        style="top: 100%; left: 0; background: #fff; z-index: 10; max-height: 300px; overflow-y: auto;"
+                        >
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-muted small">🔍 검색 결과</span>
+                            <button class="btn btn-sm btn-link p-0" @click="searchResults = []">✖</button>
+                        </div>
+
+                        <div v-for="msg in searchResults" :key="msg.message_no" class="mb-1">
+                            <button @click="jumpToMessage(msg.message_no)" class="btn btn-sm w-100 text-start border bg-white">
+                            <div class="fw-bold text-truncate">{{ msg.sender_nickname }}</div>
+                            <div class="text-truncate">{{ msg.content }}</div>
+                            <div class="text-muted small">{{ formatMessageTime(msg.sent_at) }}</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="button" class="px-2 chatclose d-block d-md-none" data-target="gside">
+                        <iconify-icon icon="solar:close-circle-line-duotone" class="fs-10 d-flex align-items-center"></iconify-icon>
+                    </button>
             </div>
             <div class="group-submenu p-2" data-simplebar="init">
                 <div class="accordion accordion-flush open">
@@ -179,10 +210,12 @@
                             </li>
                         </ul>
                     </div>
-                </div>
+                    </div>
+                    
             </div>
         </div>
     </div>
+    <!-- 그룹 프로필 모달 -->
     <div class="modal fade" id="groupSettingsModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -261,6 +294,51 @@
             </div>
         </div>
     </div>
+    <!-- 그룹 추가 모달 -->
+    <div class="modal fade" id="createGroupModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">새 그룹 만들기</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+            <label class="form-label">그룹명</label>
+            <input type="text" class="form-control" v-model="groupDetail.group_name">
+            </div>
+            <div class="mb-3">
+            <label class="form-label">설명</label>
+            <textarea class="form-control" v-model="groupDetail.description"></textarea>
+            </div>
+            <div class="mb-3">
+            <label class="form-label">정원</label>
+            <input type="number" class="form-control" v-model="groupDetail.capacity" min="1">
+            </div>
+            <div class="mb-3">
+            <label class="form-label">공개 여부</label>
+            <select class="form-select" v-model="groupDetail.is_public">
+                <option value="Y">공개</option>
+                <option value="N">비공개</option>
+            </select>
+            </div>
+            <div class="mb-3">
+            <label class="form-label">프로필 이미지</label>
+            <input type="file" class="form-control" @change="handleProfileImgChange" ref="profileImgInput">
+            </div>
+            <div class="mb-3" v-if="groupDetail.profile_img">
+            <label class="form-label">미리보기</label><br>
+            <img :src="groupDetail.profile_img" alt="미리보기" style="height: 100px">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+            <button class="btn btn-primary" @click="submitCreateGroup">생성</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
     </div>
 </body>
     <script type="module">

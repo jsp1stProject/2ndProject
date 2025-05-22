@@ -1,7 +1,7 @@
-package com.sist.web.groupchat.websocket.config;
+package com.sist.web.common.config;
 
-import com.sist.web.groupchat.websocket.interceptor.JwtChannelInterceptor;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -16,7 +16,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final JwtChannelInterceptor channelInterceptor;
+    private final JwtChannelInterceptor jwtChannelInterceptor;
 
     @Bean
     public ThreadPoolTaskScheduler messageBrokerTaskScheduler() {
@@ -29,21 +29,24 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
-                .setAllowedOrigins("*");
+        registry.addEndpoint("/ws-user").setAllowedOrigins("*");
+        registry.addEndpoint("/ws-sitter").setAllowedOrigins("*");
     }
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(channelInterceptor);
+        registration.interceptors(jwtChannelInterceptor);
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        long[] heartbeat = {10_000, 10_000};
+        long[] heartbeat = {10_000, 10_000}; 
         registry.setApplicationDestinationPrefixes("/pub");
-        registry.enableSimpleBroker("/sub", "/topic")
+        registry.enableSimpleBroker("/sub", "/topic", "/queue")
                 .setHeartbeatValue(heartbeat)
                 .setTaskScheduler(messageBrokerTaskScheduler());
+        registry.setUserDestinationPrefix("/user"); 
     }
 }
+
+

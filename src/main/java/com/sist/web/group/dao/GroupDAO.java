@@ -9,6 +9,8 @@ import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.mapper.GroupMapper;
 import com.sist.web.group.dto.GroupMemberDTO;
+import com.sist.web.group.dto.GroupMemberInfoDTO;
+
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -86,5 +88,45 @@ public class GroupDAO {
 	/** 그룹 태그 수정 전 태그 모두 삭제 */
 	public void deleteGroupTags(int groupNo) {
 		mapper.deleteGroupTags(groupNo);
+	}
+	
+	/** 그룹 삭제 */
+	public void deleteGroup(int groupNo) {
+		mapper.deleteGroup(groupNo);
+	}
+	
+	/** 그룹의 현재 인원 조회 */
+	public int selectMemberCountByGroupNo(int groupNo) {
+		return mapper.selectMemberCountByGroupNo(groupNo);
+	}
+	
+	/** 그룹 멤버 상세정보 조회 */
+	public GroupMemberInfoDTO selectGroupMemberInfo(int groupNo, int userNo) {
+		return mapper.selectGroupMemberInfo(groupNo, userNo);
+	}
+	
+	/** 채팅방 입장시 viewing 열람 중 컬럼 1 update */
+	public void updateViewingStatus(int groupNo, int userNo, int viewing) {
+		mapper.updateViewingStatus(groupNo, userNo, viewing);
+	}
+	
+	/** 채팅방 나갈 시 viewing 열람 중 컬럼 0 update, lastReadMessageNo 최신 메세지로 update */
+	public void updateExitStatus(int groupNo, int userNo, Long lastReadMessagesNo) {
+		mapper.updateExitStatus(groupNo, userNo, lastReadMessagesNo);
+	}
+	
+	/** 채팅방 연결 끊김 추적 */
+	public void updateLastSeenAt(int userNo) {
+		mapper.updateLastSeenAt(userNo);
+	}
+	
+	/** 채팅방 연결 끊김 추적 후 연길 끊김 확인 시 viewing 0 update */
+	public void markInactiveUsers() {
+		mapper.markInactiveUsers();
+	}
+	
+	/** markInactiveUsers 보완 메서드(추적 실패 시) */
+	public void updateViewingZero(int userNo) {
+		mapper.updateViewingZero(userNo);
 	}
 }

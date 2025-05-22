@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.*;
 import com.sist.web.sitter.vo.*;
 import com.sist.web.sitter.service.*;
 @Controller
@@ -19,10 +18,12 @@ public class SitterController {
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
 
+
 	@GetMapping("/sitter/list")
-	public String sitter()
+	public String sitter(Model model)
 	{
-        return "sitter/list";
+		model.addAttribute("main_jsp", "../sitter/list.jsp");
+        return "main/main";
 	}
 	
 	@GetMapping("/sitter/detail")
@@ -46,19 +47,22 @@ public class SitterController {
 	    SitterVO vo = service.sitterDetailData(sitter_no);
 	    model.addAttribute("vo", vo);
 	    model.addAttribute("user_no", user_no); 
-	    return "sitter/detail";
+	    model.addAttribute("main_jsp", "../sitter/detail.jsp");
+	    return "main/main";
 	}
 
 	
 	@GetMapping("/sitter/insert")
-    public String sitter_insert() 
+    public String sitter_insert(Model model) 
 	{
-        return "sitter/insert";
+		model.addAttribute("main_jsp", "../sitter/insert.jsp");
+		return "main/main";
     }
 
 	@GetMapping("/sitter/update")
-	public String sitter_update() 
+	public String sitter_update(Model model) 
 	{
-	    return "sitter/update";
+		model.addAttribute("main_jsp", "../sitter/update.jsp");
+		return "main/main";
 	}
 }

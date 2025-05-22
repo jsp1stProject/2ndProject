@@ -22,9 +22,6 @@ public class SitterChatRestController {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-    
-    @Autowired
-	private AwsS3Service AwsS3Service;
 
     // 내부 토큰 파싱
     private int parseUserNo(String token) {
@@ -36,18 +33,15 @@ public class SitterChatRestController {
         }
     }
 
-    // 채팅방 목록 조회
+    // 1. 채팅방 목록 조회 (좌측 사이드바)
     @GetMapping("/list_vue")
     public ResponseEntity<Map<String, Object>> chat_list(
-        @CookieValue(name = "accesstoken", required = false) String token,
+        @CookieValue(name = "accessToken", required = false) String token,
         @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "10") int rowSize,
-        @RequestParam(defaultValue = "nickname") String fd,
-        @RequestParam(required = false) String st
+        @RequestParam(defaultValue = "10") int rowSize
     ) {
         Map<String, Object> result = new HashMap<>();
         int userNo = parseUserNo(token);
-
         if (userNo == -1) {
             result.put("status", "NO_LOGIN");
             return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
@@ -56,24 +50,11 @@ public class SitterChatRestController {
         int start = (page - 1) * rowSize + 1;
         int end = page * rowSize;
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("userNo", userNo);
-        map.put("start", start);
-        map.put("end", end);
-
         List<SitterChatRoomVO> list;
         int totalpage;
-
-        if (st != null && !st.trim().isEmpty()) {
-            map.put("fd", fd);
-            map.put("st", st);
-            list = service.SitterChatRoomListWithFilter(map);
-            totalpage = service.SitterChatRoomTotalPageWithFilter(map);
-        } else {
-            list = service.SitterChatRoomList(userNo, start, end);
-            totalpage = service.SitterChatRoomTotalPage(userNo, rowSize);
-        }
-
+        
+        list = service.selectChatRoomList(userNo);
+        totalpage = service.selectChatRoomTotalPage();
         int BLOCK = 10;
         int startPage = ((page - 1) / BLOCK) * BLOCK + 1;
         int endPage = Math.min(startPage + BLOCK - 1, totalpage);
@@ -88,41 +69,37 @@ public class SitterChatRestController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    // 채팅방 생성
-    @PostMapping("/insert")
-    public ResponseEntity<String> chat_insert(@RequestBody SitterChatRoomVO vo) {
-        service.SitterChatRoomInsert(vo);
-        return new ResponseEntity<>("INSERTED", HttpStatus.OK);
-    }
-
-    // 채팅방 삭제
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> chat_delete(@RequestParam int room_id) {
-        service.SitterChatRoomDelete(room_id);
-        return new ResponseEntity<>("DELETED", HttpStatus.OK);
-    }
-
-    // 메시지 저장
-    @PostMapping("/send")
-    public ResponseEntity<String> msg_insert(@RequestBody SitterChatVO vo) {
-        service.SitterChatInsert(vo);
-        return new ResponseEntity<>("SENT", HttpStatus.OK);
-    }
-
-    // 메시지 목록 조회
+    // 2. 메시지 목록 조회 (채팅방 진입 시)
     @GetMapping("/msglist")
-    public ResponseEntity<List<SitterChatVO>> msg_list(@RequestParam int room_id) {
-        List<SitterChatVO> list = service.SitterChatList(room_id);
+    public ResponseEntity<?> msg_list(@RequestParam("room_no") int room_no,
+        @CookieValue(name = "accessToken", required = false) String token) {
+
+        int userNo = parseUserNo(token);
+        if (userNo == -1) return new ResponseEntity<>("unauthorized", HttpStatus.UNAUTHORIZED);
+
+        SitterChatRoomVO room = service.SitterChatRoomById(room_no);
+        if (room == null || (room.getUser1_no() != userNo && room.getUser2_no() != userNo)) {
+            return new ResponseEntity<>("forbidden", HttpStatus.FORBIDDEN);
+        }
+
+        List<SitterChatVO> list = service.selectChatList(room_no);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    // 메시지 키워드 검색
+    // 3. 메시지 저장 (fallback 또는 WebSocket 사용 시 함께 저장)
+    @PostMapping("/send")
+    public ResponseEntity<String> msg_insert(@RequestBody SitterChatVO vo) {
+        service.insertChat(vo);
+        return new ResponseEntity<>("SENT", HttpStatus.OK);
+    }
+
+    // 4. 메시지 키워드 검색
     @GetMapping("/search")
     public ResponseEntity<List<SitterChatVO>> msg_search(
         @RequestParam int room_id,
         @RequestParam String keyword
     ) {
-        List<SitterChatVO> list = service.SitterChatSearch(room_id, keyword);
+        List<SitterChatVO> list = service.searchChatByKeyword(room_id, keyword);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 }
