@@ -37,7 +37,7 @@ public class SitterJwtChannelInterceptor implements ChannelInterceptor {
                 if (cookieHeader != null) {
                     for (String cookie : cookieHeader.split(";")) {
                         String[] parts = cookie.trim().split("=");
-                        if (parts.length == 2 && parts[0].equals("accesstoken")) {
+                        if (parts.length == 2 && parts[0].equals("accessToken")) {
                             token = parts[1];
                         }
                     }
