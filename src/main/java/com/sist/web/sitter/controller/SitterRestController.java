@@ -3,6 +3,9 @@ package com.sist.web.sitter.controller;
 import com.sist.web.aws.AwsS3Service;
 import com.sist.web.common.response.ApiResponse;
 import com.sist.web.security.JwtTokenProvider;
+import com.sist.web.sitter.service.SitterResPetService;
+import com.sist.web.sitter.service.SitterResService;
+import com.sist.web.sitter.service.SitterReviewService;
 import com.sist.web.sitter.service.SitterService;
 import com.sist.web.sitter.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +17,17 @@ import java.util.*;
 
 @RestController
 public class SitterRestController {
-
+	@Autowired
+	private SitterReviewService rService;
+	
     @Autowired
     private SitterService service;
+    
+    @Autowired
+    private SitterResService reService;
+    
+    @Autowired
+    private SitterResPetService pService;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -190,94 +201,18 @@ public class SitterRestController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.fail("403", "삭제 권한 없음"));
             }
 
-            service.deleteSitterReviewWithPost(sitter_no);
+            rService.deleteReviewsBySitterNo(sitter_no);
+            service.deleteJjimAll(sitter_no);
+            pService.deleteReservePetBySitterNo(sitter_no);
+            reService.deleteReserveBySitterNo(sitter_no);
             service.sitterDelete(sitter_no);
+            
             return ResponseEntity.ok(ApiResponse.success("펫시터 삭제 성공"));
 
         } catch (RuntimeException re) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.fail("401", "인증 오류"));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.fail("500", "펫시터 삭제 실패"));
-        }
-    }
-
-    @GetMapping("/sitter/review")
-    public ResponseEntity<ApiResponse<List<SitterReviewVO>>> review_list(@RequestParam int sitter_no) {
-        try {
-            List<SitterReviewVO> list = service.reviewListData(sitter_no);
-            return ResponseEntity.ok(ApiResponse.success(list));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.fail("500", "리뷰 목록 조회 실패"));
-        }
-    }
-
-    @PostMapping("/sitter/review")
-    public ResponseEntity<ApiResponse<String>> review_insert(@RequestBody SitterReviewVO vo) {
-        try {
-        	
-            service.reviewInsert(vo);
-            return ResponseEntity.ok(ApiResponse.success("리뷰 등록 성공"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.fail("500", "리뷰 등록 실패"));
-        }
-    }
-
-    @PostMapping("/sitter/review/reply")
-    public ResponseEntity<ApiResponse<String>> reply_insert(@RequestBody SitterReviewVO vo,
-                                                            @CookieValue(value = "accessToken", required = false) String token) {
-        try {
-            int user_no = validateTokenAndGetUserNo(token);
-            SitterVO sitterVO = service.sitterDetailData(vo.getSitter_no());
-            if (sitterVO == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.fail("404", "해당 게시글이 존재하지 않습니다"));
-            }
-            if (sitterVO.getUser_no() != user_no) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.fail("403", "대댓글 권한이 없습니다"));
-            }
-            vo.setUser_no(user_no);
-            service.replyInsert(vo);
-            return ResponseEntity.ok(ApiResponse.success("대댓글 작성 성공"));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.fail("401", "토큰 오류"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.fail("500", "대댓글 작성 실패"));
-        }
-    }
-
-    @PutMapping("/sitter/review")
-    public ResponseEntity<ApiResponse<String>> review_update(@RequestBody SitterReviewVO vo,
-                                                             @CookieValue(value = "accessToken", required = false) String token) {
-        try {
-            int user_no = validateTokenAndGetUserNo(token);
-            int writer_no = service.getReviewWriter(vo.getReview_no());
-            if (writer_no != user_no) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.fail("403", "수정 권한 없음"));
-            }
-            service.reviewUpdate(vo);
-            return ResponseEntity.ok(ApiResponse.success("리뷰 수정 성공"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.fail("500", "리뷰 수정 실패"));
-        }
-    }
-
-    @DeleteMapping("/sitter/review")
-    public ResponseEntity<ApiResponse<String>> review_delete(@RequestParam int review_no,
-                                                             @CookieValue(value = "accessToken", required = false) String token) {
-        try {
-            int user_no = validateTokenAndGetUserNo(token);
-            int writer_no = service.getReviewWriter(review_no);
-            if (writer_no != user_no) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.fail("403", "삭제 권한 없음"));
-            }
-            service.reviewDelete(review_no);
-            return ResponseEntity.ok(ApiResponse.success("리뷰 삭제 성공"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.fail("500", "리뷰 삭제 실패"));
         }
     }
 } 

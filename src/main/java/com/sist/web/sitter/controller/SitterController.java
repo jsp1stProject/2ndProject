@@ -47,7 +47,7 @@ public class SitterController {
 	    SitterVO vo = service.sitterDetailData(sitter_no);
 	    model.addAttribute("vo", vo);
 	    model.addAttribute("user_no", user_no); 
-	    model.addAttribute("main_jsp", "../sitter/detail.jsp");
+	    model.addAttribute("main_jsp", "../sitter/detail2.jsp");
 	    return "main/main";
 	}
 

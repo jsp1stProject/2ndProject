@@ -20,14 +20,7 @@ public interface SitterService {
 	public boolean isSitter(int user_no);
 	public boolean hasSitterPost(int user_no);
 	// 찜
-	List<SitterVO> jjimSitterList(int user_no);
-    boolean toggleJjim(int user_no, int sitter_no);
-	// 리뷰
-	public List<SitterReviewVO> reviewListData(int sitter_no);
-	public int getReviewWriter(int review_no);
-	public void reviewInsert(SitterReviewVO vo);
-	public void replyInsert(SitterReviewVO vo);
-	public void reviewUpdate(SitterReviewVO vo);
-	public void reviewDelete(int review_no);
-	public void deleteSitterReviewWithPost(int sitter_no);
+	public List<SitterVO> jjimSitterList(int user_no);
+    public boolean toggleJjim(int user_no, int sitter_no);
+    public void deleteJjimAll(int sitter_no);
 }

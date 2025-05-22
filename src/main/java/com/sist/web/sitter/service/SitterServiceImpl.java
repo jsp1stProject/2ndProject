@@ -70,42 +70,6 @@ public class SitterServiceImpl implements SitterService{
 	}
 
 	@Override
-	public List<SitterReviewVO> reviewListData(int sitter_no) {
-		// TODO Auto-generated method stub
-		return sDao.reviewListData(sitter_no);
-	}
-
-	@Override
-	public void reviewInsert(SitterReviewVO vo) {
-		// TODO Auto-generated method stub
-		sDao.reviewInsert(vo);
-	}
-
-	@Override
-	public void replyInsert(SitterReviewVO vo) {
-		// TODO Auto-generated method stub
-		sDao.replyInsert(vo);
-	}
-
-	@Override
-	public void reviewUpdate(SitterReviewVO vo) {
-		// TODO Auto-generated method stub
-		sDao.sitterUpdate(null);
-	}
-
-	@Override
-	public void reviewDelete(int review_no) {
-		// TODO Auto-generated method stub
-		sDao.reviewDelete(review_no);
-	}
-
-	@Override
-	public void deleteSitterReviewWithPost(int sitter_no) {
-		// TODO Auto-generated method stub
-		sDao.deleteSitterReviewWithPost(sitter_no);
-	}
-
-	@Override
 	public List<SitterVO> jjimSitterList(int user_no) {
 		// TODO Auto-generated method stub
 		return sDao.jjimSitterList(user_no);
@@ -118,9 +82,10 @@ public class SitterServiceImpl implements SitterService{
 	}
 
 	@Override
-	public int getReviewWriter(int review_no) {
+	public void deleteJjimAll(int sitter_no) {
 		// TODO Auto-generated method stub
-		return sDao.getReviewWriter(review_no);
+		sDao.deleteJjimAll(sitter_no);
+		
 	}
 
 

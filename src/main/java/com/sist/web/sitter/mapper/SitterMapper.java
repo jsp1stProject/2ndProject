@@ -159,6 +159,9 @@ public interface SitterMapper {
 
 	@Delete("DELETE FROM p_sitter_jjim WHERE user_no = #{user_no} AND sitter_no = #{sitter_no}")
 	public void deleteJjim(@Param("user_no") int user_no, @Param("sitter_no") int sitter_no);
+	
+	@Delete("DELETE FROM p_sitter_jjim WHERE sitter_no = #{sitter_no}")
+	public void deleteJjimAll(@Param("sitter_no") int sitter_no);
 
 	@Update("UPDATE p_sitter SET jjimcount = jjimcount + #{amount} WHERE sitter_no = #{sitter_no}")
 	public void updateJjimCount(@Param("sitter_no") int sitter_no, @Param("amount") int amount);

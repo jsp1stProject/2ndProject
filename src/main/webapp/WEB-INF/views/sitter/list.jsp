@@ -82,7 +82,6 @@
                 <ul class="list-unstyled mb-3">
                   <li><strong>태그:</strong> {{ sitter.tag }}</li>
                   <li><strong>돌봄:</strong> {{ sitter.carecount }}회</li>
-                  <li><strong>평점:</strong> {{ sitter.score }}</li>
                   <li><strong>지역:</strong> {{ sitter.care_loc }}</li>
                   <li><strong>시작가:</strong> {{ sitter.pet_first_price }}</li>
                   <li v-if="sitter.sitterApp"><strong>자격증:</strong> {{ sitter.sitterApp.license }}</li>

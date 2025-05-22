@@ -16,7 +16,6 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item"><strong>태그:</strong> {{ sitter.tag }}</li>
         <li class="list-group-item"><strong>지난 돌봄 횟수:</strong> {{ sitter.carecount }}</li>
-        <li class="list-group-item"><strong>평점:</strong> {{ sitter.score }}</li>
         <li class="list-group-item"><strong>지역:</strong> {{ sitter.care_loc }}</li>
         <li class="list-group-item"><strong>시작가:</strong> {{ sitter.pet_first_price }}</li>
         <li class="list-group-item" v-if="sitter.sitterApp?.license">
@@ -46,7 +45,7 @@
   <!-- 리뷰 출력 -->
   <div v-for="review in reviews" :key="review.review_no" class="border rounded p-3 mb-3">
     <div class="d-flex align-items-center mb-2">
-      <strong>{{ review.user.nickname }}</strong>
+      <strong>{{ review.user?.nickname || '탈퇴회원' }}</strong>
       <span class="ms-2 text-warning" v-if="review.group_step === 0">
         <span v-for="n in Math.round(review.rev_score)" :key="n">⭐</span>
       </span>
@@ -104,8 +103,8 @@ createApp({
   mounted() {
   const sitter_no = new URLSearchParams(location.search).get("sitter_no")
   if (!sitter_no) return
-  this.sitter_no = sitter_no
-
+  this.sitter_no = parseInt(sitter_no)
+ this.fetchReviews(this.sitter_no)
   const token = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1]
   if (token) {
     try {
@@ -124,7 +123,8 @@ createApp({
     this.myUserNo = res.data.data.myUserNo
   }
 })
-  this.fetchReviews(sitter_no)
+ 
+console.log("📦 sitter_no:", this.sitter_no)
 },
   methods: {
     goUpdate(sitter_no) {
@@ -135,7 +135,7 @@ createApp({
     },
     async deletePost() {
       if (!confirm("정말 삭제하시겠습니까?")) return
-      const res = await axios.delete('${pageContext.request.contextPath}/sitter/delete', { params: { sitter_no: this.sitter_no } })
+      const res = await axios.delete('${pageContext.request.contextPath}/sitter/delete', { params: { sitter_no: this.sitter_no },withCredentials: true })
       if (res.data.code === '200' && res.data.data === 'success') {
         alert("삭제 완료")
         location.href = "${pageContext.request.contextPath}/sitter/list"
@@ -144,35 +144,57 @@ createApp({
       }
     },
     fetchReviews(sitter_no) {
-      axios.get(`${pageContext.request.contextPath}/sitter/review`, { params: { sitter_no } })
-           .then(res => {
-             if (res.data.code === '200') {
-               this.reviews = res.data.data
-             } else {
-               alert(res.data.message)
-             }
-           })
-    },
+  console.log("🔄 fetchReviews 호출됨, sitter_no =", sitter_no)
+  axios.get(`${pageContext.request.contextPath}/sitter/review/list_vue`, {
+    params: { sitter_no },
+    withCredentials: true
+  }).then(res => {
+    console.log("📥 fetchReviews 응답 =", res.data)
+    if (res.data.code === '200') {
+      this.reviews = res.data.data
+      console.log("✅ 리뷰 목록 할당됨:", this.reviews.length)
+    } else {
+      alert(res.data.message)
+    }
+  })
+},
     submitReview() {
-      if (!this.newReview.rev_comment.trim()) {
-        alert("내용을 입력하세요")
-        return
-      }
-      axios.post('${pageContext.request.contextPath}/sitter/review', {
-        sitter_no: this.sitter_no,
+  if (!this.newReview.rev_comment.trim()) {
+    alert("내용을 입력하세요");
+    return;
+  }
+
+  axios.post(`${pageContext.request.contextPath}/sitter/review`, {
+    sitter_no: this.sitter_no,
+    rev_comment: this.newReview.rev_comment,
+    rev_score: this.newReview.rev_score
+  }, {
+    withCredentials: true
+  }).then(res => {
+    if (res.data.code === '200' && res.data.data === 'success') {
+      alert("등록 완료");
+
+      const newReview = {
+        review_no: Date.now(), // 임시 키
         rev_comment: this.newReview.rev_comment,
-        rev_score: this.newReview.rev_score
-      }).then(res => {
-        if (res.data.code === '200' && res.data.data === 'success') {
-          alert("등록 완료")
-          this.newReview.rev_comment = ''
-          this.newReview.rev_score = 5
-          this.fetchReviews(this.sitter_no)
-        } else {
-          alert("등록 실패: " + res.data.message)
+        rev_score: this.newReview.rev_score,
+        group_step: 0,
+        user: {
+          nickname: '나',
+          user_no: this.myUserNo,
+          profile: ''
         }
-      })
-    },
+      };
+
+      this.reviews = [newReview, ...this.reviews]; // ✅ 강제 새 배열 할당
+
+      this.newReview.rev_comment = '';
+      this.newReview.rev_score = 5;
+    } else {
+      alert("등록 실패: " + res.data.message);
+    }
+  });
+},
     startEdit(review) {
       this.editTarget = review.review_no
       this.editReview = {
@@ -201,15 +223,19 @@ createApp({
     },
     deleteReview(review_no) {
       if (!confirm("정말 삭제하시겠습니까?")) return
-      axios.delete('${pageContext.request.contextPath}/sitter/review', { params: { review_no } })
-           .then(res => {
-             if (res.data.code === '200' && res.data.data === 'success') {
-               alert("삭제 완료")
-               this.fetchReviews(this.sitter_no)
-             } else {
-               alert("삭제 실패: " + res.data.message)
-             }
-           })
+      axios.delete(`${pageContext.request.contextPath}/sitter/review/delete`, {
+    params: { review_no }
+}).then(res => {
+  if (res.data.code === '200' && res.data.data === '삭제 성공') {
+    alert("삭제 완료")
+    this.reviews = this.reviews.filter(r => r.review_no !== review_no)
+  } else {
+    alert("삭제 실패: " + res.data.message)
+  }
+})
+.catch(err => {
+  alert("요청 실패: " + err.response?.data?.message || err.message)
+})
     },
     toggleReplyBox(review_no) {
       this.replyTarget = review_no
@@ -220,25 +246,29 @@ createApp({
       this.replyComment = ''
     },
     submitReply(review) {
-      if (!this.replyComment.trim()) {
-        alert("내용을 입력하세요")
-        return
-      }
-      axios.post('${pageContext.request.contextPath}/sitter/review/reply', {
-        sitter_no: this.sitter_no,
-        rev_comment: this.replyComment,
-        group_id: review.group_id,
-        group_step: review.group_step + 1
-      }).then(res => {
-        if (res.data.code === '200' && res.data.data === 'success') {
-          alert("답글 등록 완료")
-          this.replyTarget = null
-          this.fetchReviews(this.sitter_no)
-        } else {
-          alert("답글 실패: " + res.data.message)
-        }
-      })
-    },
+  if (!this.replyComment.trim()) {
+    alert("내용을 입력하세요");
+    return;
+  }
+  axios.post(`${pageContext.request.contextPath}/sitter/review/reply`, {
+    sitter_no: this.sitter_no,
+    rev_comment: this.replyComment,
+    group_id: review.group_id,         // ✅ 부모 댓글 group_id
+    group_step: 1,                      // ✅ 항상 1
+    parent_no: review.review_no         // ✅ 부모 댓글 번호
+  }, {
+    withCredentials: true
+  }).then(res => {
+    if (res.data.code === '200') {
+      alert("답글 등록 완료");
+      this.replyTarget = null;
+      this.replyComment = '';
+      this.fetchReviews(this.sitter_no);
+    } else {
+      alert("답글 실패: " + res.data.message);
+    }
+  });
+},
     scrollTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
