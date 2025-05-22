@@ -115,8 +115,17 @@ public class GroupServiceImpl implements GroupService{
 		member.setGroup_no(dto.getGroup_no());
 		member.setUser_no(dto.getOwner());
 		member.setRole(ROLE_OWNER);
+		List<String> tags=dto.getTags();
 		member.setNickname(user.getNickname());
-		
+		if (tags != null && !tags.isEmpty()) {
+			for (String tag : tags) {
+				Map<String, Object> param = new HashMap<String, Object>();
+				param.put("group_no", dto.getGroup_no());
+				param.put("tag", tag);
+				
+				gDao.insertGroupTags(param);
+			}
+		}
 		gDao.insertGroupMember(member);
 	}
 	

@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+   <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
    <style>
 	.description-line {
 	  max-width: 100%;         /* 부모 컨테이너에 맞게 제한 */
@@ -152,6 +152,15 @@
                 <option value="N">비공개</option>
             </select>
             </div>
+            <div class="mb-3">
+			  <label class="form-label">태그 선택</label>
+			  <div class="d-flex flex-wrap gap-2">
+			    <div v-for="(tag, idx) in allTags" :key="idx" class="form-check form-check-inline">
+			      <input class="form-check-input" type="checkbox" :id="'tag-'+idx" :value="tag" v-model="selectedTags">
+			      <label class="form-check-label" :for="'tag-'+idx">{{ tag }}</label>
+			    </div>
+			  </div>
+			</div>
             <div class="mb-3">
             <label class="form-label">프로필 이미지</label>
             <input type="file" class="form-control" @change="handleProfileImgChange" ref="profileImgInput">

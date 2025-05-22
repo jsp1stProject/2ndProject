@@ -65,9 +65,6 @@ public class GroupRestController {
 	public ResponseEntity<ApiResponse<GroupDTO>> createGroup(
 			@Valid @RequestPart("groupDetail") GroupDTO dto, 
 			@RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
-		System.out.println("#####################dto######################");
-		System.out.println("profileImg");
-		System.out.println(profileImg);
 		service.createGroup(dto, profileImg);
 		return ResponseEntity.ok(ApiResponse.success(dto));
 	}
