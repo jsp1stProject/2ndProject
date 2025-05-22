@@ -114,8 +114,8 @@ Vue.createApp({
 		        alert('로그인이 필요한 서비스입니다.');
 		        return;
 		      }
-
-		      this.token = res.data;
+          console.log('res: ', res);
+		      this.token = res.data.token;
 		      this.userNo = res.data.userNo;
 		      
 		      const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
