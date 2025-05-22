@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/l10n/ko.js"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<div class="container pt-header" id="app">
+<div class="container pt-header" id="app" v-cloak="true">
     <div class="login_wrap d-flex justify-content-center">
         <div class="login_inner">
             <form @submit.prevent="updatePet" method="post" name="uploadForm" id="uploadForm" ref="uploadForm">
@@ -209,7 +209,7 @@
                 $(this).val(Number($(this).val()).toFixed(0));
             });
             $("#pet_weight").on("change",function(){
-                toast($(this).val())
+                // toast($(this).val())
                 $(this).val(parseFloat(Number($(this).val()).toFixed(1)));
             });
         }

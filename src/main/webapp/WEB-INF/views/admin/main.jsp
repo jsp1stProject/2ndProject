@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/libs/AdminLTE/dist/css/adminlte.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin_reboot.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css" integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0=" crossorigin="anonymous"/>
+    <script src="${pageContext.request.contextPath}/assets/libs/AdminLTE/dist/js/adminlte.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/libs/jquery/dist/jquery.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
 <div class="app-wrapper">
@@ -27,29 +30,28 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown user-menu">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                        <img src="${pageContext.request.contextPath}/assets/libs/AdminLTE/dist/assets/img/user2-160x160.jpg" class="user-image rounded-circle shadow" alt="User Image"/>
-                        <span class="d-none d-md-inline">Alexander</span>
+                        <span class="d-none d-md-inline">관리자 <b class="text-dark">${requestScope.nickname}</b> 님, 환영합니다.</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                        <li class="user-header text-bg-primary">
-                            <img src="${pageContext.request.contextPath}/assets/libs/AdminLTE/dist/assets/img/user2-160x160.jpg" class="user-image rounded-circle shadow" alt="User Image"/>
-                            <p>
-                                Alexander Pierce - Web Developer
-                                <small>Member since Nov. 2023</small>
-                            </p>
-                        </li>
-                        <li class="user-body">
-                            <div class="row">
-                                <div class="col-4 text-center"><a href="#">Followers</a></div>
-                                <div class="col-4 text-center"><a href="#">Sales</a></div>
-                                <div class="col-4 text-center"><a href="#">Friends</a></div>
-                            </div>
-                        </li>
-                        <li class="user-footer">
-                            <a href="#" class="btn btn-default btn-flat">Profile</a>
-                            <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
-                        </li>
-                    </ul>
+<%--                    <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">--%>
+<%--                        <li class="user-header text-bg-primary">--%>
+<%--                            <img src="${pageContext.request.contextPath}/assets/libs/AdminLTE/dist/assets/img/user2-160x160.jpg" class="user-image rounded-circle shadow" alt="User Image"/>--%>
+<%--                            <p>--%>
+<%--                                Alexander Pierce - Web Developer--%>
+<%--                                <small>Member since Nov. 2023</small>--%>
+<%--                            </p>--%>
+<%--                        </li>--%>
+<%--                        <li class="user-body">--%>
+<%--                            <div class="row">--%>
+<%--                                <div class="col-4 text-center"><a href="#">Followers</a></div>--%>
+<%--                                <div class="col-4 text-center"><a href="#">Sales</a></div>--%>
+<%--                                <div class="col-4 text-center"><a href="#">Friends</a></div>--%>
+<%--                            </div>--%>
+<%--                        </li>--%>
+<%--                        <li class="user-footer">--%>
+<%--                            <a href="#" class="btn btn-default btn-flat">Profile</a>--%>
+<%--                            <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>--%>
+<%--                        </li>--%>
+<%--                    </ul>--%>
                 </li>
             </ul>
         </div>
@@ -102,15 +104,9 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a href="./generate/theme.html" class="nav-link">
-                            <i class="nav-icon bi bi-palette"></i>
-                            <p>Theme Generate</p>
-                        </a>
-                    </li>
                     <li class="nav-header">링크</li>
                     <li class="nav-item">
-                        <a href="${pageContext.request.contextPath}/main" class="nav-link">
+                        <a href="${pageContext.request.contextPath}/main" target="_blank" class="nav-link">
                             <i class="nav-icon bi bi-box-arrow-in-right"></i>
                             <p>
                                 펫포유 사용자 페이지
@@ -140,8 +136,7 @@
 <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js" integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ=" crossorigin="anonymous" ></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous" ></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-<script src="${pageContext.request.contextPath}/assets/libs/AdminLTE/dist/js/adminlte.js"></script>
-<script src="${pageContext.request.contextPath}/assets/libs/jquery/dist/jquery.js"></script>
+
 <script>
     $(function(){
         $("a.nav-link").removeClass("active");

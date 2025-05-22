@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/l10n/ko.js"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<div class="container pt-header" id="app">
+<div class="container pt-header" id="app" v-cloak="true">
     <div class="login_wrap d-flex justify-content-center">
         <div class="login_inner">
             <form @submit.prevent="updateUser" method="post" name="uploadForm" id="uploadForm" ref="uploadForm">
@@ -135,7 +135,7 @@
                 let fileSize = 0;
                 if(fileNm !== ''){
                     fileSize=document.getElementById("profile").files[0].size;
-                    toast(fileSize);
+                    // toast(fileSize);
                     if(fileSize > maxSize){
                         toast('이미지는 10MB 이하만 등록할 수 있습니다.')
                         $("#profile").val("")

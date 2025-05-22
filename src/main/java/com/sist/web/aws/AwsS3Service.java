@@ -19,6 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -64,6 +67,37 @@ public class AwsS3Service {
         return uuidFileName;
     }
 
+    public String resizeAndUploadFromUrl(String imageUrl, String fileDir, int width, int height) throws Exception {
+        URL url = new URL(imageUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setConnectTimeout(5000);
+        conn.setReadTimeout(5000);
+        conn.connect();
+
+        String path = url.getPath();
+        String ext = path.substring(path.lastIndexOf('.') + 1);
+
+        String uuidFileName = fileDir + getUuidFileName(path);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (InputStream is = conn.getInputStream()) {
+            Thumbnails.of(is)
+                    .size(width, height)
+                    .outputFormat(ext)
+                    .toOutputStream(baos);
+        }
+
+        byte[] resizedBytes = baos.toByteArray();
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(resizedBytes)) {
+            amazonS3.putObject(new PutObjectRequest(bucketName, uuidFileName, inputStream, null));
+        }
+
+        log.debug(amazonS3.getUrl(bucketName, uuidFileName).toString());
+
+        return uuidFileName;
+    }
+
     public void deleteFile(String storedFileName) {
         try {
             amazonS3.deleteObject(new DeleteObjectRequest(bucketName, storedFileName));
@@ -74,6 +108,6 @@ public class AwsS3Service {
 
     private static String getUuidFileName(String originalFileName) {
         String ext = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
-        return UUID.randomUUID() + "." + ext;
+        return UUID.randomUUID().toString().replace("-", "") + "." + ext;
     }
 }
