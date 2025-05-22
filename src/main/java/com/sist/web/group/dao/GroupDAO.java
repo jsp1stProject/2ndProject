@@ -114,4 +114,19 @@ public class GroupDAO {
 	public void updateExitStatus(int groupNo, int userNo, Long lastReadMessagesNo) {
 		mapper.updateExitStatus(groupNo, userNo, lastReadMessagesNo);
 	}
+	
+	/** 채팅방 연결 끊김 추적 */
+	public void updateLastSeenAt(int userNo) {
+		mapper.updateLastSeenAt(userNo);
+	}
+	
+	/** 채팅방 연결 끊김 추적 후 연길 끊김 확인 시 viewing 0 update */
+	public void markInactiveUsers() {
+		mapper.markInactiveUsers();
+	}
+	
+	/** markInactiveUsers 보완 메서드(추적 실패 시) */
+	public void updateViewingZero(int userNo) {
+		mapper.updateViewingZero(userNo);
+	}
 }

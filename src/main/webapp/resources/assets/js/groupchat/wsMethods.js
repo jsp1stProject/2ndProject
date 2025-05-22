@@ -57,10 +57,11 @@ export const wsMethods = {
 
   subscribeGroupOnline() {
     this.stompClient.subscribe(`/topic/groups/${this.group_no}/online`, msg => {
+      console.log('온라인 상태 수신:', msg.body);
       const onlineList = JSON.parse(msg.body);
       this.onlineUserNos = onlineList.map(u => Number(u.userNo));
       this.updateMemberOnlineStatus();
-    });
+    })
   },
 
   updateMemberOnlineStatus() {

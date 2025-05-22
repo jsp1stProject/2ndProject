@@ -1,4 +1,10 @@
 export const apiMethods = {
+  async loadGlobalOnlineUsers() {
+    const res = await axios.get(`${this.contextPath}/api/groups/online-users`);
+    this.onlineUserNos = res.data.map(u => Number(u));
+    this.updateMemberOnlineStatus();
+  },
+
   async loadGroups() {
     const res = await axios.get(`${this.contextPath}/api/groups/${this.sender_no}`);
     console.log('res', res.data.data);
@@ -21,12 +27,6 @@ export const apiMethods = {
     }));
   },
 
-  async loadInitialOnlineUsers() {
-    const res = await axios.get(`${this.contextPath}/api/groups/${this.group_no}/online`);
-    this.onlineUserNos = res.data.data.map(u => Number(u.userNo));
-    this.updateMemberOnlineStatus();
-  },
-  
   async fetchGroupDetail() {
     const res = await axios.get(`${this.contextPath}/api/groups/${this.group_no}/detail`);
     return res.data.data;

@@ -89,4 +89,13 @@ public interface GroupMapper {
 		
 		@Update("UPDATE p_group_member SET viewing = 0, last_read_message = #{lastReadMessageNo} WHERE group_no = #{groupNo} AND user_no = #{userNo}")
 		public void updateExitStatus(@Param("groupNo") int groupNo, @Param("userNo") int userNo, @Param("lastReadMessageNo") Long lastReadMessageNo);
+		
+		@Update("UPDATE p_group_member SET last_seen_at = SYSTIMESTAMP WHERE user_no = #{userNo}")
+		public void updateLastSeenAt(@Param("userNo") int userNo);
+		
+		@Update("UPDATE p_group_member SET viewing = 0 WHERE viewing = 1 AND last_seen_at < SYSTIMESTAMP - INTERVAL '1' MINUTE")
+		public void markInactiveUsers();
+		
+		@Update("UPDATE p_group_member SET viewing = 0 WHERE user_no = #{userNo}")
+		public void updateViewingZero(@Param("userNo") int userNo);
 }

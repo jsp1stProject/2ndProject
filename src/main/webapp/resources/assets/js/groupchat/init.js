@@ -68,7 +68,7 @@ export function initGroupChat(contextPath, createApp) {
         await this.loadMessages();
         this.scrollToBottom();
         await this.loadGroupMembers();
-        await this.loadInitialOnlineUsers();
+        await this.loadGlobalOnlineUsers();
         this.subscribeGroupMessages();
         this.subscribeGroupOnline();
       },
