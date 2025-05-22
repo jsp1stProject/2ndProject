@@ -10,7 +10,7 @@
 	  white-space: nowrap;     /* 줄바꿈 방지 */
 	}
 	</style>
-    <div class="container pt-header">
+    <div class="container pt-header" id="groupListApp">
         <div class="row pt-3">
             <div class="col-lg-4">
                 <div class="filter-container">
@@ -76,7 +76,7 @@
             </div>
             <div class="col-lg-8">
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary mb-2 "  data-bs-toggle="modal" data-bs-target="#newPostModal">
+                    <button type="button" class="btn btn-primary mb-2 "  data-bs-toggle="modal" data-bs-target="#createGroupModal">
                         <iconify-icon icon="solar:users-group-rounded-broken" class="fs-6 align-middle"></iconify-icon>
                         새 그룹
                     </button>
@@ -122,10 +122,10 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        
+    
     <!-- 새 그룹에 대한 모달창 -->
-	<div class="modal fade" id="newPostModal" tabindex="-1">
+	<div class="modal fade" id="createGroupModal" tabindex="-1">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
@@ -133,44 +133,44 @@
 	        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 	      </div>
 	      <div class="modal-body">
-	        <form @submit.prevent="addPost">
 	          <div class="mb-3">
-	            <label class="form-label">그룹명</label>
-	            <input type="text" class="form-control" v-model="newPost.group_name" required>
-	          </div>
-	          <div class="mb-3">
-	            <label class="form-label">설명</label>
-	            <textarea class="form-control" v-model="newPost.description" rows="3" required></textarea>
-	          </div>
-	          <div class="mb-3">
-	            <label class="form-label">최대 인원</label>
-	            <input type="number" class="form-control" v-model="newPost.capacity" required>
-	          </div>
-	          <div class="mb-3">
-	            <label class="form-label">공개 여부</label>
-	            <select class="form-select" v-model="newPost.is_public">
-	              <option value="Y">공개</option>
-	              <option value="N">비공개</option>
-	            </select>
-	          </div>
-	          <div class="mb-3">
-	            <label class="form-label">프로필 사진</label>
-	            <input type="file" class="form-control" accept="image/*" @change="handleFileChange" ref="profileImgInput">
-	          </div>
-	          <div class="mb-3" v-if="groupDetail.profile_img">
-	            <label class="form-label">미리보기</label><br>
-	            <img :src="groupDetail.profile_img" alt="미리보기" style="height: 100px">
-	            </div>
-	          <div class="text-end">
-	            <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-	            <button type="submit" class="btn btn-success">생성하기</button>
-	          </div>
-	        </form>
+            <label class="form-label">그룹명</label>
+            <input type="text" class="form-control" v-model="groupDetail.group_name">
+            </div>
+            <div class="mb-3">
+            <label class="form-label">설명</label>
+            <textarea class="form-control" v-model="groupDetail.description"></textarea>
+            </div>
+            <div class="mb-3">
+            <label class="form-label">정원</label>
+            <input type="number" class="form-control" v-model="groupDetail.capacity" min="1">
+            </div>
+            <div class="mb-3">
+            <label class="form-label">공개 여부</label>
+            <select class="form-select" v-model="groupDetail.is_public">
+                <option value="Y">공개</option>
+                <option value="N">비공개</option>
+            </select>
+            </div>
+            <div class="mb-3">
+            <label class="form-label">프로필 이미지</label>
+            <input type="file" class="form-control" @change="handleProfileImgChange" ref="profileImgInput">
+            </div>
+            <div class="mb-3" v-if="groupDetail.profile_img">
+            <label class="form-label">미리보기</label><br>
+            <img :src="groupDetail.profile_img" alt="미리보기" style="height: 100px">
+            </div>
+            
 	      </div>
+	      <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+            <button class="btn btn-primary" @click="submitCreateGroup">생성</button>
+        </div>
 	    </div>
 	  </div>
+	 </div>
 	</div>
-
+</div>
 <script>
     $(document).on("click",".cpsbtn",function(){
         var con=$(this).closest('.filter-container')
@@ -200,15 +200,45 @@
             description: '',
             capacity: '',
             is_public: 'Y'
-          }
-        }
+          },
+		  groupDetail: {
+    		group_no: '',
+    		group_name: '',
+    		description: '',
+    		profile_img: null,
+    		capacity: 0,
+    		is_public: '',
+    		owner: ''
+  		 },
+  		 allTags: [
+    		'산책', '사료공유', '훈련정보', '미용', 
+    		'병원정보', '입양', '사진공유', '소형견', 
+    		'대형견', '고양이', '중성화', '혼종사랑'],
+  		 selectedTags: [],
+         }
       },
       mounted() {
         this.dataRecv();
+		this.fetchLoginUser();
       },
       methods: {
+		async fetchLoginUser() {
+			
+			const contextPath = "${pageContext.request.contextPath}";
+			console.log('contextPath:', contextPath);
+			try{
+				const res=await axios.get(contextPath+'/api/token');
+				this.user_no = res.data.userNo;
+				console.log('로그인 유저 번호:', this.user_no);
+			} catch(err) {
+				console.error("로그인 사용자 정보 가져오기 실패",err)
+			}
+		},
         handleFileChange(event) {
-          this.selectedFiles = Array.from(event.target.files);
+		  const file = event.target.files[0];
+		  if (!file) return;
+
+		  this.groupDetail.profile_img = URL.createObjectURL(file);
         },
 		group_member_management(user_no){
 		  console.log("그룹멤버관리")
@@ -235,29 +265,77 @@
         detail(group_no) {
           location.href = '../group/detail?group_no=' + group_no;
         },
-        addPost() {
-          const formData = new FormData();
-          formData.append('group_name', this.newPost.group_name);
-          formData.append('description', this.newPost.description);
-          formData.append('capacity', this.newPost.capacity);
-          formData.append('is_public', this.newPost.is_public);
+        async updateGroupDetail() {
+    		if (!this.groupDetail.group_name?.trim()) {
+      		alert('그룹명을 입력해주세요.');
+      		return;
+    	}
+    		if (!this.groupDetail.description?.trim()) {
+      		alert('그룹 설명을 입력해주세요.');
+      		return;
+    	}
+		
+  		this.groupDetail.owner =Number(this.user_no);
+  		console.log('전송 전 owner:', this.groupDetail.owner);
 
-          this.selectedFiles.forEach(file => {
-            formData.append('files', file);
-          });
+    	const dto = {
+      		...this.groupDetail,
+      		tags: this.selectedTags,
+    	};
+    
+    	const formData = new FormData();
+    	formData.append(
+      		'groupDetail',
+      		new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    	);
 
-          axios.post('../group/groups', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-          }).then(response => {
-            alert('새 그룹 생성 완료');
-            const modal = bootstrap.Modal.getInstance(document.getElementById('newPostModal'));
-            modal.hide();
-            this.dataRecv();
-          }).catch(error => {
-            console.error(error);
-            alert('등록 중 오류 발생');
-          });
-        },
+    	const fileInput = this.$refs.profileImgInput;
+    	if (fileInput && fileInput.files && fileInput.files[0]) {
+      		formData.append('profileImg', fileInput.files[0]);
+    	}
+
+    	const res = await axios.put(
+      	'../api/groups/'+this.groupDetail.group_no, formData);
+
+    	 return res.data;
+  		},
+
+		async submitCreateGroup() {
+    		if (!this.groupDetail.group_name?.trim()) {
+      		alert('그룹명을 입력해주세요.');
+     		 return;
+    	}
+    	if (!this.groupDetail.description?.trim()) {
+    	  alert('그룹 설명을 입력해주세요.');
+    	  return;
+   		 }
+		this.groupDetail.owner =Number(this.user_no);
+    	const dto = { ...this.groupDetail, tags: this.selectedTags };
+		console.log(dto)
+    	const formData = new FormData();
+   	    formData.append('groupDetail', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+
+    	const fileInput = this.$refs.profileImgInput;
+		console.log('파일:', fileInput?.files?.[0]);
+    	if (fileInput?.files?.[0]) {
+      		formData.append('profileImg', fileInput.files[0]);
+			console.log('✅ 파일을 FormData에 추가했습니다.');
+    	} else {
+ 			 console.warn('❌ 파일이 없어서 FormData에 추가하지 못했습니다.');
+		}
+		for (let pair of formData.entries()) {
+ 			 console.log('FormData key:', pair[0], 'value:', pair[1]);
+		}
+    	try {
+      	const res = await axios.post('../api/groups', formData);
+      	alert('그룹이 생성되었습니다.');
+      	bootstrap.Modal.getInstance(document.getElementById('createGroupModal')).hide();
+      	this.dataRecv();
+    	} catch (error) {
+      	console.error('그룹 생성 실패', error);
+      	alert('그룹 생성에 실패했습니다.');
+    	}
+  		},
         async dataRecv() {
           const res = await axios.get('../api/groups');
           console.log(res.data)
@@ -273,7 +351,7 @@
           console.log(this.stateMap)
         }
       }
-    }).mount('.container');
+    }).mount('#groupListApp');
 
 
 </script>

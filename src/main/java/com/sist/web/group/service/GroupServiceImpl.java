@@ -97,11 +97,10 @@ public class GroupServiceImpl implements GroupService{
 	@Transactional
 	@Override
 	public void createGroup(GroupDTO dto, MultipartFile profileImg) {
-		
 		if (profileImg != null && !profileImg.isEmpty()) {
 			dto.setProfile_img(uploadThumbnailImage(profileImg));
 		}
-		
+		System.out.println("##### dto:"+dto);
 		gDao.insertGroup(dto);
 		
 		GroupMemberDTO member = new GroupMemberDTO();
