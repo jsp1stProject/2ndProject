@@ -11,6 +11,11 @@ export const searchMethods = {
 
     this.searchResults = res.data.data;
 
+    if (!this.searchResults || this.searchResults.length === 0) {
+      alert('검색 결과가 없습니다.');
+      return;
+    }
+
     await this.$nextTick();
 
     const dropdown = document.querySelector('.dropdown-menu.show');
