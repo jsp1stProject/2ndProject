@@ -70,4 +70,10 @@ public class SitterResServiceImpl implements SitterResService{
 	    }
 	}
 
+	@Override
+	public int getSitterUserNoBySitterNo(int sitter_no) {
+		// TODO Auto-generated method stub
+		return rDao.getSitterUserNoBySitterNo(sitter_no);
+	}
+
 }

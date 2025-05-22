@@ -16,58 +16,57 @@ public class SitterChatServiceImpl implements SitterChatService{
 	private SitterChatDAO cDao;
 
 	@Override
-	public List<SitterChatRoomVO> SitterChatRoomList(int userNo, int start, int end) {
+    public List<SitterChatRoomVO> selectChatRoomList(int user_no) {
+        return cDao.selectChatRoomList(user_no);
+    }
+
+    @Override
+    public SitterChatRoomVO selectChatRoom(int user1_no, int user2_no, int reserve_no) {
+        return cDao.selectChatRoom(user1_no, user2_no, reserve_no);
+    }
+
+    @Override
+    public int insertChatRoom(SitterChatRoomVO vo) {
+        return cDao.insertChatRoom(vo);
+    }
+
+    @Override
+    public int deleteChatRoom(int room_no) {
+        return cDao.deleteChatRoom(room_no);
+    }
+
+    @Override
+    public List<SitterChatVO> selectChatList(int room_no) {
+        return cDao.selectChatList(room_no);
+    }
+
+    @Override
+    public int insertChat(SitterChatVO vo) {
+        return cDao.insertChat(vo);
+    }
+
+    @Override
+    public List<SitterChatVO> searchChatByKeyword(int room_no, String keyword) {
+        return cDao.searchChatByKeyword(room_no, keyword);
+    }
+
+    @Override
+    public String isChatEnabled(int room_no) {
+        return cDao.isChatEnabled(room_no);
+    }
+
+	@Override
+	public int selectChatRoomTotalPage() {
 		// TODO Auto-generated method stub
-		return cDao.SitterChatRoomList(userNo, start, end);
+		return cDao.selectChatRoomTotalPage();
 	}
 
 	@Override
-	public int SitterChatRoomTotalPage(int userNo, int rowSize) {
+	public SitterChatRoomVO SitterChatRoomById(int room_no) {
 		// TODO Auto-generated method stub
-		return cDao.SitterChatRoomTotalPage(userNo, rowSize);
+		return cDao.SitterChatRoomById(room_no);
 	}
 
-	@Override
-	public int SitterChatRoomInsert(SitterChatRoomVO vo) {
-		// TODO Auto-generated method stub
-		return cDao.SitterChatRoomInsert(vo);
-	}
-
-	@Override
-	public int SitterChatRoomDelete(int room_id) {
-		// TODO Auto-generated method stub
-		return cDao.SitterChatRoomDelete(room_id);
-	}
-
-	@Override
-	public int SitterChatInsert(SitterChatVO vo) {
-		// TODO Auto-generated method stub
-		return cDao.SitterChatInsert(vo);
-	}
-
-	@Override
-	public List<SitterChatVO> SitterChatList(int room_id) {
-		// TODO Auto-generated method stub
-		return cDao.SitterChatList(room_id);
-	}
-
-	@Override
-	public List<SitterChatVO> SitterChatSearch(int room_id, String keyword) {
-		// TODO Auto-generated method stub
-		return cDao.SitterChatSearch(room_id, keyword);
-	}
-
-	@Override
-	public List<SitterChatRoomVO> SitterChatRoomListWithFilter(Map<String, Object> map) {
-		// TODO Auto-generated method stub
-		return cDao.SitterChatRoomListWithFilter(map);
-	}
-
-	@Override
-	public int SitterChatRoomTotalPageWithFilter(Map<String, Object> map) {
-		// TODO Auto-generated method stub
-		return cDao.SitterChatRoomTotalPageWithFilter(map);
-	}
 	
 	
 }

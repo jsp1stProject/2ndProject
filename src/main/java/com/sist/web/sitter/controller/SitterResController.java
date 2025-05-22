@@ -1,6 +1,7 @@
 package com.sist.web.sitter.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -28,17 +29,38 @@ public class SitterResController {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
     
-	@GetMapping("/sitter/resList")
-	public String sitter_resList()
-	{
-        return "sitter/resList";
-	}
-	@GetMapping("/sitter/resDetail")
-	public String sitter_resDetail()
-	{
-        return "sitter/resDetail";
-	}
+	@Value("${imp.initcode}")
+	private String impCode;
 	
+	// 예약 목록
+	@GetMapping("/sitter/resList")
+	public String sitter_res_list(Model model,
+	    @CookieValue(name = "accessToken", required = false) String token) {
+
+	    if (token == null) { 
+	    	System.out.println("❌ 토큰이 없음. 로그인 필요.");
+	    	return "redirect:/login";
+	    }
+
+	    int user_no = -1; // 에러 탐지용 기본값
+	    try {
+	        user_no = Integer.parseInt(jwtTokenProvider.getUserNoFromToken(token));
+	    } catch (Exception e) {
+	        return "redirect:/login";
+	    }
+	    model.addAttribute("userNo", user_no); 
+	    model.addAttribute("main_jsp", "../sitter/resList.jsp");
+	    return "main/main"; 
+	}
+
+	// 예약 상세 페이지
+	@GetMapping("/sitter/resDetail")
+	public String sitter_res_detail(@RequestParam int res_no, Model model) {
+	    model.addAttribute("resNo", res_no);
+	    model.addAttribute("main_jsp", "../sitter/resDetail.jsp");
+	    return "main/main";
+	}
+	// 예약하기
 	@GetMapping("/sitter/reserve")
 	public String sitter_reserve(@RequestParam int sitter_no,
 	                             @CookieValue(name = "accessToken", required = false) String token,
@@ -62,21 +84,18 @@ public class SitterResController {
 	    int petFirstPrice = Integer.parseInt(
 	            sitterVO.getPet_first_price().replaceAll("[^0-9]", "")
 	    );
-
+	    
 	    // 신청자의 반려동물 리스트
 	    List<PetsVO> petsList = pService.getPetsByUserNo(user_no);
-	    System.out.println("✅ user_no: " + user_no);
-	    System.out.println("✅ petsList size: " + petsList.size());
-	    for (PetsVO pet : petsList) {
-	        System.out.println("➡️ pet_name: " + pet.getPet_name());
-	    }
 	    String petsJson = new Gson().toJson(petsList);
-
+	    
 	    model.addAttribute("petFirstPrice", petFirstPrice);
 	    model.addAttribute("petsJson", petsJson);
 	    model.addAttribute("sitterNo", sitter_no);
+	    model.addAttribute("impCode",impCode);
 
-	    return "sitter/reserve";
+	    model.addAttribute("main_jsp", "../sitter/reserve.jsp");
+	    return "main/main";
 	}
 
 }

@@ -1,27 +1,17 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@ page import="com.google.gson.Gson" %>
+<%@ page import="com.google.gson.Gson" %> 
 <%@ page import="com.sist.web.user.vo.UserVO" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <title>펫시터 예약하기</title>
-  <script type="module" src="https://unpkg.com/vue@3/dist/vue.esm-browser.js"></script>
-  <script type="module" src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    .time-btn.active {
-      background-color: #0d6efd;
-      color: white;
-    }
-  </style>
 </head>
 <body>
 <div id="app" class="container mt-4">
   <h2 class="mb-4">펫시터 예약하기</h2>
 
   <form @submit.prevent="submitReservation">
-
     <div class="mb-3">
       <label class="form-label">돌봄 아이</label>
       <div class="d-flex flex-wrap gap-2">
@@ -52,13 +42,11 @@
       </select>
     </div>
 
-
     <div class="mb-3">
       <label class="form-label">돌봄 일자</label>
       <input type="date" v-model="form.res_date" class="form-control" @change="fetchDisabledHours" required>
     </div>
 
-  
     <div class="mb-3">
       <label class="form-label">시간대 선택</label>
       <div class="d-flex flex-wrap gap-1">
@@ -70,13 +58,12 @@
         </button>
       </div>
     </div>
-    
+
     <div class="mb-3">
       <label class="form-label">펫시터에게 남길 말</label>
       <textarea class="form-control" rows="3" v-model="form.memo"></textarea>
     </div>
 
-    <!-- 실시간 요약 -->
     <div class="border p-3 rounded bg-light">
       <h5>신청 요약</h5>
       <p><strong>선택한 아이:</strong> {{ selectedPetNames.join(', ') }}</p>
@@ -92,6 +79,7 @@
   </form>
 </div>
 <script src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+<script>window.__IMP_CODE__ = '<%= request.getAttribute("impCode") %>';</script>
 <script type="module">
   import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
   import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.7/+esm';
@@ -101,7 +89,7 @@
       return {
         sitterNo: parseInt('<%= request.getAttribute("sitterNo") %>'),
         petFirstPrice: parseInt('<%= request.getAttribute("petFirstPrice") %>'),
-        petsList: JSON.parse('<%= ((String)request.getAttribute("petsJson")).replaceAll("\"", "\\\\\"") %>'),
+        petsList: JSON.parse('<%= ((String)request.getAttribute("petsJson")).replaceAll("\"", "\\\"") %>'),
         disabledHours: [],
         form: {
           pet_nos: [],
@@ -110,7 +98,8 @@
           res_date: '',
           selectedTimes: [],
           memo: ''
-        }
+        },
+        timeSelectTemp: []
       };
     },
     computed: {
@@ -137,10 +126,23 @@
     },
     methods: {
       toggleTime(hour) {
-        const idx = this.form.selectedTimes.indexOf(hour);
-        if (idx === -1) this.form.selectedTimes.push(hour);
-        else this.form.selectedTimes.splice(idx, 1);
-        this.form.selectedTimes.sort((a, b) => a - b);
+        if (this.timeSelectTemp.length === 0) {
+          this.timeSelectTemp.push(hour);
+          this.form.selectedTimes = [hour];
+        } else if (this.timeSelectTemp.length === 1) {
+          this.timeSelectTemp.push(hour);
+          const [start, end] = this.timeSelectTemp.sort((a, b) => a - b);
+          this.form.selectedTimes = [];
+          for (let i = start; i <= end; i++) {
+            if (!this.disabledHours.includes(i)) {
+              this.form.selectedTimes.push(i);
+            }
+          }
+        } else {
+          // 세 번째 클릭 시 초기화 후 해당 시간부터 새 선택 시작
+          this.timeSelectTemp = [hour];
+          this.form.selectedTimes = [hour];
+        }
       },
       async fetchDisabledHours() {
         if (!this.form.res_date) return;
@@ -157,61 +159,59 @@
         }
       },
       async submitReservation() {
-  const IMP = window.IMP;
-  IMP.init("."); // 포트원 가맹점 식별코드
+        const IMP = window.IMP;
+        IMP.init(window.__IMP_CODE__);
 
-  const amount = this.totalPrice;
-  const merchantUid = 'resv_' + new Date().getTime(); // 고유 주문번호
+        const amount = this.totalPrice;
+        const merchantUid = 'resv_' + new Date().getTime(); 
 
-  IMP.request_pay({
-    pg: "kakaopay", // ✅ PG사: 카카오페이
-    pay_method: "card",
-    merchant_uid: merchantUid,
-    name: "펫시터 돌봄 예약",
-    amount: amount,
-    buyer_email: "test@example.com",         // 실제 유저 정보로 교체 가능
-    buyer_name: "홍길동",
-    buyer_tel: "010-1234-5678",
-    buyer_addr: this.form.location_detail,
-    buyer_postcode: "12345"
-  }, async (rsp) => {
-    if (rsp.success) {
-      // ✅ 결제 성공 → 예약 정보 서버로 전송
-      const payload = {
-        sitter_no: this.sitterNo,
-        pet_nos: this.form.pet_nos,
-        res_date: this.form.res_date,
-        start_time: this.startTime,
-        end_time: this.endTime,
-        location_type: this.form.location_type,
-        location_detail: this.form.location_detail,
-        total_price: this.totalPrice,
-        pay_status: "결제완료",
-        res_status: "요청",
-        imp_uid: rsp.imp_uid,
-        merchant_uid: rsp.merchant_uid
-      };
+        IMP.request_pay({
+          pg: "kakaopay", 
+          pay_method: "card",
+          merchant_uid: merchantUid,
+          name: "pet4you 돌봄 예약",
+          amount: amount,
+          buyer_email: "test@example.com",
+          buyer_name: "홍길동",
+          buyer_tel: "010-1234-5678",
+          buyer_addr: this.form.location_detail,
+          buyer_postcode: "12345"
+        }, async (rsp) => {
+          if (rsp.success) {
+            const payload = {
+              sitter_no: this.sitterNo,
+              pet_nos: this.form.pet_nos,
+              res_date: this.form.res_date,
+              start_time: this.startTime,
+              end_time: this.endTime,
+              location_type: this.form.location_type,
+              location_detail: this.form.location_detail,
+              total_price: this.totalPrice,
+              pay_status: "결제완료",
+              res_status: "요청",
+              imp_uid: rsp.imp_uid,
+              merchant_uid: rsp.merchant_uid
+            };
 
-      try {
-        const res = await axios.post("/web/sitter/reserve_vue", payload, {
-          withCredentials: true
+            try {
+              const res = await axios.post("/web/sitter/reserve_vue", payload, {
+                withCredentials: true
+              });
+              if (res.data === "success") {
+                alert("예약 및 결제 완료!");
+                location.href = "/web/sitter/resList";
+              } else {
+                alert("예약 저장 실패");
+              }
+            } catch (err) {
+              console.error("❌ 예약 등록 오류:", err);
+              alert("오류 발생");
+            }
+          } else {
+            alert("❌ 결제 실패: " + rsp.error_msg);
+          }
         });
-        if (res.data === "success") {
-          alert("예약 및 결제 완료!");
-          location.href = "/sitter/resList";
-        } else {
-          alert("예약 저장 실패");
-        }
-      } catch (err) {
-        console.error("❌ 예약 등록 오류:", err);
-        alert("오류 발생");
       }
-
-    } else {
-      alert("❌ 결제 실패: " + rsp.error_msg);
-    }
-  });
-}
     }
   }).mount("#app");
 </script>

@@ -90,6 +90,10 @@ public class SitterDAO {
 	{
 		mapper.replyInsert(vo);
 	}
+	public void reviewUpdate(SitterReviewVO vo)
+	{
+		mapper.reviewUpdate(vo);
+	}
 	public void reviewDelete(int review_no)
 	{
 		mapper.reviewDelete(review_no);
