@@ -15,7 +15,8 @@ import java.util.*;
 import lombok.Data;
 @Data
 public class BoardVO {
-	private int post_id,user_no,views,like_count,reply_count;
+	private int post_id,views,like_count,reply_count;
+	private long user_no;
 	private String type,title,content,image_url,nickname;
 	private Date created_at;
 }

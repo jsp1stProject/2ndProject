@@ -8,7 +8,7 @@ import lombok.Data;
 public class CommentVO {
 	private int comment_id;
     private int post_id;
-    private int user_no;
+    private long user_no;
     private String content;
     private Date created_at;
     private String nickname;

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<c:set var="loginUserNo" value="${requestScope.userno}" />
 <html>
 <head>
     <title>🐾</title>
@@ -111,7 +112,7 @@
     </div>
 
     <div class="post-actions">
-        <c:if test="${sessionScope.user_no!=null }">
+        <c:if test="${loginUserNo != null && loginUserNo == vo.user_no}">
             <a href="update?post_id=${vo.post_id}">✏ 수정</a>
             <a href="delete?post_id=${vo.post_id}" onclick="return confirm('정말 삭제하시겠습니까?')">🗑 삭제</a>
         </c:if>
@@ -136,6 +137,10 @@
     </div>
 </div>
 
+<script>
+    const USER_NO = ${loginUserNo != null ? loginUserNo : 'null'};
+</script>
+
 <script type="module">
     import { createApp, ref, onMounted } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
@@ -143,7 +148,7 @@
         setup() {
             const comments = ref([])
             const newComment = ref('')
-            const postId = ${vo.post_id}  // JSP에서 post_id 전달
+            const postId = ${vo.post_id}
 
             const fetchComments = async () => {
                 try {
@@ -155,7 +160,7 @@
             }
 
             const addComment = async () => {
-                if (newComment.value.trim() === '') return
+                if (newComment.value.trim() === '' || USER_NO == null) return
 
                 try {
                     await fetch('/comment/insert', {
@@ -165,7 +170,7 @@
                         },
                         body: JSON.stringify({
                             post_id: postId,
-                            user_no: ${sessionScope.user_no},
+                            user_no: USER_NO,
                             content: newComment.value
                         })
                     })

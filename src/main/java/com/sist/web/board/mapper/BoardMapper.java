@@ -22,10 +22,11 @@ public interface BoardMapper {
     public BoardVO boardDetail(@Param("post_id") int post_id);
 
     @Insert("INSERT INTO p_board_post(post_id, user_no, type, title, content, image_url, created_at, views, like_count) "
-            +"VALUES (p_board_post_seq.nextval, #{user_no}, #{type}, #{title}, #{content}, #{image_url}, SYSDATE, 0, 0)")
+            + "VALUES (p_board_post_seq.nextval, #{user_no}, #{type}, #{title}, #{content}, #{image_url, jdbcType=VARCHAR}, SYSDATE, 0, 0)")
     public void boardInsert(BoardVO vo);
 
-    @Update("UPDATE p_board_post SET title = #{title}, content = #{content}, type = #{type}, image_url = #{image_url} WHERE post_id = #{post_id}")
+
+    @Update("UPDATE p_board_post SET title = #{title}, content = #{content}, type = #{type}, image_url = #{image_url, jdbcType=VARCHAR} WHERE post_id = #{post_id}")
     public void boardUpdate(BoardVO vo);
 
     @Delete("DELETE FROM p_board_post WHERE post_id = #{post_id}")
@@ -33,8 +34,7 @@ public interface BoardMapper {
 
     @Update("UPDATE p_board_post SET views = views + 1 WHERE post_id = #{post_id}")
     public void boardHit(@Param("post_id") int post_id);
-
-    // 게시글 개수 (페이징용)
+    
     @Select("SELECT COUNT(*) FROM p_board_post")
     public int boardTotalCount();
 }

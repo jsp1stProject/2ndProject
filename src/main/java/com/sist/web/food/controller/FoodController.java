@@ -29,11 +29,11 @@ public class FoodController {
             @RequestParam double activity,
             Model model) {
 
-        // RER, DER °è»ê
+        // RER, DER ï¿½ï¿½ï¿½
         double rer = 70 * Math.pow(weight, 0.75);
         double der = rer * activity;
 
-        // È°µ¿ Áö¼ö ±âÁØÀ¸·Î ³ªÀÌ Å°¿öµå ÃßÃâ
+        
         String ageKeyword = getAgeKeywordByActivity(animal, activity);
 
         List<FoodVO> foodList = (animal.equals("cat"))
@@ -50,21 +50,21 @@ public class FoodController {
 
     private String getAgeKeywordByActivity(String animal, double activity) {
         if (animal.equals("cat")) {
-            if (activity <= 0.8) return "¸ðµç";
-            else if (activity <= 1.0) return "7¼¼ÀÌ»ó";
-            else if (activity <= 1.2) return "12°³¿ù";
-            else if (activity <= 1.4) return "1¼¼";
-            else if (activity <= 2.0) return "3°³¿ù";
-            else if (activity <= 2.5) return "±îÁö";
-            else return "°í¾çÀÌ";
+            if (activity <= 0.8) return "ëª¨ë“ ";
+            else if (activity <= 1.0) return "7ì„¸ì´ìƒ";
+            else if (activity <= 1.2) return "12ê°œì›”";
+            else if (activity <= 1.4) return "1ì„¸";
+            else if (activity <= 2.0) return "3ê°œì›”";
+            else if (activity <= 2.5) return "ê¹Œì§€";
+            else return "ê³ ì–‘ì´";
         } else {
-            if (activity <= 1.0) return "¸ðµç";
-            else if (activity <= 1.2) return "14¼¼";
-            else if (activity <= 1.6) return "12°³¿ù";
-            else if (activity <= 1.8) return "10°³¿ù";
-            else if (activity <= 2.5) return "°³¿ù";
-            else if (activity <= 3.0) return "ÀÓ½Å¼öÀ¯±â";
-            else return "°­¾ÆÁö";
+            if (activity <= 1.0) return "ëª¨ë“ ";
+            else if (activity <= 1.2) return "14ì„¸";
+            else if (activity <= 1.6) return "12ê°œì›”";
+            else if (activity <= 1.8) return "10ê°œì›”";
+            else if (activity <= 2.5) return "ê°œì›”";
+            else if (activity <= 3.0) return "ìž„ì‹ ìˆ˜ìœ ê¸°";
+            else return "ê°•ì•„ì§€";
         }
     }
     
