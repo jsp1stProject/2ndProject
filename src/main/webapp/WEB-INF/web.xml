@@ -33,6 +33,11 @@
         <error-code>500</error-code>
         <location>/error</location><!-- 500 Internal Server Error 페이지 -->
     </error-page>
+
+    <error-page>
+        <error-code>403</error-code>
+        <location>/error</location><!-- 500 Internal Server Error 페이지 -->
+    </error-page>
     <!-- 한글 변환 -->
     <filter>
         <filter-name>encodingFilter</filter-name>

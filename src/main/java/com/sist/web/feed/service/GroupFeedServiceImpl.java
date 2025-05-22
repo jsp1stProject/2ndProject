@@ -53,6 +53,12 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 	}
 
 	@Override
+	public List<GroupMemberVO> joined_groupmember(int group_no) {
+		// TODO Auto-generated method stub
+		return dao.joined_groupmember(group_no);
+	}
+	
+	@Override
 	public Map groupFeedData(int group_no)
 	{
 		Map map = new HashMap();
@@ -76,6 +82,9 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 			*/
 			//stream으로 하면 코드는 간편한데 아직 공부못한부분
 		}
+		List<GroupMemberVO> mvo = joined_groupmember(group_no);
+		System.out.println("mvo"+mvo);
+		map.put("mvo", mvo);
 		map.put("list", feedList);
 		map.put("gvo", gvo);
 		
@@ -243,6 +252,8 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		
 		return map;
 	}
+
+
 
 	
 

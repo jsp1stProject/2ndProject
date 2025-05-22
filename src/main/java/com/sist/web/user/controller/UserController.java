@@ -46,7 +46,7 @@ public class UserController {
         return "redirect:/main";
     }
 
-    @GetMapping("auth/join")
+    @GetMapping("/auth/join")
     public String join(@RequestParam(required = false, value="code") String code, Model model) {
         model.addAttribute("main_jsp", "../user/join.jsp");
         return "main/main";
@@ -67,13 +67,6 @@ public class UserController {
         return "main/main";
     }
 
-    //권한 테스트용 페이지
-    @GetMapping("admin")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String admin(Model model) {
-        model.addAttribute("main_jsp", "home.jsp");
-        return "main/main";
-    }
 
     //권한 테스트용 페이지
     @GetMapping("users/test")
@@ -99,5 +92,4 @@ public class UserController {
         model.addAttribute("main_jsp", "../group/detailtest.jsp");
         return "main/main";
     }
-
 }

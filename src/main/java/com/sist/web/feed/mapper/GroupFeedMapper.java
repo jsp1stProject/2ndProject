@@ -42,6 +42,9 @@ public interface GroupFeedMapper {
 	@Select("SELECT * FROM p_feed_fileInfo WHERE feed_no=#{feed_no}")
 	public List<FeedFileInfoVO> fileListData(int feed_no);
 	
+	@Select("SELECT user_no, nickname, role, status FROM p_group_member WHERE group_no=#{group_no}")
+	public List<GroupMemberVO> joined_groupmember(int group_no);
+	
 	@Insert("INSERT INTO p_feed VALUES(p_feed_seq.nextval,#{group_no},#{user_no},#{title},#{content},#{filecount},SYSDATE,SYSDATE)")
 	public void feedInsertData(FeedVO vo);
 	

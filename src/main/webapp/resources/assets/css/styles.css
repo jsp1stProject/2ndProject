@@ -96,7 +96,7 @@
   --bs-dark-border-subtle: #5a6a85;
   --bs-white-rgb: 255, 255, 255;
   --bs-black-rgb: 0, 0, 0;
-  --bs-font-sans-serif: "Inter", sans-serif;
+  --bs-font-sans-serif: "Pretendard", sans-serif;
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-body-font-family: var(--bs-font-sans-serif);
@@ -13008,6 +13008,9 @@ textarea.form-control-lg {
     padding: 0 16px;
     height: calc(100vh - 80px); } }
 
+body {
+  font-weight: 400; }
+
 * {
   margin: 0;
   padding: 0;
@@ -13062,12 +13065,12 @@ ul {
     text-indent: 120%;
     overflow: hidden;
     white-space: nowrap; }
-  .login_wrap input {
+  .login_wrap input:not([type="checkbox"]) {
     width: 100%;
     padding: 10px;
     border: none;
     background-color: #ffffff; }
-    .login_wrap input[readonly] {
+    .login_wrap input:not([type="checkbox"])[readonly] {
       background-color: #ffffff; }
   .login_wrap button:not(.btn-sm) {
     line-height: 27px;
@@ -13092,10 +13095,22 @@ ul {
       border-bottom-right-radius: 14px;
       margin-bottom: 6px; }
     .login_wrap .input_wrap label {
-      font-size: 0.9em;
       padding: 8px 12px 0; }
+    .login_wrap .input_wrap input[type="checkbox"] + label {
+      padding: 0; }
     .login_wrap .input_wrap label + input {
       padding-top: 4px; }
+    .login_wrap .input_wrap textarea {
+      width: 100%;
+      height: 100px;
+      border: none;
+      resize: none;
+      padding: 4px 10px; }
+    .login_wrap .input_wrap textarea + p {
+      margin-bottom: 0;
+      padding: 0 10px 10px 10px;
+      font-size: 0.9em;
+      text-align: right; }
   .login_wrap .input_group:focus-within .input_wrap {
     border-color: #19d5bb; }
   .login_wrap .find_wrap {
@@ -13205,7 +13220,8 @@ ul {
     overflow: hidden; }
     .chat-wrapper .group-room .group-main .group-chat .chat-body {
       height: calc(100vh - var(--chat-header-height) - var(--chat-input-height));
-      padding: var(--chat-body-padding); }
+      padding: var(--chat-body-padding);
+      overflow-y: auto; }
       .chat-wrapper .group-room .group-main .group-chat .chat-body .msg {
         gap: 0.6em;
         align-items: flex-start;
@@ -13238,7 +13254,8 @@ ul {
           padding: 0 10px 0 18px; }
   .chat-wrapper .group-side {
     width: var(--chat-side-width);
-    overflow: hidden;
+    position: relative;
+    overflow: auto;
     transition: 0.15s ease-in-out; }
     .chat-wrapper .group-side .search-wrap {
       background-color: var(--chat-bg-dark);
