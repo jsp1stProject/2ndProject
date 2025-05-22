@@ -99,29 +99,40 @@ Vue.createApp({
       messages: [],
       chatContent: '',
       stompClient: null,
-      userNo: null
+      userNo: null,
+      token: ''
     };
   },
   mounted() {
-    axios.get('/web/auth/me', { withCredentials: true })
-      .then(res => {
-        if (!res.data.valid) {
-          alert("로그인이 필요한 서비스입니다.");
-          return;
-        }
-
-        this.userNo = res.data.userNo;
-        const socket = new WebSocket("ws://localhost:8080/web/ws-s");
-        this.stompClient = Stomp.over(socket);
-        this.stompClient.reconnect_delay = 5000;
-
-        this.stompClient.connect({}, () => {
-          console.log(" WebSocket connected");
-          this.loadRooms();
-        });
-      });
+	  this.initWebSocket();      
   },
   methods: {
+	  async initWebSocket() {
+		    try {
+		      const res = await axios.get('/web/auth/me');
+		      if (!res.data.valid) {
+		        alert('로그인이 필요한 서비스입니다.');
+		        return;
+		      }
+
+		      this.token = res.data;
+		      this.userNo = res.data.userNo;
+
+		      const socket = new WebSocket("ws://localhost:8080/web/ws-sitter");
+		      this.stompClient = Stomp.over(socket);
+		      this.stompClient.reconnect_delay = 5000;
+
+		      this.stompClient.connect(
+		        { Authorization: 'Bearer ' + this.token },
+		        () => {
+		          console.log("WebSocket connected");
+		          this.loadRooms();
+		        }
+		      );
+		    } catch (err) {
+		      console.error("인증 또는 WebSocket 오류:", err);
+		    }
+		  },
     loadRooms() {
       axios.get('/web/sitterchat/list_vue').then(res => {
         this.rooms = res.data.list;
