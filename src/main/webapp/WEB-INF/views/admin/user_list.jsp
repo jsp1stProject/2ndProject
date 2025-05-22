@@ -26,9 +26,8 @@
                         <th>이메일</th>
                         <th>이름</th>
                         <th>닉네임</th>
-                        <th>돌봄횟수</th>
-                        <th>돌봄지역</th>
-                        <th>평점</th>
+                        <th>등급</th>
+                        <th>가입일</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -38,9 +37,22 @@
                             <td>${i.user_mail}</td>
                             <td>${i.user_name}</td>
                             <td>${i.nickname}</td>
-                            <td></td>
-                            <td>${i.care_loc}</td>
-                            <td>${i.score}</td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${i.authority eq 'ROLE_USER'}">
+                                        일반 회원
+                                    </c:when>
+                                    <c:when test="${i.authority eq 'ROLE_SITTER'}">
+                                        펫시터
+                                    </c:when>
+                                    <c:otherwise>
+                                        관리자
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                ${i.db_regdate}
+                            </td>
                         </tr>
                     </c:forEach>
                     </tbody>
@@ -49,11 +61,11 @@
             <!-- /.card-body -->
             <div class="card-footer clearfix">
                 <ul class="pagination pagination-sm m-0 float-end">
-                    <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/admin/petsitters?page=1">«</a></li>
+                    <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/admin/users?page=1">«</a></li>
                     <c:forEach begin="${result.startPage}" end="${result.endPage}" var="i">
-                        <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/admin/petsitters?page=${i}">${i}</a></li>
+                        <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/admin/users?page=${i}">${i}</a></li>
                     </c:forEach>
-                    <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/admin/petsitters?page=${result.endPage}">»</a></li>
+                    <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/admin/users?page=${result.endPage}">»</a></li>
                 </ul>
             </div>
         </div>

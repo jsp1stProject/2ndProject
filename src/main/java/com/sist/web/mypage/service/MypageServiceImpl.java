@@ -15,6 +15,7 @@ import com.sist.web.security.JwtTokenProvider;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserDetailDTO;
 import com.sist.web.user.vo.UserVO;
+import com.sist.web.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,17 +33,7 @@ public class MypageServiceImpl implements MypageService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final AwsS3Service awsS3Service;
-
-    public String getValidUserNo(String token) {
-        if(token==null){
-            throw new CommonException(CommonErrorCode.SC_UNAUTHORIZED);
-        }
-        String userno=jwtTokenProvider.getUserNoFromToken(token);
-        if(userno==null){
-            throw new CommonException(CommonErrorCode.NOT_FOUND);
-        }
-        return userno;
-    }
+    private final SecurityUtil securityUtil;
 
     public String getRolls(String token) {
         if(token==null){
@@ -57,13 +48,13 @@ public class MypageServiceImpl implements MypageService {
 
     @Override
     public UserDetailDTO getMyinfo(String token) {
-        String userno=getValidUserNo(token);
+        String userno=securityUtil.getValidUserNo(token);
         return userMapper.getUserDtoFromUserNo(userno);
     }
 
     @Override
     public void updateMyinfo(String token, UserDetailDTO dto, MultipartFile file, int isChange) {
-        String userno=getValidUserNo(token);
+        String userno=securityUtil.getValidUserNo(token);
         String usermail=dto.getUser_mail();
         String orig_mail=userMapper.getUserMailFromUserNo(userno).getUser_mail();
         int count=userMapper.getUserMailCount(usermail);
@@ -154,15 +145,18 @@ public class MypageServiceImpl implements MypageService {
 
     @Override
     public String insertOrUpdatePetProfileImage(String token, MultipartFile file, String petno) {
-        PetDTO dto=getMyPetDetail(token, petno);
-        if(dto.getPet_profilepic()!=null){ //이미 프사가 있으면
-            //기존 프사 삭제
-            awsS3Service.deleteFile(dto.getPet_profilepic());
+        String userno=securityUtil.getValidUserNo(token);
+        PetDTO dto=mypageMapper.getMyPetDetail(userno,petno);
+
+        if(dto!=null){
+            if(dto.getPet_profilepic()!=null){
+                //이미 프사가 있으면 기존 프사 삭제
+                awsS3Service.deleteFile(dto.getPet_profilepic());
+            }
         }
         //새로운 프사 업로드
         String storedFileName = "";
         String fileDir = "petprofile/";
-
         try {
             storedFileName=awsS3Service.ResizeAndUploadFile(file, fileDir, 120, 120);
         }catch (Exception e){
@@ -174,13 +168,13 @@ public class MypageServiceImpl implements MypageService {
 
     @Override
     public List<PetDTO> getMyPets(String token) {
-        String userno=getValidUserNo(token);
+        String userno=securityUtil.getValidUserNo(token);
         return mypageMapper.getMyPets(userno);
     }
 
     @Override
     public PetDTO getMyPetDetail(String token, String petno) {
-        String userno=getValidUserNo(token);
+        String userno=securityUtil.getValidUserNo(token);
         if(mypageMapper.checkPetExists(userno,petno) == 0){
             throw new CommonException(CommonErrorCode.INVALID_PARAMETER);
         }
@@ -189,7 +183,7 @@ public class MypageServiceImpl implements MypageService {
 
     @Override
     public void updateMyPetDetail(String token, PetDTO dto, MultipartFile file, int isChange) {
-        String userno=getValidUserNo(token);
+        String userno=securityUtil.getValidUserNo(token);
         String petno=dto.getPet_no();
         int count=mypageMapper.checkPetExists(userno,petno);
 
@@ -236,7 +230,7 @@ public class MypageServiceImpl implements MypageService {
         if(dto.getLicense()!=null){
             dto.setLicense("반려동물종합관리사");
         }
-        String userno=getValidUserNo(token);
+        String userno=securityUtil.getValidUserNo(token);
         SitterDTO origApp= mypageMapper.getAppSitter(userno);
         dto.setUser_no(Integer.parseInt(userno));
         
@@ -252,7 +246,7 @@ public class MypageServiceImpl implements MypageService {
 
     @Override
     public SitterDTO getPetsitter(String token) {
-        String userno=getValidUserNo(token);
+        String userno=securityUtil.getValidUserNo(token);
         SitterDTO origApp= mypageMapper.getAppSitter(userno);
         if(origApp==null){
             throw new PetException(PetErrorCode.NO_APPLY);

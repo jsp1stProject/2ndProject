@@ -5,6 +5,7 @@ import com.sist.web.common.exception.domain.PetException;
 import com.sist.web.mypage.mapper.MypageMapper;
 import com.sist.web.mypage.vo.PetDTO;
 import com.sist.web.mypage.vo.PetVO;
+import com.sist.web.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class MypageTransactionalService {
     private final MypageMapper mypageMapper;
     private final MypageService mypageService;
+    private final SecurityUtil securityUtil;
 
     public void insertMyPetDetail(String token, PetDTO dto, MultipartFile file, int isChange) {
-        String userno=mypageService.getValidUserNo(token);
+        String userno=securityUtil.getValidUserNo(token);
         String petno=String.valueOf(mypageMapper.getNextPetNo());
 
-        //수정 실행
         PetVO vo=new PetVO();
         vo.setPet_no(petno);
         vo.setUser_no(userno);
