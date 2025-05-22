@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserTimeoutScheduler {
 	private final GroupDAO gDao;
 	
-	@Scheduled(fixedDelay = 600000)
+	@Scheduled(fixedRate = 60000)
 	public void handleInactiveUsers() {
 		try {
 			gDao.markInactiveUsers();
