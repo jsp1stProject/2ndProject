@@ -1,0 +1,12 @@
+@charset "UTF-8";
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
+
+body{
+    font-family: 'pretendard';
+    font-size: 0.875rem;
+    font-weight: 300;
+}
+
+.table-linked tr {
+    position: relative;
+}

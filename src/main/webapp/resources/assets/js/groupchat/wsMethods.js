@@ -9,7 +9,7 @@ export const wsMethods = {
       this.sender_nickname = res.data.nickname;
 
       const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-      const socketUrl = `${protocol}://${location.host}${this.contextPath}/ws`;
+      const socketUrl = `${protocol}://${location.host}${this.contextPath}/ws-user`;
       const socket = new WebSocket(socketUrl);
 
       this.stompClient = Stomp.over(socket);
@@ -18,7 +18,10 @@ export const wsMethods = {
 
       this.stompClient.connect(
         { Authorization: 'Bearer ' + this.token },
-        this.loadGroups,
+        async () => {
+          await this.loadGroups();
+          this.subscribeNotify();
+        },
         err => console.error('STOMP 연결 실패', err)
       );
     } catch (e) {
@@ -40,7 +43,6 @@ export const wsMethods = {
       const body = JSON.parse(msg.body);
 
       const sender = this.members.find(m => m.user_no === body.sender_no);
-      console.log('sender_no:', body.sender_no, '→ matched member:', sender);
       body.profile_img = sender?.profile_img || `${this.contextPath}/assets/images/profile/default_pf.png`;
 
       const container = this.scrollTarget;
@@ -55,10 +57,11 @@ export const wsMethods = {
 
   subscribeGroupOnline() {
     this.stompClient.subscribe(`/topic/groups/${this.group_no}/online`, msg => {
+      console.log('온라인 상태 수신:', msg.body);
       const onlineList = JSON.parse(msg.body);
       this.onlineUserNos = onlineList.map(u => Number(u.userNo));
       this.updateMemberOnlineStatus();
-    });
+    })
   },
 
   updateMemberOnlineStatus() {
@@ -67,5 +70,24 @@ export const wsMethods = {
       ...m,
       isOnline: set.has(Number(m.user_no))
     }));
+  },
+
+  subscribeNotify() {
+    console.log('subscribNotify', this);
+    this.stompClient.subscribe('/user/queue/notify', msg => {
+      console.log('알림 수신 성공', msg.body);
+
+      const payload = JSON.parse(msg.body);
+      const { groupNo } = payload;
+      console.log('알림 수신된 groupNo', groupNo);
+
+      const group = this.availableGroups.find(g => g.group_no === groupNo);
+      if (group) {
+        console.log('해당 그룹 찾음', group.group_name);
+        group.hasUnread = true;
+      } else {
+        console.log('그룹 못찾음');
+      }
+    }, { id: 'notify-sub'});
   }
 };

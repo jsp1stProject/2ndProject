@@ -1,6 +1,9 @@
 package com.sist.web.mypage.controller;
 
+import com.sist.web.common.response.ApiResponse;
+import com.sist.web.mypage.vo.PetDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,16 +28,29 @@ public class MypageController {
         return "main/main";
     }
 
-    @GetMapping("/pets")
+    @GetMapping("/pets/list")
     @PreAuthorize("hasRole('USER')")
-    public String pets(Model model){
+    public String pets_list(Model model){
         model.addAttribute("main_jsp", "../mypage/pets.jsp");
+        return "main/main";
+    }
+
+    @GetMapping("/pets/{petno}")
+    public String GetMyPetDetail(Model model){
+        model.addAttribute("main_jsp", "../mypage/pets_detail.jsp");
+        return "main/main";
+    }
+
+    @GetMapping("/pets/new")
+    @PreAuthorize("hasRole('USER')")
+    public String pets_insert(Model model){
+        model.addAttribute("main_jsp", "../mypage/pets_insert.jsp");
         return "main/main";
     }
 
     @GetMapping("/petsitters")
     public String petsitters(Model model){
-        model.addAttribute("main_jsp", "../mypage/petsitters.jsp");
+        model.addAttribute("main_jsp", "../mypage/petsitters_apply.jsp");
         return "main/main";
     }
 
