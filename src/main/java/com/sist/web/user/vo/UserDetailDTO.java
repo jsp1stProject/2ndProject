@@ -19,4 +19,6 @@ public class UserDetailDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate regdate,birthday;
     private String authority;//p_autority 테이블 join
+    private String care_loc;//p_sitter
+    private float score;//p_sitter
 }

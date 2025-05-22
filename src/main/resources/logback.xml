@@ -2,7 +2,7 @@
 <configuration>
 
     <!-- 로그 패턴 설정 -->
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"/>
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %cyan(%logger) - %msg%n"/>
 
     <!-- 콘솔 출력 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -34,11 +34,11 @@
         <level value="all" />
     </logger>
 
-    <logger name="com.sist.config">
+    <logger name="com.sist.web.common.config">
         <level value="all" />
     </logger>
 
-    <logger name="com.sist.security">
+    <logger name="com.sist.web.security">
         <level value="all" />
     </logger>
 

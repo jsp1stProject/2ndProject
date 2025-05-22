@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
-public class AWSConfiguration implements WebMvcConfigurer {
+public class AWSConfig implements WebMvcConfigurer {
     @Value("${aws.accesskey}")
     private String accessKey;
 

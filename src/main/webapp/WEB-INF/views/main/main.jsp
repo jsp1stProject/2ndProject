@@ -14,11 +14,11 @@
 	<link rel="shortcut icon" type="image/png" href="${pageContext.request.contextPath }/assets/images/logos/favicon.png" />
 	<link rel="stylesheet" href="${pageContext.request.contextPath }/assets/css/styles.css" />
 
-	<script src="${pageContext.request.contextPath }/assets/libs/jquery/dist/jquery.min.js"></script>
-	<script src="${pageContext.request.contextPath }/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="${pageContext.request.contextPath }/assets/libs/jquery/dist/jquery.js"></script>
+	<script src="${pageContext.request.contextPath }/assets/libs/bootstrap/dist/js/bootstrap.bundle.js"></script>
 	<script src="${pageContext.request.contextPath }/assets/js/sidebarmenu.js"></script>
 	<script src="${pageContext.request.contextPath }/assets/js/app.min.js"></script>
-	<script src="${pageContext.request.contextPath }/assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+	<script src="${pageContext.request.contextPath }/assets/libs/apexcharts/dist/apexcharts.js"></script>
 	<script src="${pageContext.request.contextPath }/assets/libs/simplebar/dist/simplebar.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
