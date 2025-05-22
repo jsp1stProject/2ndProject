@@ -15,6 +15,7 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sist.web.aws.AwsS3Service;
@@ -62,13 +63,8 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		
 		return dao.fileListData(no);
 	}
-/*
-	@Override
-	public List<GroupMemberVO> joined_groupmember(int group_no) {
-		// TODO Auto-generated method stub
-		return dao.joined_groupmember(group_no);
-	}
-	*/
+
+	
 	@Override
 	public Map<String, Object> groupFeedTotalData(int group_no, int page, long user_no)
 	{
@@ -193,10 +189,20 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		return vo;	
 	}
 
-	/*
-	 * @Override public int groupInsertData(GroupVO vo) { // TODO Auto-generated
-	 * method stub return dao.groupInsertData(vo); }
-	 */
+	
+	@Override
+	public void feedUpdate(FeedVO vo) {
+		dao.feedUpdate(vo);
+	}
+	
+	@Transactional
+	@Override
+	public void feedDelete(int feed_no) {
+		dao.feedLikeTableDelete(feed_no);
+		dao.feedCommentTableDelete(feed_no);
+		dao.feedFileInfoTableDelete(feed_no);
+		dao.feedDelete(feed_no);
+	}
 	@Override
 	public List<FeedCommentVO> feedCommentListData(Map map) {
 		// TODO Auto-generated method stub
@@ -332,15 +338,19 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 	}
 
 	@Override
-	public void selectLike(long user_no, int feed_no)
+	public boolean  selectLike(long user_no, int feed_no)
 	{
 		
-	    if (dao.hasUserLike(user_no, feed_no) > 0) {
-	        dao.likeDelete(user_no, feed_no);;
+		if (dao.hasUserLike(user_no, feed_no) > 0) {
+	        dao.likeDelete(user_no, feed_no);
+	        return false; // ❤️ 삭제됨 → 좋아요 안한 상태
 	    } else {
-	    	dao.likeInsert(user_no, feed_no);
+	        dao.likeInsert(user_no, feed_no);
+	        return true;  // ❤️ 추가됨 → 좋아요 상태
 	    }
 	}
+
+	
 
 
 	

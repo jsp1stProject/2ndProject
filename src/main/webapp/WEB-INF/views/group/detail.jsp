@@ -60,10 +60,11 @@
 	  <div class="row g-0">
 	    <div class="col-sm-3 d-none d-sm-block">
 		  <img 
-		    :src="gvo.profile_img ? gvo.profile_img : '/assets/images/noimage.png'" 
+		    :src="gvo.profile_img?.startsWith('http') ? gvo.profile_img : '${pageContext.request.contextPath}/s3/' + gvo.profile_img" 
 		    class="card-img-top h-100" 
 		    alt="그룹 이미지" 
 		    style="object-fit: cover;">
+		    
 		</div>
 	    <div class="card-body col-sm-9 p-3">
 	      <div class="d-flex gap-2">
@@ -107,32 +108,36 @@
 	  <div v-for="(vo, index) in list" :key="vo.feed_no" class="card overflow-hidden mb-3">
 	    <div class="row g-0">
 	      <div class="card-body col-3 p-3">
-	        <div class="d-flex gap-2">
-	          <div class="d-flex align-items-center">
-	            <img src="https://pet4u.s3.ap-northeast-2.amazonaws.com/profile/21ef189e-a172-4649-ae01-cb37381b61b3.jpg">
-	          </div>
-	          <div class="">
-	            
-	            <div class="d-flex align-items-center flex-wrap gap-2 fs-3">
-	              <div class="d-flex align-items-center gap-1">
-	                <span>닉네임</span><span class="text-dark">{{ vo.nickname }}</span>
-	              </div>
-	              <div class="d-flex align-items-center gap-1">
-	                <span>작성일</span><span class="text-dark">{{ vo.dbday }}</span>
-	              </div>
-	            </div>
-	            <a class="d-block fs-4 text-dark fw-semibold link-primary" :href="'../group/feed?feed_no='+vo.feed_no" >
-	              {{ vo.title }}
-	            </a>
-	          </div>
-	        </div>
+	        <div class="d-flex align-items-start gap-2 mb-1">
+			  <!-- 프로필 이미지 -->
+			  <img :src="'${pageContext.request.contextPath}/s3/' + vo.profile"
+			       alt="프로필 이미지"
+			       class="rounded-circle"
+			       style="width: 42px; height: 42px; object-fit: cover;">
+			
+			  <!-- 닉네임 + 작성일 -->
+			  <div class="d-flex flex-column justify-content-center">
+			    <span class="fs-3 text-dark">{{ vo.nickname }}</span>
+			    <span class="fs-3 text-muted">{{ vo.dbday }}</span>
+			  </div>
+			</div>
+			
+			<!-- 제목 (작성자 정보 아래 한 줄 띄워서) -->
+			<div class="mb-2">
+			  <a :href="'../group/feed?feed_no=' + vo.feed_no"
+			     class="fw-semibold fs-4 text-dark text-decoration-none link-primary">
+			    {{ vo.title }}
+			  </a>
+			</div>
 
 	        <!-- 이미지가 있을 경우에만 출력 -->
 	        <div v-if="vo.images && vo.images.length">
 	          <div :id="'carousel-' + index" class="carousel slide my-2" data-bs-ride="carousel">
 	            <div class="carousel-inner">
 	              <div class="carousel-item" v-for="(img, i) in vo.images" :class="{ active: i === 0 }">
-	                <img :src="img" class="d-block w-100 rounded" style="max-height: 300px; object-fit: cover;">
+	                <!-- <img :src="img" class="d-block w-100 rounded" style="max-height: 300px; object-fit: cover;"> -->
+	                <img :src="img.startsWith('http') ? img : '${pageContext.request.contextPath}/s3/' + img" 
+	                 class="d-block w-100 rounded" style="max-height: 300px; object-fit: cover;">
 	              </div>
 	            </div>
 	            <button class="carousel-control-prev" type="button" :data-bs-target="'#carousel-' + index" data-bs-slide="prev">
@@ -144,19 +149,22 @@
 	          </div>
 	        </div>
 	
-	        <div class="d-flex justify-content-end">
-			  <div class="d-flex align-items-center gap-3 mt-2 text-muted fs-5">
+	        <!-- <div class="d-flex justify-content-end"> -->
+			  <div class="d-flex align-items-center gap-3 mt-2 text-muted" style="padding-left: 12px;">
 			    <!-- 좋아요 아이콘 버튼 -->
 			    <button @click="selectLike(vo.feed_no)" class="btn btn-sm p-0 border-0 bg-transparent">
-			      <i :class="liked[vo.feed_no] ? 'bi bi-heart-fill text-danger fs-4' : 'bi bi-heart fs-4 text-muted'"></i>
-			    </button>
+			    <i
+				  :class="liked[vo.feed_no] ? 'bi bi-heart-fill text-danger' : 'bi bi-heart text-muted'"
+				  style="font-size: 2em; position: relative; top: 2px;">
+				</i>
+			  </button>
 			
 			    <!-- 댓글 아이콘 버튼 (링크로 이동) -->
 			    <a :href="'../group/feed?feed_no=' + vo.feed_no" class="text-muted">
-			      <i class="bi bi-chat-dots fs-4"></i>
+			      <i class="bi bi-chat-dots" style="font-size: 2.0em;"></i>
 			    </a>
 			  </div>
-			</div>
+			<!-- </div> -->
 	      </div>
 	    </div>
 	  </div>
@@ -297,10 +305,10 @@ createApp({
     this.scheduleRecv();
   },
   methods: {
-	selectLike(feed_no) {
-    		axios.post('../api/feed/'+feed_no+'/like')
-      		.then(() => {
-        		this.liked[feed_no] = !this.liked[feed_no];
+	selectLike() {
+    		axios.post('../api/feed/'+this.feed_no+'/like')
+      		.then(res => {
+        		this.liked = res.data.liked;
       		})
       		.catch(err => {
         		console.log(err);
@@ -380,6 +388,9 @@ createApp({
         this.list = res.data.list;
         this.gvo = res.data.gvo;
         this.mvo = res.data.mvo;
+		this.liked = res.data.list.is_liked;
+		this.liked = Boolean(res.data.is_liked);
+		console.log("liked 상태:", this.is_liked);
 	  }).catch(error => {
 		 console.err(error);
 	  })

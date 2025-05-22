@@ -9,6 +9,22 @@
 	  text-overflow: ellipsis;
 	  white-space: nowrap;     /* 줄바꿈 방지 */
 	}
+  .joined-group-scroll {
+    max-height: 300px; /* 필요에 따라 조절 */
+    overflow-y: auto;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #fafafa;
+  }
+
+  .joined-group-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .joined-group-scroll::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+  }
 	</style>
     <div class="container pt-header" id="groupListApp">
         <div class="row pt-3">
@@ -57,21 +73,21 @@
                         </div>
                     </form>
                     <div class="filter-item mt-4">
-					  <h6 class="mb-3">✅ 내가 가입한 그룹</h6>
-					  <div v-if="joinedgroup_list.length > 0">					  
-					    <div v-for="vo in joinedgroup_list" :key="vo.group_no" class="card mb-2">
-					      <div class="card-body p-2">
-					        <div class="d-flex justify-content-between align-items-center">
-					          <div>
-					            <strong>{{ vo.group_name }}</strong>
-					            </div>
-					          <button class="btn btn-sm btn-outline-primary" @click="detail(vo.group_no)">입장</button>
-					        </div>
-					      </div>
-					    </div>
-					  </div>
-					  <div v-else class="text-muted">가입한 그룹이 없습니다.</div>
-					</div>
+			          <h6 class="mb-3">✅ 내가 가입한 그룹</h6>
+			          <div v-if="joinedgroup_list.length > 0" class="joined-group-scroll">
+			            <div v-for="vo in joinedgroup_list" :key="vo.group_no" class="card mb-2">
+			              <div class="card-body p-2">
+			                <div class="d-flex justify-content-between align-items-center">
+			                  <div>
+			                    <strong>{{ vo.group_name }}</strong>
+			                  </div>
+			                  <button class="btn btn-sm btn-outline-primary" @click="detail(vo.group_no)">입장</button>
+			                </div>
+			              </div>
+			            </div>
+			          </div>
+			          <div v-else class="text-muted">가입한 그룹이 없습니다.</div>
+			        </div>
                 </div>
             </div>
             <div class="col-lg-8">
@@ -112,7 +128,7 @@
                                     <span>개설일</span><span class="text-dark">{{vo.created_at}}</span>
                                 </div>
                             </div>
-                            <p class="mb-3">{{vo.description}}</p>
+                            <p class="mb-3 description-line">{{vo.description}}</p>
                             <div class="d-flex justify-content-end fs-3">
                                 <button v-if="stateMap[vo.group_no]?.IS_MEMBER === 'Y'"  type="button" class="btn btn-outline-dark" @click="detail(vo.group_no)">입장하기</button>
                                 <button v-else-if="stateMap[vo.group_no]?.JOIN_STATUS === 'WAITING'" type="button" class="btn btn-outline-warning" disabled>가입 대기 중</button>
@@ -163,7 +179,7 @@
 			</div>
             <div class="mb-3">
             <label class="form-label">프로필 이미지</label>
-            <input type="file" class="form-control" @change="handleProfileImgChange" ref="profileImgInput">
+            <input type="file" class="form-control" @change="handleFileChange" ref="profileImgInput">
             </div>
             <div class="mb-3" v-if="groupDetail.profile_img">
             <label class="form-label">미리보기</label><br>

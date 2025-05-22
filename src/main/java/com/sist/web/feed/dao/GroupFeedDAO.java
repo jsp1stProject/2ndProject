@@ -56,6 +56,28 @@ public class GroupFeedDAO {
 	{
 		return mapper.feedDetailData(feed_no,user_no);
 	}
+	
+	public void feedUpdate(FeedVO vo)
+	{
+		mapper.feedUpdate(vo);
+	}
+	
+	public void feedDelete(int feed_no)
+	{
+		mapper.feedDelete(feed_no);
+	}
+	public void feedCommentTableDelete(int feed_no)
+	{
+		mapper.feedCommentTableDelete(feed_no);
+	}
+	public void feedFileInfoTableDelete(int feed_no)
+	{
+		mapper.feedFileInfoTableDelete(feed_no);
+	}
+	public void feedLikeTableDelete(int feed_no)
+	{
+		mapper.feedLikeTableDelete(feed_no);;
+	}
 	/*
 	 * 
 	 * 수정필요!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

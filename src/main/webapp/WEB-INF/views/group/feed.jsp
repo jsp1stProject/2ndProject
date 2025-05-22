@@ -1,5 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -89,17 +88,20 @@
           <small class="text-muted">{{ feed_data.dbday }}</small>
         </div>
       </div>
+   
       <div class="dropdown">
-        <button class="btn btn-sm btn-light" data-bs-toggle="dropdown">
+        <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
           <i class="bi bi-three-dots-vertical"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="#">수정</a></li>
-          <li><a class="dropdown-item text-danger" href="#">삭제</a></li>
+          <li>
+			<button type="button" class="dropdown-item" @click="openEditModal(feed_data)">수정</button>
+		  </li>
+          <li><a class="dropdown-item text-danger" href="#" @click.prevent="deleteFeed(feed_data.feed_no, feed_data.group_no)">삭제</a></li>
         </ul>
       </div>
     </div>
-
+    
     <!-- 제목 / 내용 -->
     <div class="feed-title mt-3">{{ feed_data.title }}</div>
     <div class="feed-content">{{ feed_data.content }}</div>
@@ -110,7 +112,7 @@
         <div class="carousel-item" 
              v-for="(img, index) in feed_data.images" 
              :class="{ active: index === 0 }" :key="index">
-          <img :src="img.startsWith('http') ? img : 'https://pet4u.s3.ap-northeast-2.amazonaws.com/' + img" class="d-block w-100 rounded">
+          <img :src="img.startsWith('http') ? img : '${pageContext.request.contextPath}/s3/' + img" class="d-block w-100 rounded">
         </div>
       </div>
       <button class="carousel-control-prev" type="button" :data-bs-target="'#carousel-' + feed_data.feed_no" data-bs-slide="prev">
@@ -122,16 +124,14 @@
     </div>
 
     <!-- 좋아요 / 댓글 수 -->
-    <div class="d-flex align-items-center gap-3 mt-3">
-	  <!-- 좋아요 버튼: 클릭 여부에 따라 아이콘 변경 -->
+    <div class="d-flex align-items-center gap-3 mt-3 text-muted" style="padding-left: 12px;">
 	  <button @click="selectLike" class="btn btn-sm p-0 border-0 bg-transparent">
-	    <i :class="liked ? 'bi bi-heart-fill text-danger fs-4' : 'bi bi-heart fs-4 text-muted'"></i>
-	  </button>
+	  <i :class="heartClass" style="font-size: 2em; position: relative; top: 2px;"></i>
+	</button>
 	
-	  <!-- 댓글 수: 동일한 스타일로 맞춤 -->
-	  <div class="d-flex align-items-center text-muted fs-5">
-	    <i class="bi bi-chat-dots me-1"></i>
-	    <span>{{ feed_data.comment_count }}</span>
+	  <div class="d-flex align-items-center gap-1">
+	    <i class="bi bi-chat-dots" style="font-size: 2em;"></i>
+	    <span style="font-size: 1.2em;">{{ feed_data.comment_count }}</span>
 	  </div>
 	</div>
 	<!-- 댓글 입력 -->
@@ -154,9 +154,14 @@
             <strong>{{ comment.nickname }}</strong>
             <small class="text-muted ms-2">{{ comment.dbday }}</small>
           </div>
-          <div>
-            <button class="btn btn-sm btn-outline-secondary" v-if="comment.user_no === user_no" @click="toggleEdit(comment.no, comment.msg)">수정</button>
-            <button class="btn btn-sm btn-outline-danger" v-if="comment.user_no === user_no" @click="deleteComment(comment.no, comment.group_id,comment.group_step)">삭제</button>
+          <div class="dropdown" v-if="comment.user_no === user_no">
+           <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+		    <i class="bi bi-three-dots"></i>
+		   </button>
+		   <ul class="dropdown-menu">
+			<li><a class="dropdown-item" href="#" @click.prevent="toggleEdit(comment.no, comment.msg)">수정</a></li>
+			<li><a class="dropdown-item text-danger" href="#" @click.prevent="deleteComment(comment.no, comment.group_id, comment.group_step)">삭제</a></li>
+		   </ul>
           </div>
         </div>
 
@@ -190,10 +195,15 @@
 	          <strong>{{ reply.nickname }}</strong>
 	          <small class="text-muted ms-2">{{ reply.dbday }}</small>
 	        </div>
-	        <div>
-	          <button class="btn btn-sm btn-outline-secondary me-1" v-if="reply.user_no === user_no" @click="toggleEdit(reply.no, reply.msg)">수정</button>
-	          <button class="btn btn-sm btn-outline-danger me-1" v-if="reply.user_no === user_no" @click="deleteComment(reply.no, reply.group_id, reply.group_step)">삭제</button>
-	        </div>														
+	        <div class="dropdown" v-if="reply.user_no === user_no">
+	           <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+	           		<i class="bi bi-three-dots"></i>
+			   </button>
+			   <ul class="dropdown-menu">
+				<li><a class="dropdown-item" href="#" @click.prevent="toggleEdit(reply.no, reply.msg)">수정</a></li>
+				<li><a class="dropdown-item text-danger" href="#" @click.prevent="deleteComment(reply.no, reply.group_id, reply.group_step)">삭제</a></li>
+			   </ul>
+            </div>	        													
 	      </div>
 	
 	      <div v-if="editingComment === reply.no">
@@ -215,6 +225,32 @@
     </div>
     
   </div>
+  <!-- 피드 수정 모달창 -->
+    <div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <form @submit.prevent="editPost">
+	        <div class="modal-header">
+	          <h5 class="modal-title" id="editPostModalLabel">✏️ 피드 수정</h5>
+	          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+	        </div>
+	        <div class="modal-body">
+	          <div class="mb-3">
+	            <label class="form-label">제목</label>
+	            <input type="text" class="form-control" v-model="editPostData.title" required>
+	          </div>
+	          <div class="mb-3">
+	            <label class="form-label">내용</label>
+	            <textarea class="form-control" rows="3" v-model="editPostData.content" required></textarea>
+	          </div>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="submit" class="btn btn-primary">수정하기</button>
+	        </div>
+	      </form>
+	    </div>
+	  </div>
+	</div>
 </div>
 	
 <script type="module">
@@ -233,16 +269,29 @@
 		page:1,
 		newComment: '',
 		editingComment:null,
-		liked: false,
+		liked: null,
         isExpanded: false,
 		replyInput: {}, // 대댓글 입력 내용 저장
-    	replyInputVisible: {} // 대댓글 입력창 표시 여부
+    	replyInputVisible: {}, // 대댓글 입력창 표시 여부
+		editPostData: {
+			feed_no: null,
+      		title: '',
+      		content: ''
+    	},
       }
     },
 	computed: {
       visibleComments() {
         return this.list.slice(0, this.visibleCount);
-      }
+      },
+	  heartClass() {
+    	if (this.liked === null) return 'bi'; // 아직 안 불러온 상태
+    	return this.liked
+      		? 'bi bi-heart-fill text-danger'
+      	: 'bi bi-heart text-muted';
+  
+  	  }
+		
     },
 	mounted(){
 		const params = new URLSearchParams(window.location.search);
@@ -255,6 +304,50 @@
 		this.fetchLoginUser();
 	},
     methods: {
+		openEditModal(feed) {
+    		this.editPostData = {
+      		feed_no: feed.feed_no,
+      		title: feed.title,
+      		content: feed.content
+      		};
+			const modal = new bootstrap.Modal(document.getElementById('editPostModal'));
+    		modal.show();
+		},
+		async editPost() {
+			console.log("수정하기")
+			try{
+				const res = await axios.put('../api/feeds/'+this.editPostData.feed_no, {
+					title: this.editPostData.title,
+					content: this.editPostData.content
+				});
+				
+				console.log("수정 결과 : "+ res.data)
+
+				this.dataRecv();
+				this.commentDataRecv();
+
+				const modalEl = document.getElementById('editPostModal');
+				const modal = bootstrap.Modal.getInstance(modalEl);
+				modal.hide();
+			} catch(error) {
+				console.error("수정 실패",error);
+				alert("수정을 실패했습니다. 다시 시도해 주세요");
+			}
+
+		},
+		async deleteFeed(feed_no, group_no) {
+			if (!confirm("정말 삭제하시겠습니까?")) return;
+			try {
+    			const res = await axios.delete('../api/feeds/'+feed_no);
+    			console.log("삭제:", res.data);
+
+    			alert("피드가 삭제되었습니다.");
+    			window.location.href =  "../group/detail?group_no=" + group_no;;
+  			} catch (error) {
+    			console.error("삭제 실패:", error);
+    			alert("삭제에 실패했습니다. 다시 시도해 주세요.");
+  			}
+		},
 		async fetchLoginUser() {
 			
 			const contextPath = "${pageContext.request.contextPath}";
@@ -269,8 +362,8 @@
 		},
 		selectLike() {
     		axios.post('../api/feed/'+this.feed_no+'/like')
-      		.then(() => {
-        		this.liked = !this.liked;
+      		.then(res => {
+        		this.liked = res.data.liked;
       		})
       		.catch(err => {
         		console.log(err);
@@ -283,6 +376,10 @@
 			.then(res=>{
 				console.log(res.data)
 				this.feed_data=res.data;
+				console.log("서버에서 받은 liked 원본 값:", res.data.is_liked);
+				console.log("타입:", typeof res.data.is_liked);
+				this.liked = Boolean(res.data.is_liked);
+				console.log("liked 상태:", this.is_liked);
 			}).catch(err=>{
 				console.log(err)
 			})
@@ -394,7 +491,7 @@
 	  },
 	  toggleEdit(no, msg) {
         this.editingComment = no;
-        const comment = this.list.find(c => c.no === no);
+        const comment = this.comment_list.find(c => c.no === no);
         if (comment) comment.editMsg = msg;
       },
 	  toggleReplyInput(commentNo) {
@@ -423,6 +520,7 @@
 		 }
 	  },
 	  deleteComment(comment_no, group_id,group_step) {
+		if (!confirm("정말 삭제하시겠습니까?")) return;
         axios.delete('../api/feed/comments/'+comment_no,{
 				params:{
 					no:comment_no,
