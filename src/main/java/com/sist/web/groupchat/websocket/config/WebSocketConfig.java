@@ -42,8 +42,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         long[] heartbeat = {10_000, 10_000};
         registry.setApplicationDestinationPrefixes("/pub");
-        registry.enableSimpleBroker("/sub", "/topic")
+        registry.enableSimpleBroker("/sub", "/topic", "/queue")
                 .setHeartbeatValue(heartbeat)
                 .setTaskScheduler(messageBrokerTaskScheduler());
+        registry.setUserDestinationPrefix("/user");
     }
 }

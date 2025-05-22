@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.dto.GroupMemberDTO;
+import com.sist.web.group.dto.GroupMemberInfoDTO;
 
 public interface GroupService {
 	public List<GroupDTO> getGroupAllList();
@@ -24,4 +25,6 @@ public interface GroupService {
 	public List<GroupJoinRequestsDTO> selectGroupRequestsData(int user_no);
 	public void updateJoinRequestStatus(GroupJoinRequestsDTO dto);
 	public void joinRequestResult(int request_no, int group_no, long user_no, String status, String nickname);
+	public void removeGroup(int groupNo, int userNo);
+	public GroupMemberInfoDTO getGroupMemberDetail(int groupNo, int userNo);
 }

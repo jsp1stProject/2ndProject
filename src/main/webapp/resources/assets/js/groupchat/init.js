@@ -3,6 +3,7 @@ import { apiMethods } from './apiMethods.js';
 import { wsMethods } from './wsMethods.js';
 import { uiMethods } from './uiMethods.js';
 import { utilMethods } from './utilMethods.js';
+import { searchMethods } from './searchMethods.js';
 
 export function initGroupChat(contextPath, createApp) {
   createApp({
@@ -11,6 +12,15 @@ export function initGroupChat(contextPath, createApp) {
         ...groupChatData,
         contextPath
       };
+    },
+    computed: {
+      searchModelLabel() {
+        switch (this.searchMode) {
+          case 'keyword': return '메세지 내용:';
+          case 'sender': return '보낸 사람:';
+          default: return '';
+        }
+      }
     },
     mounted() {
       this.initialize();
@@ -30,8 +40,23 @@ export function initGroupChat(contextPath, createApp) {
       ...wsMethods,
       ...uiMethods,
       ...utilMethods,
+      ...searchMethods,
 
       async joinGroup(groupNo) {
+        const prevGroupNo = this.group_no;
+
+        if (prevGroupNo && prevGroupNo !== groupNo) {
+          await this.markExit(prevGroupNo);
+        }
+
+        const group = this.availableGroups.find(g => g.group_no === groupNo);
+        if (group) {
+          console.log('알림 초기화', group.group_name);
+          group.hasUnread = false;
+        }
+
+        await this.markViewing(groupNo, true);
+
         const selected = this.availableGroups.find(g => g.group_no === groupNo);
         this.currentGroupName = selected?.group_name || '그룹';
         this.group_no = groupNo;
@@ -43,7 +68,7 @@ export function initGroupChat(contextPath, createApp) {
         await this.loadMessages();
         this.scrollToBottom();
         await this.loadGroupMembers();
-        await this.loadInitialOnlineUsers();
+        await this.loadGlobalOnlineUsers();
         this.subscribeGroupMessages();
         this.subscribeGroupOnline();
       },
@@ -118,7 +143,6 @@ export function initGroupChat(contextPath, createApp) {
         const m = this.members.find(m => m.user_no === userNo);
         return m?.nickname || '알 수 없음';
       }
-
     }
   }).mount('#app');
 }

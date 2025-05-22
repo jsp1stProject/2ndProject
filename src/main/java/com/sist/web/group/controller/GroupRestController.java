@@ -1,28 +1,24 @@
 package com.sist.web.group.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.sist.web.common.exception.code.CommonErrorCode;
 import com.sist.web.common.exception.code.GroupErrorCode;
 import com.sist.web.common.exception.domain.CommonException;
@@ -31,7 +27,9 @@ import com.sist.web.common.response.ApiResponse;
 import com.sist.web.group.dto.GroupDTO;
 import com.sist.web.group.dto.GroupJoinRequestsDTO;
 import com.sist.web.group.service.GroupService;
+import com.sist.web.groupchat.service.GroupChatService;
 import com.sist.web.group.dto.GroupMemberDTO;
+import com.sist.web.group.dto.GroupMemberInfoDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/groups")
 public class GroupRestController {
 	private final GroupService service;
+	private final GroupChatService chatService;
 	
 	@GetMapping
 	public ResponseEntity<ApiResponse<Map<String, Object>>> group_groups(HttpServletRequest request)
@@ -169,4 +168,17 @@ public class GroupRestController {
 		return ResponseEntity.ok(ApiResponse.success("심사후 멤버추가 완료"));
 	}
 	
+	@DeleteMapping("/{groupNo}")
+	public ResponseEntity<ApiResponse<Object>> deleteGroup(@PathVariable Integer groupNo, HttpServletRequest req) {
+		int userNo = (Integer) req.getAttribute("userno");
+		service.removeGroup(groupNo, userNo);
+		return ResponseEntity.ok(ApiResponse.success(null, "그룹이 삭제되었습니다."));
+	}
+	
+	@GetMapping("/members/details")
+	public ResponseEntity<ApiResponse<GroupMemberInfoDTO>> getGroupMemberDetail(Integer groupNo, Integer userNo) {
+		// 유효성 검사 필요
+		GroupMemberInfoDTO dto = service.getGroupMemberDetail(groupNo, userNo);
+		return ResponseEntity.ok(ApiResponse.success(dto));
+	}
 }

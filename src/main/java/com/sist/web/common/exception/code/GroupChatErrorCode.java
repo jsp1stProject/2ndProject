@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum GroupChatErrorCode implements ErrorInfo {
+	/** 잘못된 접속 요청입니다. */
 	INVALID_JOIN_REQUEST("G400", "잘못된 접속 요청입니다", HttpStatus.BAD_REQUEST),
+	/** 인증되지 않은 WebSocket 연결입니다. */
 	UNAUTHORIZED("G401", "인증되지 않은 WebSocket 연결입니다", HttpStatus.UNAUTHORIZED);
 	
 	private final String code;
