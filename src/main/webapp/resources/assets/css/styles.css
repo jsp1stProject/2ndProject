@@ -13254,7 +13254,8 @@ ul {
           padding: 0 10px 0 18px; }
   .chat-wrapper .group-side {
     width: var(--chat-side-width);
-    overflow: hidden;
+    position: relative;
+    overflow: auto;
     transition: 0.15s ease-in-out; }
     .chat-wrapper .group-side .search-wrap {
       background-color: var(--chat-bg-dark);

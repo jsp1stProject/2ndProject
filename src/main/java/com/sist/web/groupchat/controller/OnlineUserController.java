@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @Slf4j
@@ -25,5 +26,10 @@ public class OnlineUserController {
         List<UserStatusDTO> onlineUsers = groupOnlineUserService.getOnlineUsersWithNickname(groupNo);
         log.info("현재 온라인 (group={}): {}", groupNo, onlineUsers);
         return ResponseEntity.ok(ApiResponse.success(onlineUsers));
+    }
+    
+    @GetMapping("/online-users")
+    public ResponseEntity<Set<Long>> getGlobalOnlineUsers() {
+    	return ResponseEntity.ok(groupOnlineUserService.getGloballyOnlineUsers());
     }
 }

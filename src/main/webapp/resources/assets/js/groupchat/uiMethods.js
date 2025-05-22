@@ -104,5 +104,25 @@ export const uiMethods = {
     } else {
       this.selectedTags.push(tag);
     }
+  },
+  openCreateGroupModal() {
+    Object.assign(this.groupDetail, {
+      group_no: '',
+      group_name: '',
+      description: '',
+      profile_img: null,
+      capacity: 5,
+      is_public: 'Y',
+      owner: this.sender_no
+    });
+    this.selectedTags = [];
+
+    this.$nextTick(() => {
+      const modalEl = document.getElementById('createGroupModal');
+      modalEl?.removeAttribute('aria-hidden');
+      new bootstrap.Modal(modalEl).show();
+    });
   }
+
+
 };
