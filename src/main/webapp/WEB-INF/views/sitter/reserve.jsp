@@ -147,7 +147,7 @@
       async fetchDisabledHours() {
         if (!this.form.res_date) return;
         try {
-          const res = await axios.get("/web/sitter/res/disabled_hours", {
+          const res = await axios.get("${pageContext.request.contextPath}/sitter/res/disabled_hours", {
             params: {
               sitter_no: this.sitterNo,
               res_date: this.form.res_date
@@ -194,12 +194,12 @@
             };
 
             try {
-              const res = await axios.post("/web/sitter/reserve_vue", payload, {
+              const res = await axios.post("${pageContext.request.contextPath}/sitter/reserve_vue", payload, {
                 withCredentials: true
               });
               if (res.data === "success") {
                 alert("예약 및 결제 완료!");
-                location.href = "/web/sitter/resList";
+                location.href = "${pageContext.request.contextPath}/sitter/resList";
               } else {
                 alert("예약 저장 실패");
               }

@@ -113,11 +113,11 @@ createApp({
       this.myUserNo = parseInt(payload.user_no) 
     } catch (e) {
       this.myUserNo = null
-      console.log("❌ 사용자 번호 파싱 실패")
+      console.log("사용자 번호 파싱 실패")
     }
   }
 
-  axios.get(`/web/sitter/detail_vue`, { params: { sitter_no },withCredentials: true })
+  axios.get(`${pageContext.request.contextPath}/sitter/detail_vue`, { params: { sitter_no },withCredentials: true })
        .then(res => {
   if (res.data.code === '200') {
     this.sitter = res.data.data.sitter
@@ -128,23 +128,23 @@ createApp({
 },
   methods: {
     goUpdate(sitter_no) {
-      location.href = '/web/sitter/update?sitter_no=' + sitter_no
+      location.href = '${pageContext.request.contextPath}/sitter/update?sitter_no=' + sitter_no
     },
 	goReserve(sitter_no) {
-      location.href = '/web/sitter/reserve?sitter_no=' + sitter_no
+      location.href = '${pageContext.request.contextPath}/sitter/reserve?sitter_no=' + sitter_no
     },
     async deletePost() {
       if (!confirm("정말 삭제하시겠습니까?")) return
-      const res = await axios.delete('/web/sitter/delete', { params: { sitter_no: this.sitter_no } })
+      const res = await axios.delete('${pageContext.request.contextPath}/sitter/delete', { params: { sitter_no: this.sitter_no } })
       if (res.data.code === '200' && res.data.data === 'success') {
         alert("삭제 완료")
-        location.href = "/web/sitter/list"
+        location.href = "${pageContext.request.contextPath}/sitter/list"
       } else {
         alert("삭제 실패: " + res.data.message)
       }
     },
     fetchReviews(sitter_no) {
-      axios.get(`/web/sitter/review`, { params: { sitter_no } })
+      axios.get(`${pageContext.request.contextPath}/sitter/review`, { params: { sitter_no } })
            .then(res => {
              if (res.data.code === '200') {
                this.reviews = res.data.data
@@ -158,7 +158,7 @@ createApp({
         alert("내용을 입력하세요")
         return
       }
-      axios.post('/web/sitter/review', {
+      axios.post('${pageContext.request.contextPath}/sitter/review', {
         sitter_no: this.sitter_no,
         rev_comment: this.newReview.rev_comment,
         rev_score: this.newReview.rev_score
@@ -185,7 +185,7 @@ createApp({
       this.editReview = { rev_comment: '', rev_score: 5 }
     },
     submitEdit(review_no) {
-      axios.put('/web/sitter/review', {
+      axios.put('${pageContext.request.contextPath}/sitter/review', {
         review_no,
         rev_comment: this.editReview.rev_comment,
         rev_score: this.editReview.rev_score
@@ -201,7 +201,7 @@ createApp({
     },
     deleteReview(review_no) {
       if (!confirm("정말 삭제하시겠습니까?")) return
-      axios.delete('/web/sitter/review', { params: { review_no } })
+      axios.delete('${pageContext.request.contextPath}/sitter/review', { params: { review_no } })
            .then(res => {
              if (res.data.code === '200' && res.data.data === 'success') {
                alert("삭제 완료")
@@ -224,7 +224,7 @@ createApp({
         alert("내용을 입력하세요")
         return
       }
-      axios.post('/web/sitter/review/reply', {
+      axios.post('${pageContext.request.contextPath}/sitter/review/reply', {
         sitter_no: this.sitter_no,
         rev_comment: this.replyComment,
         group_id: review.group_id,

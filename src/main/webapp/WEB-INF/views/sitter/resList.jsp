@@ -33,7 +33,7 @@ createApp({
     }
   },
   mounted() {
-    axios.get('/web/sitter/resList_vue', { params: { page: 1 }, withCredentials: true })
+    axios.get('${pageContext.request.contextPath}/sitter/resList_vue', { params: { page: 1 }, withCredentials: true })
       .then(res => {
         if (res.data.status === 'unauthorized') {
           this.unauthorized = true;
@@ -46,7 +46,7 @@ createApp({
   },
   methods: {
     goToDetail(res_no) {
-      location.href = '/web/sitter/resDetail?res_no='+res_no;
+      location.href = '${pageContext.request.contextPath}/sitter/resDetail?res_no='+res_no;
     }
   }
 }).mount("#app");

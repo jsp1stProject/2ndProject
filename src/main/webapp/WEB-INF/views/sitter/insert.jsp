@@ -90,14 +90,14 @@
     formData.append("pet_first_price", this.form.pet_first_price)
     formData.append("upload", this.imageFile)
 
-    const res = await axios.post('/web/sitter/insert', formData, {
+    const res = await axios.post('${pageContext.request.contextPath}/sitter/insert', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       withCredentials: true
     })
 
     if (res.data.code === '200' && res.data.data === 'success') {
       alert("등록 완료!")
-      location.href = "/web/sitter/list"
+      location.href = "${pageContext.request.contextPath}/sitter/list"
     } else {
       alert("등록 실패: " + res.data.message)
     }
