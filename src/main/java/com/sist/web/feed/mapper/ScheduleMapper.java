@@ -40,6 +40,49 @@ public interface ScheduleMapper {
 			+ "WHERE m.user_no=#{user_no} OR p.user_no=#{user_no}")
 	public List<ScheduleVO> scheduleUserTotalList(long user_no);
 	
+	@Select("SELECT * "
+			+ "FROM (SELECT a.*, ROWNUM AS num "
+			+ "FROM (SELECT p.sche_no, p.sche_title, "
+			+ "TO_CHAR(p.sche_start, 'YYYY-MM-DD HH24:MI') AS sche_start_str,"
+			+ "TO_CHAR(p.sche_end, 'YYYY-MM-DD HH24:MI') AS sche_end_str, "
+			+ "p.is_important, p.type "
+			+ "FROM p_schedule p "
+			+ "LEFT JOIN p_schedule_member m ON p.sche_no = m.sche_no "
+			+ "WHERE m.user_no = #{user_no} OR p.user_no = #{user_no} "
+			+ "GROUP BY "
+			+ "p.sche_no, p.sche_title, p.sche_start, p.sche_end, p.is_important, p.type "
+			+ "ORDER BY p.sche_start DESC) a "
+			+ "WHERE ROWNUM <= #{end} ) "
+			+ "WHERE num > #{start}")
+	public List<ScheduleVO> schedulePagingUserTotalList(Map map);
+	
+	@Select("SELECT CEIL(COUNT(DISTINCT p.sche_no)/15.0)"
+			+ "FROM p_schedule p LEFT JOIN p_schedule_member m ON p.sche_no = m.sche_no "
+			+ "WHERE m.user_no = #{user_no} OR p.user_no = #{user_no}")
+	public int scheduleUserTotalCount(long user_no);
+	
+	@Select("SELECT * "
+			+ "FROM (SELECT a.*, ROWNUM AS num "
+			+ "FROM (SELECT p.sche_no, p.sche_title, "
+			+ "TO_CHAR(p.sche_start, 'YYYY-MM-DD HH24:MI') AS sche_start_str, "
+			+ "TO_CHAR(p.sche_end, 'YYYY-MM-DD HH24:MI') AS sche_end_str, "
+			+ "p.is_important, p.type "
+			+ "FROM p_schedule p "
+			+ "LEFT JOIN p_schedule_member m ON p.sche_no = m.sche_no "
+			+ "WHERE (m.user_no = #{user_no} OR p.user_no = #{user_no}) "
+			+ "AND p.sche_title LIKE '%' || #{search} || '%' "
+			+ "GROUP BY p.sche_no, p.sche_title, p.sche_start, p.sche_end, p.is_important, p.type "
+			+ "ORDER BY p.sche_start DESC) a "
+			+ "WHERE ROWNUM <= #{end} ) "
+			+ "WHERE num > #{start}")
+	public List<ScheduleVO> schedulePagingUserSearchlList(Map map);
+	
+	@Select("SELECT CEIL(COUNT(DISTINCT p.sche_no)/15.0) "
+			+ "FROM p_schedule p LEFT JOIN p_schedule_member m ON p.sche_no = m.sche_no "
+			+ "WHERE (m.user_no = #{user_no} OR p.user_no = #{user_no}) "
+			+ "AND p.sche_title LIKE '%' || #{search} || '%'")
+	public int scheduleUserTotalCountWithSearch(@Param("user_no") long user_no, @Param("search") String search);
+	
 	@Insert("INSERT INTO p_schedule(sche_no, group_no, user_no, sche_title, sche_content, sche_start, sche_end, is_important, alarm ) "
 			+"VALUES(p_sche_no_seq.nextval, null, #{user_no}, #{sche_title}, #{sche_content}, #{sche_start}, #{sche_end}, "
 			+"#{is_important}, #{alarm})")

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -81,5 +82,25 @@ public class ScheduleDAO {
 	public void updateSchedule(ScheduleVO vo)
 	{
 		mapper.updateSchedule(vo);
+	}
+	
+	public List<ScheduleVO> schedulePagingUserTotalList(Map map)
+	{
+		return mapper.schedulePagingUserTotalList(map);
+	}
+	
+	public int scheduleUserTotalCount(long user_no)
+	{
+		return mapper.scheduleUserTotalCount(user_no);
+	}
+	
+	public List<ScheduleVO> schedulePagingUserSearchlList(Map map)
+	{
+		return mapper.schedulePagingUserSearchlList(map);
+	}
+	
+	public int scheduleUserTotalCountWithSearch(@Param("user_no") long user_no, @Param("search") String search)
+	{
+		return mapper.scheduleUserTotalCountWithSearch(user_no, search);
 	}
 }

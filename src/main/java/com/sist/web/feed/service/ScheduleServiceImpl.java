@@ -227,4 +227,112 @@ public class ScheduleServiceImpl implements ScheduleService {
 		dao.updateSchedule(vo);
 		
 	}
+
+	@Override
+	public List<ScheduleVO> schedulePagingUserTotalList(Map map) {
+		// TODO Auto-generated method stub
+		return dao.schedulePagingUserTotalList(map);
+	}
+
+	@Override
+	public int scheduleUserTotalCount(long user_no) {
+		// TODO Auto-generated method stub
+		return dao.scheduleUserTotalCount(user_no);
+	}
+	
+	@Override
+	public Map<String, Object> schedulePagingData(int page, long user_no)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			if(page==0)
+			{
+				page=1;
+			}
+			int rowSize = 15;
+			int start = (rowSize*page)-(rowSize-1);
+			int end = rowSize*page;
+			
+			final int BLOCK=10;
+			int startPage=((page-1)/BLOCK*BLOCK)+1;
+			int endPage=((page-1)/BLOCK*BLOCK)+BLOCK;
+			int totalpage=dao.scheduleUserTotalCount(user_no);   
+			if(endPage>totalpage)
+			   endPage=totalpage;
+			System.out.println(start);
+			System.out.println(end);
+			System.out.println(user_no);
+			
+			map.put("start", start);
+			map.put("end", end);
+			map.put("user_no", user_no);
+			
+			List<ScheduleVO> list = dao.schedulePagingUserTotalList(map);
+			map = new HashMap<String, Object>();
+			map.put("list", list);
+			map.put("curpage", page);
+			map.put("totalpage", totalpage);
+			map.put("startPage", startPage);
+			map.put("endPage", endPage);
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return map;
+	}
+
+	@Override
+	public List<ScheduleVO> schedulePagingUserSearchlList(Map map) {
+		// TODO Auto-generated method stub
+		return dao.schedulePagingUserSearchlList(map);
+	}
+
+	@Override
+	public int scheduleUserTotalCountWithSearch(long user_no, String search) {
+		// TODO Auto-generated method stub
+		return dao.scheduleUserTotalCountWithSearch(user_no, search);
+	}
+
+	@Override
+	public Map<String, Object> schedulePagingSearchData(int page, long user_no, String search) {
+		// TODO Auto-generated method stub
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			if(page==0)
+			{
+				page=1;
+			}
+			int rowSize = 15;
+			int start = (rowSize*page)-(rowSize-1);
+			int end = rowSize*page;
+			
+			final int BLOCK=10;
+			int startPage=((page-1)/BLOCK*BLOCK)+1;
+			int endPage=((page-1)/BLOCK*BLOCK)+BLOCK;
+			int totalpage=dao.scheduleUserTotalCountWithSearch(user_no,search);   
+			if(endPage>totalpage)
+			   endPage=totalpage;
+			
+			map.put("start", start);
+			map.put("end", end);
+			map.put("user_no", user_no);
+			map.put("search", search);
+			
+			List<ScheduleVO> list = dao.schedulePagingUserSearchlList(map);
+			map = new HashMap<String, Object>();
+			map.put("list", list);
+			map.put("curpage", page);
+			map.put("totalpage", totalpage);
+			map.put("startPage", startPage);
+			map.put("endPage", endPage);
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return map;
+	}
 }

@@ -193,4 +193,27 @@ public class ScheduleRestController {
 	    return new ResponseEntity<String>(result, HttpStatus.OK);
 	}
 	
+	@GetMapping("/list")
+	public ResponseEntity<Map<String, Object>> user_schedule_list (@RequestParam int page,HttpServletRequest request, @RequestParam(required = false, defaultValue = "") String search)
+	{
+		System.out.println("전체목록리스트");
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			long user_no = (long)request.getAttribute("userno");
+			if(search!=null && !search.trim().isEmpty())
+			{
+				System.out.println("검색어있음");
+				map = service.schedulePagingSearchData(page, user_no, search);
+			}
+			else
+			{
+				map = service.schedulePagingData(page, user_no);
+			}
+			System.out.println(map);
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new ResponseEntity<Map<String, Object>>(map,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+	}
 }

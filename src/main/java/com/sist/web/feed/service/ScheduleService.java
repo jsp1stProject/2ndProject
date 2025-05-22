@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import com.sist.web.feed.vo.ScheduleMemberVO;
 import com.sist.web.feed.vo.ScheduleVO;
@@ -30,4 +31,11 @@ public interface ScheduleService {
 	public String deleteScheduleData(int sche_no, int type);
 	public void updateSchedule(ScheduleVO vo);
 	public String updateScheduleData(ScheduleVO vo);
+	public List<ScheduleVO> schedulePagingUserTotalList(Map map);
+	public int scheduleUserTotalCount(long user_no);
+	public Map<String, Object> schedulePagingData(int page, long user);
+	public List<ScheduleVO> schedulePagingUserSearchlList(Map map);
+	public int scheduleUserTotalCountWithSearch(long user_no, String search);
+	public Map<String, Object> schedulePagingSearchData(int page, long user_no, String search);
+	
 }
