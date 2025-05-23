@@ -13,7 +13,7 @@
             <form @submit.prevent="updateUser" method="post" name="uploadForm" id="uploadForm" ref="uploadForm">
                 <input type="file" id="profile" name="profile" accept="image/*" @change="checkProfile(this, $event)"/>
                 <div id="profilewrap" @click="profileupload">
-                    <div :style="user.profile ? { backgroundImage: 'url(${pageContext.request.contextPath}/s3/'+user.profile+')' } : {  backgroundImage: 'url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 62 62' fill='none'%3E%3Cg clip-path='url(%23clip0_101_2)'%3E%3Crect width='62' height='62' fill='%23D9D9D9'/%3E%3Cpath d='M43 22C43 28.6274 37.6274 34 31 34C24.3726 34 19 28.6274 19 22C19 15.3726 24.3726 10 31 10C37.6274 10 43 15.3726 43 22Z' fill='white'/%3E%3Cpath d='M14.0598 45.2807C15.5406 40.3662 20.0898 37 25.2504 37H36.9771C42.179 37 46.7541 40.4193 48.1992 45.387L54.533 67.1612C56.6933 74.5877 51.0876 82 43.3109 82H18.6895C10.8663 82 5.25409 74.5048 7.49889 67.0549L14.0598 45.2807Z' fill='white'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_101_2'%3E%3Crect width='62' height='62' fill='white'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E) no-repeat center center / cover;'}"></div>
+                    <div :style="user.profile ? { backgroundImage: 'url(${pageContext.request.contextPath}/s3/'+user.profile+')' } : {}"></div>
                 </div>
                 <input type="hidden" id="profileChange" name="profileChange" value="0">
                 <button type="button" class="btn btn-sm btn-outline-danger d-block mx-auto mb-3" @click="deleteProfile">기본 이미지 적용</button>
