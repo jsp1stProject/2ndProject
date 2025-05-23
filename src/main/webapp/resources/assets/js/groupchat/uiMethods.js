@@ -53,7 +53,7 @@ export const uiMethods = {
   async openGroupSettingsModal() {
     const data = await this.fetchGroupDetail();
     this.selectedTags = data.tags || [];
-
+    console.log('tags', this.selectedTags);
     this.groupDetail.group_no = data.group_no;
     this.groupDetail.group_name = data.group_name;
     this.groupDetail.description = data.description;
