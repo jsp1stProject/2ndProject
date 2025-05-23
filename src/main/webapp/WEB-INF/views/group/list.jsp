@@ -98,7 +98,7 @@
             </div>
             <div class="col-lg-8">
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary mb-2 "  data-bs-toggle="modal" data-bs-target="#createGroupModal">
+                    <button type="button" class="btn btn-secondary mb-2 me-2 "  data-bs-toggle="modal" data-bs-target="#createGroupModal">
                         <iconify-icon icon="solar:users-group-rounded-broken" class="fs-6 align-middle"></iconify-icon>
                         새 그룹
                     </button>
@@ -111,12 +111,14 @@
                 <div v-for="vo in list" :key="vo.group_no" class="card overflow-hidden mb-3">
                     <div class="row g-0">
                         <div class="position-relative col-sm-4 d-none d-sm-block">
-                                <img :src="vo.profile_img" class="card-img-top h-100" alt="그룹프로필이미지" style="object-fit: cover"> 
+                                <img v-if="vo.profile_img != null" :src="vo.profile_img" class="card-img-top h-100" alt="그룹프로필이미지" style="object-fit: cover">
+                                <img v-else src="${pageContext.request.contextPath}/assets/images/profile/default_pf.png" class="card-img-top h-100" alt="그룹프로필이미지" style="object-fit: cover">
                         </div>
                         <div class="card-body col-3 p-3">
                             <div class="d-flex gap-2">
                                 <div class="d-flex align-items-center d-sm-none">
-                                    <img :src="vo.profile_img" width="42" height="42" class="rounded-circle fs-1">
+                                    <img v-if="vo.profile_img != null" :src="vo.profile_img" width="42" height="42" class="rounded-circle fs-1">
+                                    <img v-else src="${pageContext.request.contextPath}/assets/images/profile/default_pf.png" width="42" height="42" class="rounded-circle fs-1">
                                 </div>
                                 <div class="">
                                     <span v-for="(tag, idx) in vo.tag?.split(',')" :key="idx" class="badge text-bg-light fs-2 py-1 px-2 lh-sm">태그1</span>

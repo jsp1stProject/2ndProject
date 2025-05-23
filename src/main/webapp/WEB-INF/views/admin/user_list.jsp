@@ -7,7 +7,7 @@
                 <h3 class="card-title"></h3>
 
                 <div class="card-tools">
-                    <form class="input-group input-group-sm" method="get" action="${pageContext.request.contextPath}/admin/petsitters/list" name="search">
+                    <form class="input-group input-group-sm" method="get" action="${pageContext.request.contextPath}/admin/users" name="search">
                         <input type="text" name="mail" class="form-control float-right" placeholder="이메일 검색">
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-info">
