@@ -1,9 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<html>
-<head>
-    <title>커뮤니티 게시판</title>
+
     <style>
         .post-container {
             display: flex;
@@ -75,13 +73,15 @@
 
         a { text-decoration: none; color: inherit; }
     </style>
-</head>
-<body>
-    <h2> 애완동물 게시판</h2>
-    <h1>`</h1>
-    <h2>📋 커뮤니티 게시판</h2>
+<div class="container pt-header">
+    <h2 class="my-5">📋 커뮤니티 게시판</h2>
     <!-- 검색 + 필터 통합 -->
-    <form method="get" action="list.do">
+
+    <!-- 글쓰기 버튼 -->
+    <div style="text-align: right; margin-top: 20px;">
+        <a href="insert" class="btn btn-primary"><iconify-icon icon="solar:pen-2-broken" class="fs-6 align-middle"></iconify-icon> 글쓰기</a>
+    </div>
+    <form method="get" action="list.do" class="mb-2">
         <select name="type">
             <option value="title" ${type == 'title' ? 'selected' : ''}>제목</option>
             <option value="content" ${type == 'content' ? 'selected' : ''}>내용</option>
@@ -99,9 +99,9 @@
     </form>
 
     <c:forEach var="vo" items="${list}">
-    <c:if test="${empty list}">
-  		<p>❗ 게시물이 없습니다 또는 리스트를 못 불러왔습니다.</p>
-	</c:if>
+        <c:if test="${empty list}">
+            <p>❗ 게시물이 없습니다 또는 리스트를 못 불러왔습니다.</p>
+        </c:if>
         <a href="detail?post_id=${vo.post_id}">
             <div class="post-container">
                 <div class="post-content">
@@ -124,10 +124,6 @@
             </div>
         </a>
     </c:forEach>
-    
-    <!-- 글쓰기 버튼 -->
-    <div style="text-align: right; margin-top: 20px;">
-        <a href="insert">✍ 글쓰기</a>
-    </div>
-</body>
-</html>
+
+</div>
+

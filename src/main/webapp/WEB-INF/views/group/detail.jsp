@@ -66,7 +66,7 @@
 		    style="object-fit: cover;">
 		</div>
 	    <div class="card-body col-sm-9 p-3">
-	      <div class="d-flex gap-2">
+	      <div class="d-flex justify-content-between gap-2">
 	        <div class="d-sm-none d-flex align-items-center">
 	          <img :src="gvo.profile_img || '/assets/images/profile/default.png'" width="42" height="42" class="rounded-circle fs-1">
 	        </div>
@@ -92,6 +92,9 @@
 	            </div>
 	          </div>
 	        </div>
+			  <div>
+				  <a href="../groupchat/chat" class="btn btn-secondary">채팅</a>
+			  </div>
 	      </div>
 	    </div>
 	  </div>

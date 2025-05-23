@@ -1,15 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>추천 사료 결과</title>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
+      /*font-family: Arial, sans-serif;*/
       background-color: #f9fafb;
-      padding: 30px;
+      /*padding: 30px;*/
     }
     .result {
       max-width: 800px;
@@ -49,10 +45,9 @@
       color: #555;
     }
   </style>
-</head>
-<body>
+<div class="container pt-header">
   <div class="result">
-    <h2>🐾 추천 사료 결과 🐾</h2>
+    <h2 class="mt-5 mb-3">🐾 추천 사료 결과 🐾</h2>
     <div class="calorie">
       <p>계산된 하루 권장 칼로리: <strong>${der} kcal</strong></p>
       <p><a href="calorieCalculator">다시 계산하기</a></p>
@@ -71,5 +66,5 @@
       </c:forEach>
     </div>
   </div>
-</body>
-</html>
+</div>
+
