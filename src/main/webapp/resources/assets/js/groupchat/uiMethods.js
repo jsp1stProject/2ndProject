@@ -126,7 +126,22 @@ export const uiMethods = {
       modalEl?.removeAttribute('aria-hidden');
       new bootstrap.Modal(modalEl).show();
     });
-  }
+  },
 
+  async openUserDetail(userNo) {
+    try {
+      const data = await this.fetchGroupMemberDetail(this.group_no, userNo);
+      this.selectedUser = data;
+      this.selectedUser.role = this.selectedUser.role === 'OWNER' ? '그룹장' : '일반 멤버';
+
+      await this.$nextTick(() => {
+        const modal = document.getElementById('userDetailModal');
+        if (modal) new bootstrap.Modal(modal).show();
+      });
+    } catch (e) {
+      alert('유저 정보를 불러오는 데 실패했습니다.');
+      console.error(e);
+    }
+  }
 
 };

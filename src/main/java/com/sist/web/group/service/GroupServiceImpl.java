@@ -250,7 +250,9 @@ public class GroupServiceImpl implements GroupService{
 	@Override
 	public GroupMemberInfoDTO getGroupMemberDetail(int groupNo, int userNo) {
 		// 기타 로직 수행 필요
-		return gDao.selectGroupMemberInfo(groupNo, userNo);
+		GroupMemberInfoDTO dto = gDao.selectGroupMemberInfo(groupNo, userNo);
+		dto.setProfile(s3BaseUrl + dto.getProfile());
+		return dto;
 	}
 	
 	private String uploadThumbnailImage(MultipartFile file) {
@@ -261,6 +263,11 @@ public class GroupServiceImpl implements GroupService{
 			log.error("썸네일 이미지 업로드 실패", ex);
 			throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
 		}
+	}
+	
+	@Override
+	public void updateGroupMemberNickname(int userNo, String nickname) {
+		gDao.updateGroupMemberNickname(userNo, nickname);
 	}
 
 	

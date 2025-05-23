@@ -178,4 +178,14 @@ public class GroupRestController {
 		GroupMemberInfoDTO dto = service.getGroupMemberDetail(groupNo, userNo);
 		return ResponseEntity.ok(ApiResponse.success(dto));
 	}
+	
+	@PatchMapping("/members/nickname")
+	public ResponseEntity<ApiResponse<Void>> updateGroupMemberNickname(@RequestParam Integer userNo, @RequestParam String nickname) {
+		if (userNo == null) {
+			log.error("유저가 존재하지 않습니다: userNo={}", userNo);
+			throw new GroupException(GroupErrorCode.USER_NOT_FOUND);
+		}
+		service.updateGroupMemberNickname(userNo, nickname);
+		return ResponseEntity.ok(ApiResponse.success(null, "닉네임 변경되었습니다."));
+	}
 }

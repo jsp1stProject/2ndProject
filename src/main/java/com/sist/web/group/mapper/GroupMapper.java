@@ -6,6 +6,8 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectKey;
 import org.apache.ibatis.annotations.Update;
@@ -85,11 +87,14 @@ public interface GroupMapper {
 		@Select("SELECT COUNT(*) FROM p_group_member WHERE group_no = #{group_no}")
 		public int selectMemberCountByGroupNo(@Param("group_no") int groupNo);
 		
-		@Select("SELECT g.group_no, g.nickname, g.joined_at, g.role, u.profile "
+		@Select("SELECT g.group_no, g.nickname, g.joined_at, g.role, u.profile, g.user_no "
 			  + "FROM p_group_member g JOIN p_users u "
 			  + "ON g.user_no = u.user_no "
 			  + "WHERE g.group_no = #{group_no} "
 			  + "AND u.user_no = #{user_no}")
+		@Results(
+				{@Result(property = "joinedAt", column = "joined_at"),
+				@Result(property = "userNo", column = "user_no")})
 		public GroupMemberInfoDTO selectGroupMemberInfo(@Param("group_no") int groupNo, @Param("user_no") int userNo);
 		
 		@Update("UPDATE p_group_member SET viewing = #{viewing} WHERE group_no = #{groupNo} AND user_no = #{userNo}")
@@ -109,4 +114,8 @@ public interface GroupMapper {
 		
 		@Select("SELECT tag FROM p_group_tag WHERE group_no = #{groupNo}")
 		public List<String> selectGroupTagsByGroupNo(@Param("groupNo") int groupNo);
+		
+		@Update("UPDATE p_group_member SET nickname = #{nickname} WHERE user_no = #{userNo}")
+		public void updateGroupMemberNickname(@Param("userNo") int userNo, @Param("nickname") String nickname);
+		
 }

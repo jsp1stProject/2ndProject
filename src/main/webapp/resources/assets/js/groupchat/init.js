@@ -142,7 +142,42 @@ export function initGroupChat(contextPath, createApp) {
       getNickname(userNo) {
         const m = this.members.find(m => m.user_no === userNo);
         return m?.nickname || '알 수 없음';
+      },
+      toggleEditNickname() {
+        if (!this.editNicknameMode) {
+          this.editedNickname = this.selectedUser.nickname;
+          this.editNicknameMode = true;
+        } else {
+          if (!this.editedNickname.trim()) {
+            alert('닉네임을 입력해주세요.');
+            return;
+          }
+          console.log('selectedUser', this.selectedUser);
+          console.log('nickname 변경 요청:', this.selectedUser.userNo, this.editedNickname);
+          this.updateNickname(this.selectedUser.userNo, this.editedNickname);
+        }
+      },
+
+      async updateNickname(userNo, nickname) {
+        try {
+          await axios({
+            method: 'patch',
+            url: `${this.contextPath}/api/groups/members/nickname`,
+            params: { userNo, nickname }
+          });
+          alert('닉네임이 변경되었습니다.');
+          this.selectedUser.nickname = nickname;
+          const member = this.members.find(m => m.user_no === userNo);
+          if (member) member.nickname = nickname;
+          if (userNo === this.sender_no) this.sender_nickname = nickname;
+
+          this.editNicknameMode = false;
+        } catch (e) {
+          console.error('닉네임 변경 실패', e);
+          alert('닉네임 변경에 실패했습니다.');
+        }
       }
+
     }
   }).mount('#app');
 }

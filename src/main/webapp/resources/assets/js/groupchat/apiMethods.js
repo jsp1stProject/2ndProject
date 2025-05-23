@@ -109,5 +109,14 @@ export const apiMethods = {
     } catch (e) {
       console.error('채팅방 나가기 실패', e);
     }
-  }
+  },
+
+  async fetchGroupMemberDetail(groupNo, userNo) {
+    const res = await axios.get(`${this.contextPath}/api/groups/members/details`, {
+      params: { groupNo, userNo }
+    });
+    
+    return res.data.data;
+  },
+
 };
