@@ -284,6 +284,12 @@
             <div class="modal-footer">
                 <button v-if="groupEditMode"
                         type="button"
+                        class="btn btn-outline-danger me-auto"
+                        @click="deleteGroupConfirm">
+                    그룹 삭제
+                </button>
+                <button v-if="groupEditMode"
+                        type="button"
                         class="btn btn-primary"
                         @click="saveGroupSettings">
                 저장
