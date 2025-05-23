@@ -71,7 +71,7 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
 			GroupDTO gvo = gdao.selectGroupDetailTotal(group_no);
-			
+			gvo.setTags(gdao.selectGroupTagsByGroupNo(group_no));
 			int rowSize=5;
 			map.put("user_no", user_no);
 			map.put("group_no", group_no);
@@ -80,6 +80,7 @@ public class GroupFeedServiceImpl implements GroupFeedService{
 			
 			
 			List<FeedVO> feedList = dao.feedListData(map);
+			
 			for(FeedVO vo : feedList)
   			{
 				List<FeedFileInfoVO> flist = dao.fileListData(vo.getFeed_no());

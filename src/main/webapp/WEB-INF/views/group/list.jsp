@@ -41,9 +41,15 @@
                                     <h6>태그</h6>
                                     <div class="checkbtn-wrap">
                                         <input type="checkbox" name="type" id="1">
-                                        <label for="1">태그1</label>
+                                        <label for="1">사료공유</label>
                                         <input type="checkbox" name="type" id="2">
-                                        <label for="2">태그2</label>
+                                        <label for="2">혼종사랑</label>
+                                        <input type="checkbox" name="type" id="3">
+                                        <label for="2">소형견</label>
+                                        <input type="checkbox" name="type" id="4">
+                                        <label for="2">고양이</label>
+                                        <input type="checkbox" name="type" id="5">
+                                        <label for="2">병원정보</label>
                                     </div>
                                 </div>
                                 <div class="filter-item"> <!--radio 타입-->
@@ -51,16 +57,16 @@
                                     <div class="radio-wrap row">
                                         <div class="col-3 col-lg-6">
                                             <input type="radio" name="enddate" value="false" id="enddate1" checked>
-                                            <label for="enddate1">조건 1</label>
+                                            <label for="enddate1">최신 순</label>
                                         </div>
                                         <div class="col-3 col-lg-6">
                                             <input type="radio" name="enddate" value="true" id="enddate2">
-                                            <label for="enddate2">조건 2</label>
+                                            <label for="enddate2">인원수 순</label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="filter-item">
-                                    <h6>조건</h6>
+                                    <h6>가입여부</h6>
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
                                         <label class="form-check-label" for="flexSwitchCheckDefault">입장 가능</label>
@@ -129,9 +135,14 @@
                                 </div>
                             </div>
                             <p class="mb-3 description-line">{{vo.description}}</p>
+                            <div class="d-flex align-items-center gap-1" >
+				              <p>
+							  <span v-for="(tag, idx) in vo.tags" :key="idx" class="badge text-bg-light me-1">{{ tag }}</span>
+							</p>
+				            </div>
                             <div class="d-flex justify-content-end fs-3">
                                 <button v-if="stateMap[vo.group_no]?.IS_MEMBER === 'Y'"  type="button" class="btn btn-outline-dark" @click="detail(vo.group_no)">입장하기</button>
-                                <button v-else-if="stateMap[vo.group_no]?.JOIN_STATUS === 'WAITING'" type="button" class="btn btn-outline-warning" disabled>가입 대기 중</button>
+                                <button v-else-if="stateMap[vo.group_no]?.JOIN_STATUS === 'WAITING'" type="button" class="btn btn-outline-secondary" disabled>가입 대기 중</button>
                                 <button v-else type="button" class="btn btn-outline-warning" @click="join(vo.group_no)">신청하기</button>
                             </div>
                         </div>

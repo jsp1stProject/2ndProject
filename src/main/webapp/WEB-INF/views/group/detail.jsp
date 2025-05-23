@@ -2,7 +2,13 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
+<style>
+.badge {
+  font-size: 0.9rem;
+  padding: 0.4em 0.6em;
+  border-radius: 999px;
+}
+</style>
 <div class="container pt-header" id="group-detail-app">
  <div class="row pt-3">
     <!-- ⬅️ 좌측 일정 영역 -->
@@ -76,6 +82,13 @@
 	          <h4 class="fs-4 fw-semibold text-dark mb-2">{{ gvo.group_name }}</h4>
 	          <p class="text-muted mb-2">{{ gvo.description }}</p>
 	          <div class="d-flex align-items-center flex-wrap gap-2 fs-3">
+	            <div class="d-flex align-items-center gap-1" >
+	              <p>
+				  <span v-for="(tag, idx) in gvo.tags" :key="idx" class="badge text-bg-light me-1">{{ tag }}</span>
+				</p>
+	            </div> 
+	          </div>
+	          <div class="d-flex align-items-center flex-wrap gap-2 fs-3">
 	            <div class="d-flex align-items-center gap-1">
 	              <span>방장</span><span class="text-dark">{{gvo.owner_name}}</span>
 	            </div>
@@ -137,7 +150,7 @@
 	              <div class="carousel-item" v-for="(img, i) in vo.images" :class="{ active: i === 0 }">
 	                <!-- <img :src="img" class="d-block w-100 rounded" style="max-height: 300px; object-fit: cover;"> -->
 	                <img :src="img.startsWith('http') ? img : '${pageContext.request.contextPath}/s3/' + img" 
-	                 class="d-block w-100 rounded" style="max-height: 300px; object-fit: cover;">
+	                 class="d-block w-100 rounded" style="width: 70%; max-height: 400px; aspect-ratio: 4 / 3; object-fit: cover;">
 	              </div>
 	            </div>
 	            <button class="carousel-control-prev" type="button" :data-bs-target="'#carousel-' + index" data-bs-slide="prev">
@@ -305,10 +318,10 @@ createApp({
     this.scheduleRecv();
   },
   methods: {
-	selectLike() {
-    		axios.post('../api/feed/'+this.feed_no+'/like')
+	selectLike(feed_no) {
+    		axios.post('../api/feed/'+feed_no+'/like')
       		.then(res => {
-        		this.liked = res.data.liked;
+        		this.liked[feed_no] = !this.liked[feed_no];
       		})
       		.catch(err => {
         		console.log(err);
@@ -369,7 +382,15 @@ createApp({
 			console.log("성공")
 			const schedulemodal = bootstrap.Modal.getInstance(document.getElementById('newScheduleModal'));
   			schedulemodal.hide();
-    		this.scheduleRecv()
+			this.title='';
+        	this.content= '';
+        	this.start= '';
+        	this.end= '';
+        	this.participants_no= [];
+        	this.type= 1;
+			this.is_important= false;
+			this.alarm=false;
+    		this.scheduleRecv();
 		})
 		.catch(err => {
      		 console.log("일정 등록 실패", err);
@@ -388,9 +409,10 @@ createApp({
         this.list = res.data.list;
         this.gvo = res.data.gvo;
         this.mvo = res.data.mvo;
-		this.liked = res.data.list.is_liked;
-		this.liked = Boolean(res.data.is_liked);
-		console.log("liked 상태:", this.is_liked);
+		this.liked = {};
+    	this.list.forEach(feed => {
+      		this.liked[feed.feed_no] = feed.is_liked === 1;
+    	});
 	  }).catch(error => {
 		 console.err(error);
 	  })
