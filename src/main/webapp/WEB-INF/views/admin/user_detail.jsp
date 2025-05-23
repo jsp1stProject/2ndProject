@@ -229,6 +229,14 @@
                             <th>돌봄 시작가</th>
                             <td>${result.pet_first_price}</td>
                         </tr>
+                        <tr class="align-middle">
+                            <th>자격증</th>
+                            <td>${result.license ne null?'반려동물종합관리사 보유':'미보유'}</td>
+                        </tr>
+                        <tr class="align-middle">
+                            <th>돌봄 경력</th>
+                            <td>${result.history}</td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
