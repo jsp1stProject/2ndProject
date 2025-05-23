@@ -266,8 +266,8 @@ public class GroupServiceImpl implements GroupService{
 	}
 	
 	@Override
-	public void updateGroupMemberNickname(int userNo, String nickname) {
-		gDao.updateGroupMemberNickname(userNo, nickname);
+	public void updateGroupMemberNickname(int userNo, String nickname, int groupNo) {
+		gDao.updateGroupMemberNickname(userNo, nickname, groupNo);
 	}
 
 	

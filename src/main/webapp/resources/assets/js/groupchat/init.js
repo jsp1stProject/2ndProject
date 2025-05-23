@@ -163,7 +163,10 @@ export function initGroupChat(contextPath, createApp) {
           await axios({
             method: 'patch',
             url: `${this.contextPath}/api/groups/members/nickname`,
-            params: { userNo, nickname }
+            params: { 
+              userNo, 
+              nickname,
+              groupNo: this.group_no }
           });
           alert('닉네임이 변경되었습니다.');
           this.selectedUser.nickname = nickname;

@@ -115,7 +115,7 @@ public interface GroupMapper {
 		@Select("SELECT tag FROM p_group_tag WHERE group_no = #{groupNo}")
 		public List<String> selectGroupTagsByGroupNo(@Param("groupNo") int groupNo);
 		
-		@Update("UPDATE p_group_member SET nickname = #{nickname} WHERE user_no = #{userNo}")
-		public void updateGroupMemberNickname(@Param("userNo") int userNo, @Param("nickname") String nickname);
+		@Update("UPDATE p_group_member SET nickname = #{nickname} WHERE user_no = #{userNo} AND group_no = #{group_no}")
+		public void updateGroupMemberNickname(@Param("userNo") int userNo, @Param("nickname") String nickname, @Param("group_no") int groupNo);
 		
 }

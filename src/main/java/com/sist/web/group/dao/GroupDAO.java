@@ -141,7 +141,7 @@ public class GroupDAO {
 	}
 	
 	/** 그룹별 닉네임 변경 */
-	public void updateGroupMemberNickname(int userNo, String nickname) {
-		mapper.updateGroupMemberNickname(userNo, nickname);
+	public void updateGroupMemberNickname(int userNo, String nickname, int groupNo) {
+		mapper.updateGroupMemberNickname(userNo, nickname, groupNo);
 	}
 }

@@ -27,5 +27,5 @@ public interface GroupService {
 	public void joinRequestResult(int request_no, int group_no, long user_no, String status, String nickname);
 	public void removeGroup(int groupNo, int userNo);
 	public GroupMemberInfoDTO getGroupMemberDetail(int groupNo, int userNo);
-	void updateGroupMemberNickname(int userNo, String nickname);
+	void updateGroupMemberNickname(int userNo, String nickname, int groupNo);
 }
