@@ -45,7 +45,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             String json=om.writeValueAsString(ApiResponse.fail(CommonErrorCode.SC_UNAUTHORIZED.getCode(),CommonErrorCode.SC_UNAUTHORIZED.getMessage()));
             response.getWriter().write(json);
         } else{
-            response.sendRedirect("/login");
+            response.sendRedirect("../login");
         }
 
     }
