@@ -86,14 +86,14 @@
                 try{
                     let res=await axios({
                         method:'post',
-                        url:'${pageContext.request.contextPath}/api/mypage/petsitters',
+                        url:'${pageContext.request.contextPath}/api/mypage/petsitterapp',
                         headers:{
                             "Content-Type":"multipart/form-data"
                         },
                         data:formData.value,
                         withCredentials: true
                     });
-                    <%--location.href='${pageContext.request.contextPath}/mypage/pets/list';--%>
+                    toast("신청 완료 되었습니다.\n허가 전까지 자유롭게 수정이 가능합니다.")
 
                 }catch (e) {
                     console.log(e);
