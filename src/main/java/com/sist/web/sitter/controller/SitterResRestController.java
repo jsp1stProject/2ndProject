@@ -81,6 +81,9 @@ public class SitterResRestController {
 		try {
 			vo.setUser_no(user_no);
 			rService.insertSitterRes(vo);
+			for (Integer pet_no : vo.getPet_nos()) {
+	            pService.insertResPet(vo.getRes_no(), pet_no);
+	        }
 			return new ResponseEntity<>("success", HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();

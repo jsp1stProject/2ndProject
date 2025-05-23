@@ -9,7 +9,7 @@ export const wsMethods = {
       this.sender_nickname = res.data.nickname;
 
       const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-      const socketUrl = `${protocol}://${location.host}${this.contextPath}/ws`;
+      const socketUrl = `${protocol}://${location.host}${this.contextPath}/ws-user`;
       const socket = new WebSocket(socketUrl);
 
       this.stompClient = Stomp.over(socket);

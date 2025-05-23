@@ -106,4 +106,7 @@ public interface GroupMapper {
 		
 		@Update("UPDATE p_group_member SET viewing = 0 WHERE user_no = #{userNo}")
 		public void updateViewingZero(@Param("userNo") int userNo);
+		
+		@Select("SELECT tag FROM p_group_tag WHERE group_no = #{groupNo}")
+		public List<String> selectGroupTagsByGroupNo(@Param("groupNo") int groupNo);
 }

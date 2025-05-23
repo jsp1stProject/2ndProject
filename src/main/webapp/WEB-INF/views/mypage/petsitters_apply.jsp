@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/l10n/ko.js"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<div class="container pt-header" id="app">
+<div class="container pt-header" id="app" v-cloak="true">
     <div class="login_wrap d-flex justify-content-center">
         <div class="login_inner" style="min-width:400px">
             <form @submit.prevent="apply" method="post" name="apply" id="apply" ref="uploadForm">
@@ -38,7 +38,8 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary" id="submit">신청하기</button>
+                <button v-if="isApplied" type="submit" class="btn btn-primary" id="submit">수정하기</button>
+                <button v-else type="submit" class="btn btn-primary" id="submit2">신청하기</button>
             </form>
         </div>
 
@@ -49,6 +50,7 @@
 
     const App = createApp({
         setup() {
+            const isApplied=ref(false);
             const sitter=ref([]);
             const formData=ref(null);
             const uploadForm = ref(null)
@@ -65,9 +67,9 @@
                         withCredentials: true
                     });
                     sitter.value=res.data.data;
-                    console.log(res.data)
-                    await nextTick()
+                    isApplied.value=true;
                     formData.value=new FormData(uploadForm.value)
+                    await nextTick()
                 }catch (e) {
                     console.log(e);
                     toast(e.response.data.message);

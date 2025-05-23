@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<div class="container pt-header" id="app">
+<div class="container pt-header" id="app" v-cloak="true">
     <div class="row pt-3">
         <div class="col-12">
             <div class="d-flex justify-content-end">
@@ -11,43 +11,47 @@
                     반려동물 추가
                 </a>
             </div>
-            <div v-for="pet in pets" class="card overflow-hidden">
-                <a :href="'${pageContext.request.contextPath}/mypage/pets/'+pet.pet_no" class="stretched-link">
-                    <div class="row g-0">
-                        <div class="position-relative col-5 col-sm-3 col-lg-2 d-sm-block">
-                            <a href="javascript:void(0)">
-                                <img :src="'${pageContext.request.contextPath}/s3/'+pet.pet_profilepic" class="card-img-top h-100" :alt="pet.pet_name" style="object-fit: cover">
-                            </a>
+
+            <template v-if="pets && pets.length > 0">
+                <div v-for="pet in pets" class="card overflow-hidden">
+                    <a :href="'${pageContext.request.contextPath}/mypage/pets/'+pet.pet_no" class="stretched-link">
+                        <div class="row g-0">
+                            <div class="position-relative col-5 col-sm-3 col-lg-2 d-sm-block">
+                                <a href="javascript:void(0)">
+                                    <img :src="'${pageContext.request.contextPath}/s3/'+pet.pet_profilepic" class="card-img-top h-100" :alt="pet.pet_name" style="object-fit: cover">
+                                </a>
+                            </div>
+                            <div class="card-body col-3 p-3">
+                                <div class="d-flex gap-2">
+                                    <div class="">
+                                        <a class="d-block mt-1 mb-2 fs-5 text-dark fw-semibold link-primary" href="">[[pet.pet_name]]</a>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center flex-wrap gap-1 mb-2 fs-2">
+                                    <div class="d-flex align-items-center">
+                                        <span class="text-dark">[[pet.pet_type]]</span><span v-if="pet.pet_subtype != null">([[pet.pet_subtype]])</span>
+                                    </div>
+                                    <span>·</span>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span class="text-dark">[[pet.pet_age]]살</span>
+                                    </div>
+                                    <span>·</span>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span v-if="pet.pet_weight != 0" class="text-dark">[[pet.pet_weight]]kg</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <span v-if="pet.pet_char1 == 1" class="badge text-bg-light fs-2 py-1 px-2 lh-sm">#낯가려요</span>
+                                    <span v-if="pet.pet_char2 == 1" class="badge text-bg-light fs-2 py-1 px-2 lh-sm">#온순해요</span>
+                                    <span v-if="pet.pet_char3 == 1" class="badge text-bg-light fs-2 py-1 px-2 lh-sm">#사나워요</span>
+                                    <span v-if="pet.pet_status == 1" class="badge text-bg-light fs-2 py-1 px-2 lh-sm">#중성화</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body col-3 p-3">
-                            <div class="d-flex gap-2">
-                                <div class="">
-                                    <a class="d-block mt-1 mb-2 fs-5 text-dark fw-semibold link-primary" href="">[[pet.pet_name]]</a>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center flex-wrap gap-1 mb-2 fs-2">
-                                <div class="d-flex align-items-center">
-                                    <span class="text-dark">[[pet.pet_type]]</span><span v-if="pet.pet_subtype != null">([[pet.pet_subtype]])</span>
-                                </div>
-                                <span>·</span>
-                                <div class="d-flex align-items-center gap-1">
-                                    <span class="text-dark">[[pet.pet_age]]살</span>
-                                </div>
-                                <span>·</span>
-                                <div class="d-flex align-items-center gap-1">
-                                    <span v-if="pet.pet_weight != 0" class="text-dark">[[pet.pet_weight]]kg</span>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-1">
-                                <span v-if="pet.pet_char1 == 1" class="badge text-bg-light fs-2 py-1 px-2 lh-sm">#낯가려요</span>
-                                <span v-if="pet.pet_char2 == 1" class="badge text-bg-light fs-2 py-1 px-2 lh-sm">#온순해요</span>
-                                <span v-if="pet.pet_char3 == 1" class="badge text-bg-light fs-2 py-1 px-2 lh-sm">#사나워요</span>
-                                <span v-if="pet.pet_status == 1" class="badge text-bg-light fs-2 py-1 px-2 lh-sm">#중성화</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
+                    </a>
+                </div>
+            </template>
+            <div v-else class="py-5 my-5 text-center">반려동물이 없습니다.</div>
         </div>
     </div>
 </div>

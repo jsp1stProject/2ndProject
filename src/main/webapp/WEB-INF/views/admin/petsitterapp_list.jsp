@@ -59,11 +59,11 @@
             <!-- /.card-body -->
             <div class="card-footer clearfix">
                 <ul class="pagination pagination-sm m-0 float-end">
-                    <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/admin/petsitters/list?page=1">«</a></li>
+                    <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/admin/petsitters/applications?page=1">«</a></li>
                     <c:forEach begin="${result.startPage}" end="${result.endPage}" var="i">
-                        <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/admin/petsitters/list?page=${i}">${i}</a></li>
+                        <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/admin/petsitters/applications?page=${i}">${i}</a></li>
                     </c:forEach>
-                    <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/admin/petsitters/list?page=${result.endPage}">»</a></li>
+                    <li class="page-item"><a class="page-link" href="${pageContext.request.contextPath}/admin/petsitters/applications?page=${result.endPage}">»</a></li>
                 </ul>
             </div>
         </div>

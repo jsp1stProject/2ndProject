@@ -5,6 +5,7 @@ import com.sist.web.sitter.mapper.SitterResMapper;
 import com.sist.web.sitter.vo.*;
 
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -41,4 +42,8 @@ public class SitterResDAO {
 	{
 		return mapper.getReservedTimeRanges(sitter_no, res_date);
 	}
+    public int getSitterUserNoBySitterNo(int sitter_no)
+    {
+    	return mapper.getSitterUserNoBySitterNo(sitter_no);
+    }
 }

@@ -74,11 +74,13 @@ public class GroupServiceImpl implements GroupService{
 		map.put("joinedgroup_list", joinedgroup_list);
 		return map;
 	}
+	@Transactional
 	@Override
 	public GroupDTO getGroupDetailByGroupNo(int group_no) {
 		GroupDTO dto = new GroupDTO();
 		try {
 			dto = gDao.selectGroupDetail(group_no);
+			dto.setTags(gDao.selectGroupTagsByGroupNo(group_no));
 		} catch (Exception ex) {
 			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
 		}

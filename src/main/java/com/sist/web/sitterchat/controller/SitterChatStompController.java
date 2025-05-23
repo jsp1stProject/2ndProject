@@ -25,36 +25,34 @@ public class SitterChatStompController {
     private final Validator validator;
 
     @MessageMapping("/chatSend")
-    public void handleMessage(
-            @Payload SitterChatMessageDTO dto,
-            Principal principal,
-            StompHeaderAccessor accessor) {
+    public void handleMessage(@Payload SitterChatMessageDTO dto,
+                              Principal principal,
+                              StompHeaderAccessor accessor) {
 
-        // 유효성 검증
+        // 1. 유효성 검증
         Set<ConstraintViolation<SitterChatMessageDTO>> violations = validator.validate(dto);
         if (!violations.isEmpty()) {
-            String errorMsg = violations.stream()
-                    .map(ConstraintViolation::getMessage)
-                    .collect(Collectors.joining(","));
-            throw new IllegalArgumentException("유효성 검증 실패: " + errorMsg);
+            throw new IllegalArgumentException("유효성 검증 실패: " +
+                violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.joining(",")));
         }
 
-        // 사용자 인증 
-        if (principal == null) {
-            throw new SecurityException("인증되지 않은 사용자");
-        }
+        // 2. 인증 확인
+        if (principal == null) throw new SecurityException("인증되지 않은 사용자");
+
         int senderNo = Integer.parseInt(principal.getName());
+        dto.setSenderNo(senderNo); // ✨ 서버에서 신뢰성 있게 세팅
 
-       
+        // 3. DB 저장
         SitterChatVO chat = new SitterChatVO();
-        chat.setRoom_id(dto.getRoomId());
+        chat.setRoom_no(dto.getRoomId());
         chat.setSender_no(senderNo);
-        chat.setReceiver_no(dto.getReceiverNo());
-        chat.setChat_content(dto.getChatContent());
-        chat.setChat_type(dto.getChatType());
+        chat.setContent(dto.getChatContent());
+        chat.setRead_flag("N"); // 기본값 처리
 
-        service.SitterChatInsert(chat);
+        service.insertChat(chat);
 
+        // 4. 메시지 브로드캐스트
         messagingTemplate.convertAndSend("/ssub/chat/" + dto.getRoomId(), dto);
     }
+
 }

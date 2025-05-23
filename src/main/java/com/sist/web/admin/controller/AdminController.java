@@ -25,7 +25,7 @@ public class AdminController {
     @GetMapping("")
     public String admin(Model model){
         model.addAttribute("main_jsp","../admin/petsitter_list.jsp");
-        return "admin/main";
+        return "redirect:/admin/users";
     }
 
     @GetMapping("/users")
@@ -37,7 +37,7 @@ public class AdminController {
         query.put("mail",mail);
         model.addAttribute("result",adminService.getAllUsers(page, query));
         model.addAttribute("menu","1");
-        model.addAttribute("main_jsp","../admin/petsitter_list.jsp");
+        model.addAttribute("main_jsp","../admin/user_list.jsp");
         model.addAttribute("title","회원");
         return "admin/main";
     }
@@ -45,8 +45,9 @@ public class AdminController {
     @GetMapping("/users/{userno:[0-9]+}")
     public String userDetail(Model model,
                              @PathVariable String userno){
-        model.addAttribute("result",adminService.getSitterAppDetail(userno));
+        model.addAttribute("result",adminService.getUserDetail(userno).get("user"));
         model.addAttribute("result2",adminService.getPetsDetail(userno));
+        model.addAttribute("result3",adminService.getUserDetail(userno).get("group"));
         model.addAttribute("menu","1");
         model.addAttribute("main_jsp","../admin/user_detail.jsp");
         model.addAttribute("title","회원 정보");

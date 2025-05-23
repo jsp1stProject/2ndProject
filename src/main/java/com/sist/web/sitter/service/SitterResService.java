@@ -18,5 +18,6 @@ public interface SitterResService {
 	public void cancelReservationBySitter(int res_no);
 	public List<Map<String, String>> getReservedTimeRanges(int sitter_no, Date res_date);
 	public boolean isConflict(int sitter_no, String res_date, String start_time, String end_time);
+	public int getSitterUserNoBySitterNo(int sitter_no);
 }
 	

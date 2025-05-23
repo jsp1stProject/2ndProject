@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sist.web.admin.mapper.AdminMapper">
 
-	<select id="getUsers" resultType="com.sist.web.user.vo.UserDetailDTO" parameterType="HashMap">
-		SELECT u.USER_NO,USER_MAIL,USER_NAME,NICKNAME,ENABLED,AUTHORITY
+	<select id="getUsers" resultType="com.sist.web.admin.dto.AdminUserDetailDTO" parameterType="HashMap">
+		SELECT u.USER_NO,USER_MAIL,USER_NAME,NICKNAME,ENABLED,AUTHORITY,TO_CHAR(u.REGDATE,'YYYY.mm.DD') as db_regdate
 		<if test="authority == 'ROLE_SITTER'">
 			,SCORE,CARE_LOC
 		</if>
@@ -60,8 +60,8 @@
 			</if>
 		</where>
 	</select>
-	<select id="getSitterApps" resultType="com.sist.web.mypage.vo.SitterDTO" parameterType="HashMap">
-		SELECT APP_NO,s.USER_NO,LICENSE,STATUS,TO_CHAR(s.REGDATE,'YYYY.mm.DD HH:MI') as dbday, u.USER_MAIL, u.NICKNAME
+	<select id="getSitterApps" resultType="com.sist.web.admin.dto.AdminSitterListDTO" parameterType="HashMap">
+		SELECT APP_NO,s.USER_NO,LICENSE,STATUS,TO_CHAR(s.updated_at,'YYYY.mm.DD HH:MI') as dbday, u.USER_MAIL, u.NICKNAME
 		FROM P_SITTER_APP s JOIN P_USERS u
 		ON s.USER_NO = u.USER_NO
 		<where>
@@ -69,7 +69,7 @@
 				AND regexp_like(user_mail, #{user_mail}, 'i')
 			</if>
 		</where>
-		ORDER BY s.REGDATE DESC
+		ORDER BY s.updated_at DESC
 		OFFSET #{start, jdbcType=INTEGER} ROWS FETCH NEXT #{rowsize, jdbcType=INTEGER } ROWS ONLY
 	</select>
 

@@ -4,8 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <title>펫시터 새 글 작성</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
   <div class="container mt-4" id="app">
@@ -78,35 +76,37 @@
           }
         },
         async handleInsert() {
-          if (!this.imageFile) {
-            alert("이미지를 선택해주세요")
-            return
-          }
+  if (!this.imageFile) {
+    alert("이미지를 선택해주세요")
+    return
+  }
 
-          try {
-            const formData = new FormData()
-            formData.append("tag", this.form.tag)
-            formData.append("content", this.form.content)
-            formData.append("carecount", this.form.carecount)
-            formData.append("care_loc", this.form.care_loc)
-            formData.append("pet_first_price", this.form.pet_first_price)
-            formData.append("upload", this.imageFile)
+  try {
+    const formData = new FormData()
+    formData.append("tag", this.form.tag)
+    formData.append("content", this.form.content)
+    formData.append("carecount", this.form.carecount)
+    formData.append("care_loc", this.form.care_loc)
+    formData.append("pet_first_price", this.form.pet_first_price)
+    formData.append("upload", this.imageFile)
 
-            const res = await axios.post('/web/sitter/insert', formData, {
-              headers: { 'Content-Type': 'multipart/form-data' }
-            })
+    const res = await axios.post('${pageContext.request.contextPath}/sitter/insert', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      withCredentials: true
+    })
 
-            if (res.data === 'success') {
-              alert("등록 완료!")
-              location.href = "/web/sitter/list"
-            } else {
-              alert("등록 실패")
-            }
-          } catch (e) {
-            alert("서버 오류 발생")
-            console.error(e)
-          }
-        }
+    if (res.data.code === '200' && res.data.data === 'success') {
+      alert("등록 완료!")
+      location.href = "${pageContext.request.contextPath}/sitter/list"
+    } else {
+      alert("등록 실패: " + res.data.message)
+    }
+  } catch (e) {
+    alert("서버 오류 발생")
+    console.error(e)
+  }
+}
+
       }
     }).mount('#app')
   </script>

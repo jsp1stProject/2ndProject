@@ -3,6 +3,7 @@ import com.sist.web.sitterchat.vo.*;
 import com.sist.web.sitterchat.mapper.*;
 import java.util.*;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 @Repository
@@ -10,41 +11,47 @@ public class SitterChatDAO {
 	@Autowired
 	private SitterChatMapper mapper;
 	
-	public List<SitterChatRoomVO> SitterChatRoomList(int userNo,int start,int end)
+	public List<SitterChatRoomVO> selectChatRoomList(int user_no)
 	{
-		return mapper.SitterChatRoomList(userNo, start, end);
+		return mapper.selectChatRoomList(user_no);
 	}
-	public int SitterChatRoomTotalPage(int userNo,int rowSize)
+	public SitterChatRoomVO selectChatRoom(int user1_no, int user2_no, int reserve_no)
+    {
+    	return mapper.selectChatRoom(user1_no, user2_no, reserve_no);
+    }
+	public int insertChatRoom(SitterChatRoomVO vo)
+    {
+    	return mapper.insertChatRoom(vo);
+    }
+	public int deleteChatRoom(int room_no)
+    {
+    	return mapper.deleteChatRoom(room_no);
+    }
+
+	public List<SitterChatVO> selectChatList(int room_no)
+    {
+    	return mapper.selectChatList(room_no);
+    }
+	public int insertChat(SitterChatVO vo)
+    {
+    	return mapper.insertChat(vo);
+    }
+	public List<SitterChatVO> searchChatByKeyword(int room_no, String keyword)
+    {
+    	return mapper.searchChatByKeyword(room_no, keyword);
+    }
+
+	public String isChatEnabled(int room_no)
+    {
+    	return mapper.isChatEnabled(room_no);
+    }
+	public int selectChatRoomTotalPage()
 	{
-		return mapper.SitterChatRoomTotalPage(userNo, rowSize);
+		return mapper.selectChatRoomTotalPage();
 	}
-	public int SitterChatRoomInsert(SitterChatRoomVO vo)
+	public SitterChatRoomVO SitterChatRoomById(int room_no)
 	{
-		return mapper.SitterChatRoomInsert(vo);
-	}
-	public int SitterChatRoomDelete(int room_id)
-	{
-		return mapper.SitterChatRoomDelete(room_id);
-	}
-	public int SitterChatInsert(SitterChatVO vo)
-	{
-		return mapper.SitterChatInsert(vo);
-	}
-	public List<SitterChatVO> SitterChatList(int room_id)
-	{
-		return mapper.SitterChatList(room_id);
-	}
-	public List<SitterChatVO> SitterChatSearch(int room_id,String keyword)
-	{
-		return mapper.SitterChatSearch(room_id, keyword);
-	}
-	public List<SitterChatRoomVO> SitterChatRoomListWithFilter(Map<String, Object> map)
-	{
-		return mapper.SitterChatRoomListWithFilter(map);
-	}
-	public int SitterChatRoomTotalPageWithFilter(Map<String, Object> map)
-	{
-		return mapper.SitterChatRoomTotalPageWithFilter(map);
+		return mapper.SitterChatRoomById(room_no);
 	}
 	
 }
