@@ -1,5 +1,7 @@
 package com.sist.web.sitter.vo;
 
+import com.sist.web.user.vo.UserVO;
+
 import lombok.Data;
 /*
 JJIM_NO   NOT NULL NUMBER 
@@ -13,4 +15,5 @@ public class SitterJjimVO {
     private int sitter_no;   
     
     private SitterVO sitterVO;
+    private UserVO userVO;
 }

@@ -50,9 +50,13 @@ public interface SitterChatMapper {
 
     // 채팅방 생성
     @Insert("INSERT INTO p_sitter_chat_room (room_no, user1_no, user2_no, res_no) " +
-            "VALUES (p_sitchat_roomno_seq.NEXTVAL, #{user1_no}, #{user2_no}, #{res_no})")
-    @Options(useGeneratedKeys = true, keyProperty = "room_no")
+            "VALUES (#{room_no}, #{user1_no}, #{user2_no}, #{res_no})")
+    @SelectKey(statement = "SELECT p_sitchat_roomno_seq.NEXTVAL FROM dual", 
+               keyProperty = "room_no", 
+               before = true, 
+               resultType = int.class)
     public int insertChatRoom(SitterChatRoomVO vo);
+
 
     // 채팅 메시지 목록 조회
     @Select("SELECT c.*, u.nickname AS sender_nick, u.profile AS sender_profile " +
@@ -74,7 +78,7 @@ public interface SitterChatMapper {
 
     // 채팅 메시지 저장
     @Insert("INSERT INTO p_sitter_chat (chat_no, room_no, sender_no, content) " +
-            "VALUES (p_sitchat_no_seq.NEXTVAL, #{room_no}, #{sender_no}, #{content})")
+            "VALUES (p_sitchat_no_seq.NEXTVAL, #{room_no}, #{sender_no}, #{content, jdbcType=VARCHAR})")
     public int insertChat(SitterChatVO vo);
 
     // 채팅방 삭제 (비활성화 시)

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sist.web.sitter.vo.SitterReviewVO;
 import com.sist.web.sitter.vo.SitterVO;
@@ -23,4 +24,6 @@ public interface SitterService {
 	public List<SitterVO> jjimSitterList(int user_no);
     public boolean toggleJjim(int user_no, int sitter_no);
     public void deleteJjimAll(int sitter_no);
+    
+   
 }

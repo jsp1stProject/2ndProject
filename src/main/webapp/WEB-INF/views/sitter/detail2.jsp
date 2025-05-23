@@ -10,7 +10,9 @@
   <h2 class="mb-4">펫시터 상세보기</h2>
 
   <div v-if="sitter" class="card">
-    <img :src="sitter.sitter_pic" class="card-img-top" alt="sitter_pic">
+     <div :style="sitter.sitter_pic ? { backgroundImage: 'url(${pageContext.request.contextPath}/s3/'+sitter.sitter_pic+')' } : {}" style="padding-top:30%;width:200px;height:100px;
+    background-repeat: no-repeat;
+background-size: cover;"></div>
     <div class="card-body">
       <p class="card-text">{{ sitter.content }}</p>
       <ul class="list-group list-group-flush">
@@ -136,6 +138,7 @@ console.log("📦 sitter_no:", this.sitter_no)
     async deletePost() {
       if (!confirm("정말 삭제하시겠습니까?")) return
       const res = await axios.delete('${pageContext.request.contextPath}/sitter/delete', { params: { sitter_no: this.sitter_no },withCredentials: true })
+		console.log(res.data.data)
       if (res.data.code === '200' && res.data.data === 'success') {
         alert("삭제 완료")
         location.href = "${pageContext.request.contextPath}/sitter/list"
@@ -186,7 +189,7 @@ console.log("📦 sitter_no:", this.sitter_no)
         }
       };
 
-      this.reviews = [newReview, ...this.reviews]; // ✅ 강제 새 배열 할당
+      this.reviews = [newReview, ...this.reviews];
 
       this.newReview.rev_comment = '';
       this.newReview.rev_score = 5;

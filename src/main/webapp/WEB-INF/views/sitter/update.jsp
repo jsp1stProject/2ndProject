@@ -90,8 +90,8 @@ methods: {
       }, {
         withCredentials: true
       })
-
-      if (res.data.code === '200' && res.data.data === 'success') {
+	console.log(res.data.code)
+      if (res.data.code === '200' && res.data.data === '펫시터 수정 성공') {
         alert("수정 완료!")
         location.href = '${pageContext.request.contextPath}/sitter/detail?sitter_no=' + this.sitter_no
       } else {

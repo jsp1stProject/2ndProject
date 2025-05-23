@@ -12,7 +12,7 @@
   <div v-else>
     <h3>예약 목록</h3>
     <div v-for="res in list" :key="res.res_no" class="card p-3 my-2">
-      <p>예약일: {{ res.res_date }}</p>
+      <p>예약번호: {{ res.res_date }}</p>
       <p>시간: {{ res.start_time }} ~ {{ res.end_time }}</p>
       <p>총액: {{ res.total_price.toLocaleString() }}원</p>
       <p>상태: {{ res.res_status }} / 결제: {{ res.pay_status }}</p>
@@ -48,6 +48,7 @@ createApp({
     goToDetail(res_no) {
       location.href = '${pageContext.request.contextPath}/sitter/resDetail?res_no='+res_no;
     }
+
   }
 }).mount("#app");
 </script>

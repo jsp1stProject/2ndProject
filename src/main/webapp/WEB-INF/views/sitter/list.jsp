@@ -49,6 +49,7 @@
         <button class="btn btn-primary btn-sm mt-3 w-100" @click="dataRecv(1)">검색</button>
         <button class="btn btn-outline-secondary btn-sm mt-2 w-100" @click="resetFilter">초기화</button>
         <button class="btn btn-success btn-sm mt-3 w-100" @click="goToReservationList">📋 내 예약 목록 보기</button>
+        <button class="btn btn-sm btn-primary" @click="goInsert()">새글쓰기</button>
       </div>
     </div>
 
@@ -57,8 +58,10 @@
         <h4 class="mb-3">♥ 찜한 펫시터</h4>
         <div v-if="jjimList.length > 0" class="row g-4">
           <div class="col-md-6 col-lg-4" v-for="sitter in jjimList" :key="'jjim-' + sitter.sitter_no">
-            <div class="card h-100 shadow-sm">
-              <img :src="sitter.profile" class="card-img-top" alt="profile">
+            <div class="card h-100 shadow-sm" style="overflow: hidden;">
+               <div :style="sitter.sitter_pic ? { backgroundImage: 'url(${pageContext.request.contextPath}/s3/'+sitter.sitter_pic+')' } : {}" style="padding-top:100%; 
+    background-repeat: no-repeat;
+background-size: cover;"></div>
               <div class="card-body">
                 <h5 class="card-title">{{ sitter.nickname }}</h5>
                 <button class="btn btn-sm btn-outline-danger me-2" @click="toggleJjim(sitter.sitter_no)">♥ 찜 해제</button>
@@ -74,8 +77,10 @@
         <h4 class="mb-3">전체 펫시터 목록</h4>
         <div v-if="list.length > 0" class="row g-4">
           <div class="col-md-6 col-lg-4" v-for="sitter in list" :key="sitter.sitter_no">
-            <div class="card h-100 shadow-sm">
-              <img :src="sitter.sitter_pic" class="card-img-top" alt="sitter_pic">
+            <div class="card h-100 shadow-sm" style="overflow: hidden;">
+             <div :style="sitter.sitter_pic ? { backgroundImage: 'url(${pageContext.request.contextPath}/s3/'+sitter.sitter_pic+')' } : {}" style="padding-top:100%; 
+    background-repeat: no-repeat;
+background-size: cover;"></div>
               <div class="card-body">
                 <h5 class="card-title">{{ sitter.user.nickname }} ({{ sitter.user.user_name }})</h5>
                 <p class="card-text">{{ sitter.content }}</p>
