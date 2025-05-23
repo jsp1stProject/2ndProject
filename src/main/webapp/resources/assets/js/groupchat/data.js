@@ -49,4 +49,8 @@ export const groupChatData = {
     startDate: '',
     endDate: ''
   },
+
+  selectedUser: null,
+  editNicknameMode: false,
+  editedNickname: '',
 };

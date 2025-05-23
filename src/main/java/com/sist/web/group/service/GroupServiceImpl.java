@@ -65,6 +65,11 @@ public class GroupServiceImpl implements GroupService{
 	public Map<String, Object> getGroupListAndStates(int user_no){
 		
 		List<GroupDTO> group_list = gDao.selectGroupAllList();
+		for(GroupDTO group : group_list)
+		{
+			int group_no = group.getGroup_no();
+			group.setTags(gDao.selectGroupTagsByGroupNo(group_no));
+		}
 		List<Map<String, Object>> states_list = gDao.selectGroupMemberStates(user_no);
 		List<GroupDTO> joinedgroup_list = gDao.selectGroup(String.valueOf(user_no));
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -74,11 +79,13 @@ public class GroupServiceImpl implements GroupService{
 		map.put("joinedgroup_list", joinedgroup_list);
 		return map;
 	}
+	@Transactional
 	@Override
 	public GroupDTO getGroupDetailByGroupNo(int group_no) {
 		GroupDTO dto = new GroupDTO();
 		try {
 			dto = gDao.selectGroupDetail(group_no);
+			dto.setTags(gDao.selectGroupTagsByGroupNo(group_no));
 		} catch (Exception ex) {
 			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
 		}
@@ -248,7 +255,9 @@ public class GroupServiceImpl implements GroupService{
 	@Override
 	public GroupMemberInfoDTO getGroupMemberDetail(int groupNo, int userNo) {
 		// 기타 로직 수행 필요
-		return gDao.selectGroupMemberInfo(groupNo, userNo);
+		GroupMemberInfoDTO dto = gDao.selectGroupMemberInfo(groupNo, userNo);
+		dto.setProfile(s3BaseUrl + dto.getProfile());
+		return dto;
 	}
 	
 	private String uploadThumbnailImage(MultipartFile file) {
@@ -259,6 +268,11 @@ public class GroupServiceImpl implements GroupService{
 			log.error("썸네일 이미지 업로드 실패", ex);
 			throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
 		}
+	}
+	
+	@Override
+	public void updateGroupMemberNickname(int userNo, String nickname, int groupNo) {
+		gDao.updateGroupMemberNickname(userNo, nickname, groupNo);
 	}
 
 	

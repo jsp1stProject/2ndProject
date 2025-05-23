@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import com.sist.web.aws.AwsS3Service;
@@ -13,6 +15,8 @@ import com.sist.web.security.JwtTokenProvider;
 import com.sist.web.sitterchat.service.SitterChatService;
 import com.sist.web.sitterchat.vo.*;
 
+import lombok.RequiredArgsConstructor;
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/sitterchat")
 public class SitterChatRestController {
@@ -87,10 +91,29 @@ public class SitterChatRestController {
     }
 
     // 3. 메시지 저장 (fallback 또는 WebSocket 사용 시 함께 저장)
-    @PostMapping("/send")
-    public ResponseEntity<String> msg_insert(@RequestBody SitterChatVO vo) {
+	/*
+	 * @PostMapping("/send") public ResponseEntity<String> msg_insert(@RequestBody
+	 * SitterChatVO vo
+	 * 
+	 * ) { service.insertChat(vo); return new
+	 * ResponseEntity<>("SENT", HttpStatus.OK); }
+	 */
+    
+    private final SimpMessagingTemplate messagingTemplate;
+
+    @MessageMapping("/Send")
+    public void handleMessage(SitterChatVO vo, java.security.Principal principal) {
+        // userNo는 JwtChannelInterceptor에서 StompPrincipal로 저장됨
+        String userNo = principal.getName(); // 실제로는 문자열임
+        vo.setSender_no(Integer.parseInt(userNo));
+
+        // DB 저장
+        System.out.println("chat 저장 직전: " + vo);
+
         service.insertChat(vo);
-        return new ResponseEntity<>("SENT", HttpStatus.OK);
+
+        // 구독자에게 브로드캐스트
+        messagingTemplate.convertAndSend("/sub/chat/" + vo.getRoom_no(), vo);
     }
 
     // 4. 메시지 키워드 검색

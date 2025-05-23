@@ -2,7 +2,13 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
+<style>
+.badge {
+  font-size: 0.9rem;
+  padding: 0.4em 0.6em;
+  border-radius: 999px;
+}
+</style>
 <div class="container pt-header" id="group-detail-app">
  <div class="row pt-3">
     <!-- ⬅️ 좌측 일정 영역 -->
@@ -60,10 +66,11 @@
 	  <div class="row g-0">
 	    <div class="col-sm-3 d-none d-sm-block">
 		  <img 
-		    :src="gvo.profile_img ? gvo.profile_img : '/assets/images/noimage.png'" 
+		    :src="gvo.profile_img?.startsWith('http') ? gvo.profile_img : '${pageContext.request.contextPath}/s3/' + gvo.profile_img" 
 		    class="card-img-top h-100" 
 		    alt="그룹 이미지" 
 		    style="object-fit: cover;">
+		    
 		</div>
 	    <div class="card-body col-sm-9 p-3">
 	      <div class="d-flex justify-content-between gap-2">
@@ -74,6 +81,13 @@
 	          <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm mb-2">그룹 정보</span>
 	          <h4 class="fs-4 fw-semibold text-dark mb-2">{{ gvo.group_name }}</h4>
 	          <p class="text-muted mb-2">{{ gvo.description }}</p>
+	          <div class="d-flex align-items-center flex-wrap gap-2 fs-3">
+	            <div class="d-flex align-items-center gap-1" >
+	              <p>
+				  <span v-for="(tag, idx) in gvo.tags" :key="idx" class="badge text-bg-light me-1">{{ tag }}</span>
+				</p>
+	            </div> 
+	          </div>
 	          <div class="d-flex align-items-center flex-wrap gap-2 fs-3">
 	            <div class="d-flex align-items-center gap-1">
 	              <span>방장</span><span class="text-dark">{{gvo.owner_name}}</span>
@@ -110,32 +124,36 @@
 	  <div v-for="(vo, index) in list" :key="vo.feed_no" class="card overflow-hidden mb-3">
 	    <div class="row g-0">
 	      <div class="card-body col-3 p-3">
-	        <div class="d-flex gap-2">
-	          <div class="d-flex align-items-center">
-	            <img src="https://pet4u.s3.ap-northeast-2.amazonaws.com/profile/21ef189e-a172-4649-ae01-cb37381b61b3.jpg">
-	          </div>
-	          <div class="">
-	            
-	            <div class="d-flex align-items-center flex-wrap gap-2 fs-3">
-	              <div class="d-flex align-items-center gap-1">
-	                <span>닉네임</span><span class="text-dark">{{ vo.nickname }}</span>
-	              </div>
-	              <div class="d-flex align-items-center gap-1">
-	                <span>작성일</span><span class="text-dark">{{ vo.dbday }}</span>
-	              </div>
-	            </div>
-	            <a class="d-block fs-4 text-dark fw-semibold link-primary" :href="'../group/feed?feed_no='+vo.feed_no" >
-	              {{ vo.title }}
-	            </a>
-	          </div>
-	        </div>
+	        <div class="d-flex align-items-start gap-2 mb-1">
+			  <!-- 프로필 이미지 -->
+			  <img :src="'${pageContext.request.contextPath}/s3/' + vo.profile"
+			       alt="프로필 이미지"
+			       class="rounded-circle"
+			       style="width: 42px; height: 42px; object-fit: cover;">
+			
+			  <!-- 닉네임 + 작성일 -->
+			  <div class="d-flex flex-column justify-content-center">
+			    <span class="fs-3 text-dark">{{ vo.nickname }}</span>
+			    <span class="fs-3 text-muted">{{ vo.dbday }}</span>
+			  </div>
+			</div>
+			
+			<!-- 제목 (작성자 정보 아래 한 줄 띄워서) -->
+			<div class="mb-2">
+			  <a :href="'../group/feed?feed_no=' + vo.feed_no"
+			     class="fw-semibold fs-4 text-dark text-decoration-none link-primary">
+			    {{ vo.title }}
+			  </a>
+			</div>
 
 	        <!-- 이미지가 있을 경우에만 출력 -->
 	        <div v-if="vo.images && vo.images.length">
 	          <div :id="'carousel-' + index" class="carousel slide my-2" data-bs-ride="carousel">
 	            <div class="carousel-inner">
 	              <div class="carousel-item" v-for="(img, i) in vo.images" :class="{ active: i === 0 }">
-	                <img :src="img" class="d-block w-100 rounded" style="max-height: 300px; object-fit: cover;">
+	                <!-- <img :src="img" class="d-block w-100 rounded" style="max-height: 300px; object-fit: cover;"> -->
+	                <img :src="img.startsWith('http') ? img : '${pageContext.request.contextPath}/s3/' + img" 
+	                 class="d-block w-100 rounded" style="width: 70%; max-height: 400px; aspect-ratio: 4 / 3; object-fit: cover;">
 	              </div>
 	            </div>
 	            <button class="carousel-control-prev" type="button" :data-bs-target="'#carousel-' + index" data-bs-slide="prev">
@@ -147,19 +165,22 @@
 	          </div>
 	        </div>
 	
-	        <div class="d-flex justify-content-end">
-			  <div class="d-flex align-items-center gap-3 mt-2 text-muted fs-5">
+	        <!-- <div class="d-flex justify-content-end"> -->
+			  <div class="d-flex align-items-center gap-3 mt-2 text-muted" style="padding-left: 12px;">
 			    <!-- 좋아요 아이콘 버튼 -->
 			    <button @click="selectLike(vo.feed_no)" class="btn btn-sm p-0 border-0 bg-transparent">
-			      <i :class="liked[vo.feed_no] ? 'bi bi-heart-fill text-danger fs-4' : 'bi bi-heart fs-4 text-muted'"></i>
-			    </button>
+			    <i
+				  :class="liked[vo.feed_no] ? 'bi bi-heart-fill text-danger' : 'bi bi-heart text-muted'"
+				  style="font-size: 2em; position: relative; top: 2px;">
+				</i>
+			  </button>
 			
 			    <!-- 댓글 아이콘 버튼 (링크로 이동) -->
 			    <a :href="'../group/feed?feed_no=' + vo.feed_no" class="text-muted">
-			      <i class="bi bi-chat-dots fs-4"></i>
+			      <i class="bi bi-chat-dots" style="font-size: 2.0em;"></i>
 			    </a>
 			  </div>
-			</div>
+			<!-- </div> -->
 	      </div>
 	    </div>
 	  </div>
@@ -302,7 +323,7 @@ createApp({
   methods: {
 	selectLike(feed_no) {
     		axios.post('../api/feed/'+feed_no+'/like')
-      		.then(() => {
+      		.then(res => {
         		this.liked[feed_no] = !this.liked[feed_no];
       		})
       		.catch(err => {
@@ -364,7 +385,15 @@ createApp({
 			console.log("성공")
 			const schedulemodal = bootstrap.Modal.getInstance(document.getElementById('newScheduleModal'));
   			schedulemodal.hide();
-    		this.scheduleRecv()
+			this.title='';
+        	this.content= '';
+        	this.start= '';
+        	this.end= '';
+        	this.participants_no= [];
+        	this.type= 1;
+			this.is_important= false;
+			this.alarm=false;
+    		this.scheduleRecv();
 		})
 		.catch(err => {
      		 console.log("일정 등록 실패", err);
@@ -383,6 +412,10 @@ createApp({
         this.list = res.data.list;
         this.gvo = res.data.gvo;
         this.mvo = res.data.mvo;
+		this.liked = {};
+    	this.list.forEach(feed => {
+      		this.liked[feed.feed_no] = feed.is_liked === 1;
+    	});
 	  }).catch(error => {
 		 console.err(error);
 	  })

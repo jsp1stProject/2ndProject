@@ -24,4 +24,8 @@ public class SitterResPetDAO {
 	{
 		return mapper.getPetsByUserNo(user_no);
 	}
+	public void deleteReservePetBySitterNo(int sitter_no)
+	{
+		mapper.deleteReservePetBySitterNo(sitter_no);
+	}
 }
