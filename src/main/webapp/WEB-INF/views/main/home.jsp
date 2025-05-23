@@ -30,38 +30,38 @@
     </div>
 </div>
 <div class="container">
-    <div class="row">
-        <div class="col-12">
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="check1">
-                <label for="check1" class="form-check-label">체크박스1</label>
-            </div>
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="check2" disabled>
-                <label for="check2" class="form-check-label">체크박스2</label>
-            </div>
-        </div>
-        <div class="col-12">
-            <div class="form-check">
-                <input type="radio" class="form-check-input" id="ra1" name="ra1">
-                <label for="ra1" class="form-check-label">라디오1</label>
-            </div>
-            <div class="form-check">
-                <input type="radio" class="form-check-input" id="ra2" name="ra1">
-                <label for="ra2" class="form-check-label">라디오2</label>
-            </div>
-            <div class="form-check">
-                <input type="radio" class="form-check-input" id="ra3" name="ra1" disabled>
-                <label for="ra3" class="form-check-label">라디오2</label>
-            </div>
-        </div>
-        <div class="col-12">
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                <label class="form-check-label" for="flexSwitchCheckDefault">Default switch checkbox input</label>
-            </div>
-        </div>
-    </div>
+<%--    <div class="row">--%>
+<%--        <div class="col-12">--%>
+<%--            <div class="form-check">--%>
+<%--                <input type="checkbox" class="form-check-input" id="check1">--%>
+<%--                <label for="check1" class="form-check-label">체크박스1</label>--%>
+<%--            </div>--%>
+<%--            <div class="form-check">--%>
+<%--                <input type="checkbox" class="form-check-input" id="check2" disabled>--%>
+<%--                <label for="check2" class="form-check-label">체크박스2</label>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--        <div class="col-12">--%>
+<%--            <div class="form-check">--%>
+<%--                <input type="radio" class="form-check-input" id="ra1" name="ra1">--%>
+<%--                <label for="ra1" class="form-check-label">라디오1</label>--%>
+<%--            </div>--%>
+<%--            <div class="form-check">--%>
+<%--                <input type="radio" class="form-check-input" id="ra2" name="ra1">--%>
+<%--                <label for="ra2" class="form-check-label">라디오2</label>--%>
+<%--            </div>--%>
+<%--            <div class="form-check">--%>
+<%--                <input type="radio" class="form-check-input" id="ra3" name="ra1" disabled>--%>
+<%--                <label for="ra3" class="form-check-label">라디오2</label>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--        <div class="col-12">--%>
+<%--            <div class="form-check form-switch">--%>
+<%--                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">--%>
+<%--                <label class="form-check-label" for="flexSwitchCheckDefault">Default switch checkbox input</label>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--    </div>--%>
 </div>
 <script>
     //custom-list
