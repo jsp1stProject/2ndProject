@@ -1,8 +1,12 @@
 package com.sist.web.feed.dao;
 
 import java.util.List;
+import java.util.Map;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -15,9 +19,9 @@ public class ScheduleDAO {
 	@Autowired
 	private ScheduleMapper mapper;
 	
-	public void scheduleInsert(ScheduleVO vo)
+	public void groupScheduleInsert(ScheduleVO vo)
 	{
-		mapper.scheduleInsert(vo);
+		mapper.groupScheduleInsert(vo);
 	}
 	
 	public void scheduleMemberInsert(ScheduleMemberVO vo)
@@ -25,13 +29,78 @@ public class ScheduleDAO {
 		mapper.scheduleMemberInsert(vo);
 	}
 	
-	public List<ScheduleVO> scheduleGroupList(int group_no)
+	public List<ScheduleVO> scheduleGroupList(Map map)
 	{
-		return mapper.scheduleGroupList(group_no);
+		return mapper.scheduleGroupList(map);
 	}
 	
 	public List<ScheduleVO> scheduleUserTotalList(long user_no)
 	{
 		return mapper.scheduleUserTotalList(user_no);
+	}
+	
+	public void scheduleInsert(ScheduleVO vo)
+	{
+		mapper.scheduleInsert(vo);
+	}
+	
+	public ScheduleVO schedule_detail(int sche_no)
+	{
+		return mapper.schedule_detail(sche_no);
+	}
+	
+	public List<ScheduleMemberVO> schedule_participatns(int shce_no)
+	{
+		return mapper.schedule_participatns(shce_no);
+	}
+	
+	public List<ScheduleVO> schedule_selected_data(@Param("selected_date") String selected_date,
+            @Param("user_no") long user_no)
+	{
+		return mapper.schedule_selected_data(selected_date,user_no); 
+	}
+	
+	public List<ScheduleVO> schedule_dday(long user_no)
+	{
+		return mapper.schedule_dday(user_no);
+	}
+	
+	public List<ScheduleVO> schedule_important(long user_no)
+	{
+		return mapper.schedule_important(user_no);
+	}
+	public void deleteSchedule(int sche_no)
+	{
+		mapper.deleteSchedule(sche_no);
+	}
+	
+	public void deleteScheduleMember(int sche_no)
+	{
+		mapper.deleteScheduleMember(sche_no);
+	}
+	
+	public void updateSchedule(ScheduleVO vo)
+	{
+		mapper.updateSchedule(vo);
+	}
+	
+	public List<ScheduleVO> schedulePagingUserTotalList(Map map)
+	{
+		return mapper.schedulePagingUserTotalList(map);
+	}
+	
+	public int scheduleUserTotalCount(long user_no)
+	{
+		return mapper.scheduleUserTotalCount(user_no);
+	}
+	
+	public List<ScheduleVO> schedulePagingUserSearchlList(Map map)
+	{
+		return mapper.schedulePagingUserSearchlList(map);
+	}
+	
+	public int scheduleUserTotalCountWithSearch(@Param("user_no") long user_no, @Param("search") String search)
+	{
+		return mapper.scheduleUserTotalCountWithSearch(user_no, search);
 	}
 }

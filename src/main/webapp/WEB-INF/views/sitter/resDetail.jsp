@@ -41,7 +41,7 @@ createApp({
   },
 methods: {
 	goToChat(resNo) {
-    window.location.href = '/web/sitterchat/chat?res_no=' + resNo;
+    window.location.href = '${pageContext.request.contextPath}/sitterchat/chat?res_no=' + resNo;
   },
   formatDate(ts) {
     const date = new Date(ts);
@@ -49,7 +49,7 @@ methods: {
   }
 },
   mounted() {
-    axios.get('/web/sitter/resDetail_vue', {
+    axios.get('${pageContext.request.contextPath}/sitter/resDetail_vue', {
       params: { res_no: this.resNo },
       withCredentials: true
     }).then(res => {

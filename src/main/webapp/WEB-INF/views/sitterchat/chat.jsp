@@ -109,7 +109,7 @@ Vue.createApp({
   methods: {
 	  async initWebSocket() {
 		    try {
-		      const res = await axios.get('/web/auth/me');
+		      const res = await axios.get('<%= request.getContextPath() %>/auth/me');
 		      if (!res.data.valid) {
 		        alert('로그인이 필요한 서비스입니다.');
 		        return;
@@ -117,8 +117,15 @@ Vue.createApp({
           console.log('res: ', res);
 		      this.token = res.data.token;
 		      this.userNo = res.data.userNo;
-
-		      const socket = new WebSocket("ws://localhost:8080/web/ws-sitter");
+		      
+		      const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+		      const socketUrl = protocol + '://' + location.host + '<%= request.getContextPath() %>/ws-sitter';
+		      const socket = new WebSocket(socketUrl);
+		      console.log("protocol=",protocol)
+		      console.log("location.host=",location.host)
+		      console.log("socketUrl",socketUrl)
+		      
+		      
 		      this.stompClient = Stomp.over(socket);
 		      this.stompClient.reconnect_delay = 5000;
 
@@ -134,7 +141,7 @@ Vue.createApp({
 		    }
 		  },
     loadRooms() {
-      axios.get('/web/sitterchat/list_vue').then(res => {
+      axios.get('${pageContext.request.contextPath}/sitterchat/list_vue').then(res => {
         this.rooms = res.data.list;
         if (this.rooms.length > 0) {
           this.enterRoom(this.rooms[0]);
@@ -158,7 +165,7 @@ Vue.createApp({
       this.currentRoom = room;
       this.messages = [];
 
-      axios.get('/web/sitterchat/msglist', {
+      axios.get('${pageContext.request.contextPath}/sitterchat/msglist', {
         params: { room_no: room.room_no }
       }).then(res => {
         this.messages = res.data;

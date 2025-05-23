@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.feed.mapper.ScheduleMapper">
+<select id="schedule_dday" parameterType="long" resultType="com.sist.web.feed.vo.ScheduleVO">
+  SELECT * 
+  FROM (SELECT p.sche_no, p.sche_title,
+  		TO_CHAR(p.sche_start, 'YYYY-MM-DD') AS sche_start_str,
+        TO_CHAR(p.sche_end, 'YYYY-MM-DD') AS sche_end_str,
+        p.is_important, p.type
+        FROM p_schedule p 
+        LEFT JOIN p_schedule_member m
+        ON p.sche_no = m.sche_no
+        WHERE (p.user_no=#{user_no} OR m.user_no=#{user_no}) 
+        	AND TRUNC(p.sche_end) >= TRUNC(SYSDATE)
+        GROUP BY p.sche_no, p.sche_title, p.sche_start, p.sche_end, p.is_important, p.type
+        ORDER BY p.sche_end ASC)
+   WHERE ROWNUM &lt;= 5    
+</select>
+<select id="scheduleGroupList" parameterType="map" resultType="com.sist.web.feed.vo.ScheduleVO">
+SELECT 
+  s.sche_no, s.sche_title, s.sche_content,
+  TO_CHAR(s.sche_start, 'YYYY-MM-DD HH24:MI') AS sche_start_str,
+  TO_CHAR(s.sche_end, 'YYYY-MM-DD HH24:MI') AS sche_end_str,
+  s.is_important, s.alarm, s.type
+FROM 
+  p_schedule s
+WHERE 
+  s.group_no = #{group_no}
+  AND (s.is_public = 1 OR EXISTS (
+    SELECT 1 FROM p_schedule_member sm 
+     WHERE sm.sche_no = s.sche_no AND sm.user_no = #{user_no}
+  ))
+ORDER BY s.sche_start
+</select>
+<select id="scheduleParticipants" parameterType="list" resultType="com.sist.web.user.vo.UserVO">
+SELECT 
+  sm.sche_no, u.user_no, u.nickname, u.profile
+FROM 
+  p_schedule_member sm
+JOIN 
+  p_users u ON sm.user_no = u.user_no
+WHERE 
+  sm.sche_no IN
+  <foreach collection="list" item="sche_no" open="(" separator="," close=")">
+    #{sche_no}
+  </foreach>
+</select>
+<!-- 
+<select id="scheduleGroupList" parameterType="map" resultType="com.sist.web.feed.vo.ScheduleVO">
+  SELECT s.sche_no, s.user_no, s.type, s.sche_title, s.sche_content,
+         TO_CHAR(s.sche_start, 'YYYY-MM-DD HH24:MI') AS sche_start_str,
+         TO_CHAR(s.sche_end, 'YYYY-MM-DD HH24:MI') AS sche_end_str,
+         s.is_public
+  FROM p_schedule s
+  WHERE s.group_no = #{group_no}
+    AND (
+      s.is_public = 1
+      OR (s.is_public = 0 AND EXISTS (
+        SELECT 1 FROM p_schedule_member sm
+        WHERE sm.sche_no = s.sche_no
+          AND sm.user_no = #{user_no}
+      ))
+    )
+  ORDER BY s.sche_start ASC
+</select>
+ -->
+</mapper>

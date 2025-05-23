@@ -65,7 +65,7 @@
 
   this.sitter_no = sitter_no
 
-  axios.get('/web/sitter/detail_vue', {
+  axios.get('${pageContext.request.contextPath}/sitter/detail_vue', {
   params: { sitter_no },
   withCredentials: true
 }).then(res => {
@@ -84,7 +84,7 @@
 methods: {
   async handleUpdate() {
     try {
-      const res = await axios.post('/web/sitter/update', {
+      const res = await axios.post('${pageContext.request.contextPath}/sitter/update', {
         sitter_no: this.sitter_no,
         ...this.form
       }, {
@@ -93,7 +93,7 @@ methods: {
 
       if (res.data.code === '200' && res.data.data === 'success') {
         alert("수정 완료!")
-        location.href = '/web/sitter/detail?sitter_no=' + this.sitter_no
+        location.href = '${pageContext.request.contextPath}/sitter/detail?sitter_no=' + this.sitter_no
       } else {
         alert("수정 실패: " + res.data.message)
       }

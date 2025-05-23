@@ -66,10 +66,12 @@ public class GroupServiceImpl implements GroupService{
 		
 		List<GroupDTO> group_list = gDao.selectGroupAllList();
 		List<Map<String, Object>> states_list = gDao.selectGroupMemberStates(user_no);
+		List<GroupDTO> joinedgroup_list = gDao.selectGroup(String.valueOf(user_no));
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("group_list", group_list);
 		map.put("states_list", states_list);
 		map.put("user_no", user_no);
+		map.put("joinedgroup_list", joinedgroup_list);
 		return map;
 	}
 	@Override
@@ -83,14 +85,25 @@ public class GroupServiceImpl implements GroupService{
 		return dto;
 	}
 	
+	@Override
+	public GroupDTO getGroupDetailTotal(int group_no) {
+		// TODO Auto-generated method stub
+		GroupDTO dto = new GroupDTO();
+		try {
+			dto = gDao.selectGroupDetailTotal(group_no);
+		} catch (Exception ex) {
+			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		}
+		return dto;
+	}
+	
 	@Transactional
 	@Override
 	public void createGroup(GroupDTO dto, MultipartFile profileImg) {
-		
 		if (profileImg != null && !profileImg.isEmpty()) {
 			dto.setProfile_img(uploadThumbnailImage(profileImg));
 		}
-		
+		System.out.println("##### dto:"+dto);
 		gDao.insertGroup(dto);
 		
 		GroupMemberDTO member = new GroupMemberDTO();
@@ -102,8 +115,17 @@ public class GroupServiceImpl implements GroupService{
 		member.setGroup_no(dto.getGroup_no());
 		member.setUser_no(dto.getOwner());
 		member.setRole(ROLE_OWNER);
+		List<String> tags=dto.getTags();
 		member.setNickname(user.getNickname());
-		
+		if (tags != null && !tags.isEmpty()) {
+			for (String tag : tags) {
+				Map<String, Object> param = new HashMap<String, Object>();
+				param.put("group_no", dto.getGroup_no());
+				param.put("tag", tag);
+				
+				gDao.insertGroupTags(param);
+			}
+		}
 		gDao.insertGroupMember(member);
 	}
 	
@@ -238,4 +260,6 @@ public class GroupServiceImpl implements GroupService{
 			throw new GroupException(GroupErrorCode.IMAGE_UPLOAD_FAILED);
 		}
 	}
+
+	
 }

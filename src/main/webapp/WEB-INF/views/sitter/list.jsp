@@ -141,7 +141,7 @@
       async dataRecv(page) {
         try {
           const params = { page: page, fd: this.fd, st: this.st.join(',') }
-          const res = await axios.get('/web/sitter/list_vue', { params })
+          const res = await axios.get('${pageContext.request.contextPath}/sitter/list_vue', { params })
           if (res.data.code === '200') {
             const d = res.data.data
             this.list = d.list
@@ -158,7 +158,7 @@
       },
       async loadJjimList() {
         try {
-          const res = await axios.get('/web/sitter/jjim/list', { withCredentials: true })
+          const res = await axios.get('${pageContext.request.contextPath}/sitter/jjim/list', { withCredentials: true })
           if (res.data.code === '200') {
             this.jjimList = res.data.data
           } else {
@@ -170,7 +170,7 @@
       },
       async toggleJjim(sitter_no) {
         try {
-          const res = await axios.post('/web/sitter/jjim/toggle', { sitter_no }, { withCredentials: true })
+          const res = await axios.post('${pageContext.request.contextPath}/sitter/jjim/toggle', { sitter_no }, { withCredentials: true })
           if (res.data.code === '200') {
             this.loadJjimList()
             this.dataRecv(this.curpage)
@@ -181,15 +181,15 @@
           alert("찜 처리 실패")
         }
       },
-      goToReservationList() { location.href = '/web/sitter/resList' },
+      goToReservationList() { location.href = '${pageContext.request.contextPath}/sitter/resList' },
       changePage(page) {
         if (page >= 1 && page <= this.totalpage) this.dataRecv(page)
       },
       resetFilter() { this.st = []; this.dataRecv(1) },
-      goInsert() { location.href = `/web/sitter/insert` },
+      goInsert() { location.href = `${pageContext.request.contextPath}/sitter/insert` },
       goDetail(sitter_no) {
         if (!sitter_no) return
-        location.href = '/web/sitter/detail?sitter_no=' + sitter_no
+        location.href = '${pageContext.request.contextPath}/sitter/detail?sitter_no=' + sitter_no
       }
     }
   }).mount('#app')
