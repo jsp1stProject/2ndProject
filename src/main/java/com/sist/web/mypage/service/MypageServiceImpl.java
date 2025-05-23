@@ -10,7 +10,8 @@ import com.sist.web.common.exception.domain.UserException;
 import com.sist.web.mypage.mapper.MypageMapper;
 import com.sist.web.mypage.vo.PetDTO;
 import com.sist.web.mypage.vo.PetVO;
-import com.sist.web.mypage.vo.SitterDTO;
+import com.sist.web.mypage.vo.SitterAppDTO;
+import com.sist.web.mypage.vo.SitterInfoDTO;
 import com.sist.web.security.JwtTokenProvider;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserDetailDTO;
@@ -221,7 +222,7 @@ public class MypageServiceImpl implements MypageService {
     }
 
     @Override
-    public void applyOrUpdatePetsitter(String token, SitterDTO dto) {
+    public void applyOrUpdatePetsitter(String token, SitterAppDTO dto) {
         String roll=getRolls(token);
         if(!roll.equals("ROLE_USER")){
             throw new PetException(PetErrorCode.CONFLICT_APPLY);
@@ -231,7 +232,7 @@ public class MypageServiceImpl implements MypageService {
             dto.setLicense("반려동물종합관리사");
         }
         String userno=securityUtil.getValidUserNo(token);
-        SitterDTO origApp= mypageMapper.getAppSitter(userno);
+        SitterAppDTO origApp= mypageMapper.getAppSitter(userno);
         dto.setUser_no(Integer.parseInt(userno));
         
         //이미 신청서가 존재하면 수정, 없으면 새로 등록
@@ -245,13 +246,23 @@ public class MypageServiceImpl implements MypageService {
     }
 
     @Override
-    public SitterDTO getPetsitter(String token) {
+    public SitterAppDTO getPetsitter(String token) {
         String userno=securityUtil.getValidUserNo(token);
-        SitterDTO origApp= mypageMapper.getAppSitter(userno);
+        SitterAppDTO origApp= mypageMapper.getAppSitter(userno);
         if(origApp==null){
             throw new PetException(PetErrorCode.NO_APPLY);
         }
         return origApp;
+    }
+
+    @Override
+    public SitterInfoDTO getPetsitterInfo(String token) {
+        String userno=securityUtil.getValidUserNo(token);
+        SitterInfoDTO info= mypageMapper.getSitterInfo(userno);
+        if(info==null){
+            throw new PetException(PetErrorCode.NO_APPLY);
+        }
+        return info;
     }
 
 

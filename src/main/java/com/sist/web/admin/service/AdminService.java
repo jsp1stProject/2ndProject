@@ -1,19 +1,9 @@
 package com.sist.web.admin.service;
 
-import co.elastic.clients.elasticsearch.ml.Page;
 import com.sist.web.admin.dto.AdminSitterAppDetailDTO;
-import com.sist.web.admin.mapper.AdminMapper;
-import com.sist.web.common.exception.code.CommonErrorCode;
-import com.sist.web.common.exception.domain.CommonException;
 import com.sist.web.mypage.vo.PetDTO;
-import com.sist.web.mypage.vo.SitterDTO;
-import com.sist.web.admin.dto.AdminUserDetailDTO;
-import com.sist.web.user.vo.UserDetailDTO;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

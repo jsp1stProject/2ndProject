@@ -70,6 +70,7 @@
                     isApplied.value=true;
                     formData.value=new FormData(uploadForm.value)
                     await nextTick()
+                    $('textarea').trigger("keyup");
                 }catch (e) {
                     console.log(e);
                     toast(e.response.data.message);
