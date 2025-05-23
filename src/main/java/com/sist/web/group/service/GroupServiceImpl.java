@@ -239,7 +239,7 @@ public class GroupServiceImpl implements GroupService{
 		
 		
 	}
-	
+	@Transactional
 	@Override
 	public void removeGroup(int groupNo, int userNo) {
 		GroupDTO dto = gDao.selectGroupDetail(groupNo);
@@ -249,6 +249,11 @@ public class GroupServiceImpl implements GroupService{
 		} else if (dto.getOwner() != userNo) {
 			throw new GroupException(GroupErrorCode.NOT_GROUP_OWNER);
 		}
+		// 해당 group_no 의 모든 태그, 가입 신청, 멤버, 메세지, 그룹 삭제
+		gDao.deleteGroupTagAll(groupNo);
+		gDao.deleteJoinRequests(groupNo);
+		gDao.deleteGroupMembers(groupNo);
+		gDao.deleteGroupMessage(groupNo);
 		gDao.deleteGroup(groupNo);
 	}
 	

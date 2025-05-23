@@ -144,4 +144,22 @@ public class GroupDAO {
 	public void updateGroupMemberNickname(int userNo, String nickname, int groupNo) {
 		mapper.updateGroupMemberNickname(userNo, nickname, groupNo);
 	}
+	
+	public void deleteGroupMembers(int groupNo) {
+		mapper.deleteGroupMembers(groupNo);
+	}
+	
+	public void deleteJoinRequests(int groupNo) {
+		mapper.deleteJoinRequests(groupNo);
+	}
+	
+	public void deleteGroupMessage(int groupNo) {
+		mapper.deleteGroupMessage(groupNo);
+	}
+	
+	public void deleteGroupTagAll(int groupNo) {
+		mapper.deleteGroupTagAll(groupNo);
+	}
+	
+	
 }
