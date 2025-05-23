@@ -49,7 +49,7 @@
         <button class="btn btn-primary btn-sm mt-3 w-100" @click="dataRecv(1)">검색</button>
         <button class="btn btn-outline-secondary btn-sm mt-2 w-100" @click="resetFilter">초기화</button>
         <button class="btn btn-success btn-sm mt-3 w-100" @click="goToReservationList">📋 내 예약 목록 보기</button>
-        <button class="btn btn-sm btn-primary" @click="goInsert()">새글쓰기</button>
+        <button class="btn btn-info btn-sm mt-3 w-100" @click="goInsert()">새글쓰기</button>
       </div>
     </div>
 
