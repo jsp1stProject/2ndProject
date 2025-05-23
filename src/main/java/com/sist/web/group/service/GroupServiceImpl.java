@@ -257,7 +257,7 @@ public class GroupServiceImpl implements GroupService{
 			fDao.feedFileInfoTableDelete(feedNo);
 			fDao.feedCommentTableDelete(feedNo);
 			fDao.feedDelete(feedNo);
-		}
+		} 
 		gDao.deleteGroupTagAll(groupNo);
 		gDao.deleteJoinRequests(groupNo);
 		gDao.deleteGroupMembers(groupNo);
