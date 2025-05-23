@@ -130,4 +130,20 @@ public interface GroupMapper {
 		@Delete("DELETE FROM p_group_tag WHERE group_no = #{groupNo}")
 		void deleteGroupTagAll(@Param("groupNo") int groupNo);
 		
+		/*
+		@Delete("DELETE FROM p_feed WHERE group_no = #{groupNo}")
+		void deleteGroupFeedAll(@Param("groupNo") int groupNo);
+		
+		@Delete("DELETE FROM p_feedcomment WHERE group_no = #{groupNo}")
+		void deleteGroupFeedCommentAll(@Param("groupNo") int groupNo);
+		
+		@Delete("DELETE FROM p_fileinfo WHERE group_no = #{groupNo}")
+		void deleteGroupFeedFileInfoAll(@Param("groupNo") int groupNo);
+		
+		@Delete("DELETE FROM p_feed_like WHERE feed_no = #{feedNo}")
+		void deleteGroupFeedLikeAll(@Param("groupNo") int feedNo);
+		*/
+		@Select("SELECT feed_no FROM p_feed WHERE group_no = #{groupNo}")
+		Integer selectGroupFeedNo(@Param("groupNo") int groupNo);
+		
 }

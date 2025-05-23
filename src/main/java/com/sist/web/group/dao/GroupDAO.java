@@ -160,6 +160,21 @@ public class GroupDAO {
 	public void deleteGroupTagAll(int groupNo) {
 		mapper.deleteGroupTagAll(groupNo);
 	}
-	
-	
+	/*
+	public void deleteGroupFeedAll(int groupNo) {
+		mapper.deleteGroupFeedAll(groupNo);
+	}
+	public void deleteGroupFeedCommentAll(int groupNo) {
+		mapper.deleteGroupFeedCommentAll(groupNo);
+	}
+	public void deleteGroupFeedFileInfoAll(int groupNo) {
+		mapper.deleteGroupFeedFileInfoAll(groupNo);
+	}
+	public void deleteGroupFeedLikeAll(int groupNo) {
+		mapper.deleteGroupFeedLikeAll(groupNo);
+	}
+	*/
+	public Integer selectGroupFeed(int groupNo) {
+		return mapper.selectGroupFeedNo(groupNo);
+	}
 }

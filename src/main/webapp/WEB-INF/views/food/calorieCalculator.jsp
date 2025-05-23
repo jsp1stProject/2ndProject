@@ -1,85 +1,65 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>반려동물 칼로리 계산기</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+  /** {*/
+  /*  box-sizing: border-box;*/
+  /*}*/
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f6f8;
-      height: 100%;
-    }
+  /*html, body {*/
+  /*  margin: 0;*/
+  /*  padding: 0;*/
+  /*  font-family: 'Segoe UI', sans-serif;*/
+  /*  background-color: #f4f6f8;*/
+  /*  height: 100%;*/
+  /*}*/
 
-    .wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
+  .wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 60px);
+  }
 
-    .calculator {
-      background-color: #ffffff;
-      padding: 30px 40px;
-      border-radius: 16px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 360px;
-      text-align: center;
-    }
+  .calculator {
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 16px;
+    box-shadow: 0 0 28px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 440px;
+    text-align: center;
+  }
 
-    h2 {
-      margin-bottom: 25px;
-      color: #333;
-    }
+  h2 {
+    margin-bottom: 25px;
+    color: #333;
+    word-break: keep-all;
+  }
 
-    form {
-      display: flex;
-      flex-direction: column;
-    }
+  form {
+    display: flex;
+    flex-direction: column;
+  }
 
-    label {
-      margin: 12px 0 4px;
-      text-align: left;
-      font-weight: bold;
-      color: #444;
-    }
+  label {
+    margin: 12px 0 4px;
+    text-align: left;
+    font-weight: bold;
+    color: #444;
+  }
 
-    input, select {
-      padding: 8px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
+  input, select {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+  }
 
-    button {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #0077cc;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    button:hover {
-      background-color: #005fa3;
-    }
-  </style>
-</head>
-<body>
+</style>
+<div class="container pt-header position-relative">
   <div class="wrapper">
     <div class="calculator">
       <h2>🐾 반려동물 권장 칼로리 계산</h2>
-      <form method="post" action="/web/food/recommend">
+      <form method="post" action="${pageContext.request.contextPath}/food/recommend">
         <label for="animal">동물 종류:</label>
         <select id="animal" name="animal" onchange="updateActivityOptions()">
           <option value="dog">강아지 🐶</option>
@@ -92,7 +72,7 @@
         <label for="activity">활동 지수 선택:</label>
         <select id="activity" name="activity"></select>
 
-        <button type="submit">계산하기</button>
+        <button class="btn btn-primary mt-4" type="submit">계산하기</button>
       </form>
     </div>
   </div>
@@ -134,5 +114,5 @@
     // 초기 실행
     updateActivityOptions();
   </script>
-</body>
-</html>
+
+</div>
