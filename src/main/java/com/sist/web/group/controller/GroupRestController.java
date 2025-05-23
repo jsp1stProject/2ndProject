@@ -167,8 +167,8 @@ public class GroupRestController {
 	
 	@DeleteMapping("/{groupNo}")
 	public ResponseEntity<ApiResponse<Object>> deleteGroup(@PathVariable Integer groupNo, HttpServletRequest req) {
-		int userNo = (Integer) req.getAttribute("userno");
-		service.removeGroup(groupNo, userNo);
+		Long userNo = (Long) req.getAttribute("userno");
+		service.removeGroup(groupNo, userNo.intValue());
 		return ResponseEntity.ok(ApiResponse.success(null, "그룹이 삭제되었습니다."));
 	}
 	

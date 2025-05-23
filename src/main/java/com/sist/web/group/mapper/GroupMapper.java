@@ -118,4 +118,16 @@ public interface GroupMapper {
 		@Update("UPDATE p_group_member SET nickname = #{nickname} WHERE user_no = #{userNo} AND group_no = #{group_no}")
 		public void updateGroupMemberNickname(@Param("userNo") int userNo, @Param("nickname") String nickname, @Param("group_no") int groupNo);
 		
+		@Delete("DELETE FROM p_group_member WHERE group_no = #{groupNo}")
+		void deleteGroupMembers(@Param("groupNo") int groupNo);
+		
+		@Delete("DELETE FROM p_group_joinrequests WHERE group_no = #{groupNo}")
+		void deleteJoinRequests(@Param("groupNo") int groupNo);
+		
+		@Delete("DELETE FROM p_group_msg WHERE group_no = #{groupNo}")
+		void deleteGroupMessage(@Param("groupNo") int groupNo);
+		
+		@Delete("DELETE FROM p_group_tag WHERE group_no = #{groupNo}")
+		void deleteGroupTagAll(@Param("groupNo") int groupNo);
+		
 }
