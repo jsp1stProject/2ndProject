@@ -10,4 +10,5 @@ public interface SitterResPetService {
 	public void insertResPet(int res_no,int pet_no);
 	public List<PetsVO> getPetsByResNo(int res_no);
 	public List<PetsVO> getPetsByUserNo(int user_no);
+	public void deleteReservePetBySitterNo(int sitter_no);
 }

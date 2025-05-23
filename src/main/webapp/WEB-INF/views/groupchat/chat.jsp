@@ -67,7 +67,7 @@
                     	</div>
 
                         <span v-if="group.hasUnread" 
-                            class="position-absolute top-0 start-0 translate-middle rounded-circle bg-white border" 
+                            class="position-absolute top-0 start-0 translate-middle rounded-circle bg-dark border" 
                             style="width: 10px; height: 10px; background-color: darkred; border: 1px solid white;">
                     </span>
                     </a>
@@ -157,7 +157,6 @@
                     <!-- 채팅 내역 검색 -->
                     <div class="dropdown-menu" aria-labelledby="searchdrop">
                         <button type="button" class="dropdown-item" @click="setSearchMode('keyword')">메시지 내용</button>
-                        <button type="button" class="dropdown-item" @click="setSearchMode('date')">날짜</button>
                         <button type="button" class="dropdown-item" @click="setSearchMode('sender')">사용자</button>
                     </div>
                 </div>
@@ -190,8 +189,8 @@
                     <div class="accordion-item">
                         <button type="button" id="onlinedrop" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#onlineUl" aria-expanded="true" aria-controls="onlineUl">온라인</button>
                         <ul id="onlineUl" class="accordion-collapse collapse show" aria-labelledby="onlinedrop">
-                            <li v-for="m in members.filter(m => m.isOnline)" :key="m.user_no">
-                                <a href="#" class="user-profile">
+                            <li v-for="m in members.filter(m => m.isOnline)" :key="m.user_no" @click="openUserDetail(m.user_no)">
+                                <a class="user-profile">
                                     <img :src="m.profile_img ? m.profile_img : '${pageContext.request.contextPath}/assets/images/profile/default_pf.png'" alt="" width="35" height="35" class="rounded-circle">
                                     <p class="user-info">{{ m.nickname }}</p>
                                 </a>
@@ -202,8 +201,8 @@
                     <div class="accordion-item">
                         <button type="button" id="offlinedrop" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#offlineUl" aria-expanded="true" aria-controls="offlineUl">오프라인</button>
                         <ul id="offlineUl" class="accordion-collapse show" aria-labelledby="offlinedrop">
-                            <li v-for="m in members.filter(m => !m.isOnline)" :key="m.user_no">
-                                <a href="#" class="user-profile">
+                            <li v-for="m in members.filter(m => !m.isOnline)" :key="m.user_no" @click="openUserDetail(m.user_no)">
+                                <a class="user-profile">
                                     <img :src="m.profile_img ? m.profile_img : '${pageContext.request.contextPath}/assets/images/profile/default_pf.png'" alt="" width="35" height="35" class="rounded-circle">
                                     <p class="user-info">{{ m.nickname }}</p>
                                 </a>
@@ -261,8 +260,8 @@
                 <div class="form-group">
                     <label>태그 선택</label>
                     <div class="d-flex flex-wrap gap-2" id="tag-buttons">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" v-for="tag in allTags"
-                                :key="tag" :class="{ active: selectedTags.includes(tag) }"
+                        <button type="button" class="btn btn-sm" v-for="tag in allTags"
+                                :key="tag" :class="['tag-button', selectedTags.includes(tag) ? 'btn-primary' : 'btn-outline-secondary']"
                                 @click="toggleTag(tag)">
                         {{ tag }}
                         </button>
@@ -294,6 +293,49 @@
             </div>
         </div>
     </div>
+
+    <!-- 유저 상세 정보 모달 -->
+    <div class="modal fade" id="userDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">유저 상세 정보</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body text-center">
+            <div v-if="selectedUser">
+            <img 
+                :src="selectedUser.profile || `${contextPath}/assets/images/profile/default_pf.png`" 
+                alt="프로필 이미지" 
+                class="img-thumbnail mb-3" 
+                style="width: 80px; height: 80px; object-fit: cover;"
+            />
+            <p>
+            <strong>닉네임:</strong>
+            <span v-if="!editNicknameMode">{{ selectedUser.nickname }}</span>
+            <input
+                v-else
+                v-model="editedNickname"
+                type="text"
+                class="form-control form-control-sm d-inline-block w-auto"
+                style="width: auto; display: inline-block;"
+            />
+            <button
+                v-if="String(selectedUser.userNo) === String(sender_no)"
+                @click="toggleEditNickname"
+                class="btn btn-sm btn-outline-secondary ms-2"
+            >
+                {{ editNicknameMode ? '완료' : '변경하기' }}
+            </button>
+            </p>
+            <p><strong>역할:</strong> {{ selectedUser.role }}</p>
+            <p><strong>가입일:</strong> {{ formatMessageTime(selectedUser.joinedAt) }}</p>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+
     <!-- 그룹 추가 모달 -->
     <div class="modal fade" id="createGroupModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">

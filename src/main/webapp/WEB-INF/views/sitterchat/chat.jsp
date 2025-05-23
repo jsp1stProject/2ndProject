@@ -64,7 +64,7 @@
     <h5>채팅 목록</h5>
     <div v-for="room in rooms" :key="room.room_no" class="chat-room" @click="enterRoom(room)">
       {{ room.opponent_nick }}<br>
-      <small>{{ formatTime(room.reserve_start_time) }}</small>
+      <small>{{ formatTime(room.res_start_time) }}</small>
     </div>
   </div>
 
@@ -91,7 +91,9 @@
 </div>
 
 <script>
+const contextPath = '<%= request.getContextPath() %>';
 Vue.createApp({
+	
   data() {
     return {
       rooms: [],
@@ -109,7 +111,7 @@ Vue.createApp({
   methods: {
 	  async initWebSocket() {
 		    try {
-		      const res = await axios.get('<%= request.getContextPath() %>/auth/me');
+		      const res = await axios.get(contextPath + '/auth/me');
 		      if (!res.data.valid) {
 		        alert('로그인이 필요한 서비스입니다.');
 		        return;
@@ -141,18 +143,25 @@ Vue.createApp({
 		    }
 		  },
     loadRooms() {
-      axios.get('${pageContext.request.contextPath}/sitterchat/list_vue').then(res => {
+      axios.get(contextPath + '/sitterchat/list_vue').then(res => {
         this.rooms = res.data.list;
+        console.log("✅ rooms:", this.rooms);
         if (this.rooms.length > 0) {
           this.enterRoom(this.rooms[0]);
         }
       });
     },
-    formatTime(timestamp) {
-      if (!timestamp) return '';
-      const date = new Date(timestamp);
-      return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-    },
+    formatTime(timeStr) {
+    	  if (!timeStr) return '';
+    	  
+    	  // 임시 날짜와 조합해서 파싱
+    	  const today = new Date().toISOString().split('T')[0]; // 예: "2025-05-23"
+    	  const fullStr = today + 'T' + timeStr; // "2025-05-23T04:00"
+
+    	  const date = new Date(fullStr);
+    	  if (isNaN(date.getTime())) return 'Invalid Date';
+    	  return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    	},
     getOpponentNo(room) {
       return (room.user1_no === this.userNo) ? room.user2_no : room.user1_no;
     },
@@ -165,7 +174,7 @@ Vue.createApp({
       this.currentRoom = room;
       this.messages = [];
 
-      axios.get('${pageContext.request.contextPath}/sitterchat/msglist', {
+      axios.get(contextPath + '/sitterchat/msglist', {
         params: { room_no: room.room_no }
       }).then(res => {
         this.messages = res.data;
@@ -176,7 +185,7 @@ Vue.createApp({
         });
       });
 
-      this.stompClient.subscribe('/ssub/chat/' + room.room_no, msg => {
+      this.stompClient.subscribe('/sub/chat/' + room.room_no, msg => {
         const newMsg = JSON.parse(msg.body);
         this.messages.push(newMsg);
 
@@ -190,13 +199,13 @@ Vue.createApp({
       if (!this.chatContent.trim()) return;
 
       const msg = {
-        roomId: this.currentRoom.room_no,
+        room_no: this.currentRoom.room_no,
         receiverNo: this.getOpponentNo(this.currentRoom),
-        chatContent: this.chatContent,
+        content: this.chatContent,
         chatType: 'text'
       };
 
-      this.stompClient.send("/spub/Send", {}, JSON.stringify(msg));
+      this.stompClient.send("/pub/Send", {}, JSON.stringify(msg));
       this.chatContent = '';
     }
   }

@@ -19,7 +19,7 @@
           <input class="form-check-input" type="checkbox" :id="'pet_' + pet.pet_no"
                  :value="pet.pet_no" v-model="form.pet_nos">
           <label class="form-check-label" :for="'pet_' + pet.pet_no">
-            <img :src="pet.pet_profilepic" width="50" height="50" class="me-1 rounded-circle">
+            <img :src="'${pageContext.request.contextPath}/s3/'+pet.pet_profilepic" width="50" height="50" class="me-1 rounded-circle">
             {{ pet.pet_name }}
           </label>
         </div>

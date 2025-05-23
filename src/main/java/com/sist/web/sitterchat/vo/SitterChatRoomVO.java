@@ -16,6 +16,6 @@ public class SitterChatRoomVO {
     // 프론트용 추가 필드 (상대방 정보)
     private String opponent_nick;
     private String opponent_profile;
-    private String reserve_start_time;
+    private String res_start_time;
 }
 

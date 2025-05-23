@@ -81,3 +81,7 @@
   background-color: #ffe58a;
   transition: background-color 1s ease;
 }
+
+.user-profile:hover {
+  cursor: pointer;
+}

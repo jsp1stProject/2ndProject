@@ -52,7 +52,7 @@ public class SitterChatStompController {
         service.insertChat(chat);
 
         // 4. 메시지 브로드캐스트
-        messagingTemplate.convertAndSend("/ssub/chat/" + dto.getRoomId(), dto);
+        messagingTemplate.convertAndSend("/sub/chat/" + dto.getRoomId(), dto);
     }
 
 }

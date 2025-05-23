@@ -1,5 +1,7 @@
 package com.sist.web.sitter.vo;
 
+import com.sist.web.user.vo.UserVO;
+
 import lombok.Data;
 
 @Data
@@ -12,5 +14,7 @@ public class SitterReviewVO {
     private int group_id;
     private Integer group_step;     // 0=댓글, 1=대댓글
     private Integer parent_no;      // 대댓글일 경우 대상 댓글
+    
+    private UserVO user;
 }
 

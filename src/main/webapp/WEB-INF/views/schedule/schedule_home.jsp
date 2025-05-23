@@ -418,6 +418,19 @@
         		initialView: 'dayGridMonth',
         		locale: 'ko',
 				dayMaxEventRows: true,
+				headerToolbar: {
+    				left: 'prev,next today',
+    				center: 'title',
+    				right: 'customFullListButton'
+  				},
+  				customButtons: {
+    				customFullListButton: {
+      				text: '📖 전체 일정 보기',
+      				click: () => {
+        			window.location.href = '../schedule/list';
+      				}
+   				  }
+  				},
   				views: {
   				dayGridMonth: {
       				dayMaxEventRows: 3 // 최대 3개까지만 보이고, 초과 시 "+n개 더보기"로 표시

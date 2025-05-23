@@ -134,4 +134,14 @@ public class GroupDAO {
 	public void updateViewingZero(int userNo) {
 		mapper.updateViewingZero(userNo);
 	}
+	
+	/** 그룹 태그 조회 */
+	public List<String> selectGroupTagsByGroupNo(int groupNo) {
+		return mapper.selectGroupTagsByGroupNo(groupNo);
+	}
+	
+	/** 그룹별 닉네임 변경 */
+	public void updateGroupMemberNickname(int userNo, String nickname, int groupNo) {
+		mapper.updateGroupMemberNickname(userNo, nickname, groupNo);
+	}
 }

@@ -53,7 +53,7 @@ export const uiMethods = {
   async openGroupSettingsModal() {
     const data = await this.fetchGroupDetail();
     this.selectedTags = data.tags || [];
-
+    console.log('tags', this.selectedTags);
     this.groupDetail.group_no = data.group_no;
     this.groupDetail.group_name = data.group_name;
     this.groupDetail.description = data.description;
@@ -86,8 +86,12 @@ export const uiMethods = {
   async saveGroupSettings() {
     await this.updateGroupDetail();
     alert('수정되었습니다.');
-    //this.groupEditMode = false;
+
+    const currentGroupno = this.group_no;
+
     await this.loadGroups();
+
+    await this.joinGroup(currentGroupno);
 
     const updated = await this.fetchGroupDetail();
 
@@ -122,7 +126,22 @@ export const uiMethods = {
       modalEl?.removeAttribute('aria-hidden');
       new bootstrap.Modal(modalEl).show();
     });
-  }
+  },
 
+  async openUserDetail(userNo) {
+    try {
+      const data = await this.fetchGroupMemberDetail(this.group_no, userNo);
+      this.selectedUser = data;
+      this.selectedUser.role = this.selectedUser.role === 'OWNER' ? '그룹장' : '일반 멤버';
+
+      await this.$nextTick(() => {
+        const modal = document.getElementById('userDetailModal');
+        if (modal) new bootstrap.Modal(modal).show();
+      });
+    } catch (e) {
+      alert('유저 정보를 불러오는 데 실패했습니다.');
+      console.error(e);
+    }
+  }
 
 };

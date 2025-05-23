@@ -78,4 +78,11 @@ public interface SitterResMapper {
 	public List<Map<String, String>> getReservedTimeRanges(@Param("sitter_no") int sitter_no,
 			@Param("res_date") Date res_date);
 
+	@Delete("DELETE FROM p_sitter_res_pet WHERE res_no IN (SELECT res_no FROM p_sitter_reserve WHERE sitter_no = #{sitter_no})")
+	public void deleteReservePetBySitterNo(@Param("sitter_no") int sitter_no);
+	
+	@Delete("DELETE FROM p_sitter_res WHERE sitter_no = #{sitter_no}")
+	public void deleteReserveBySitterNo(@Param("sitter_no") int sitter_no);
+
+
 }

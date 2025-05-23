@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Getter @Setter
 public class GroupMemberInfoDTO {
 	private Long groupNo;
+	private int userNo;
     private String nickname;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Timestamp joinedAt;
