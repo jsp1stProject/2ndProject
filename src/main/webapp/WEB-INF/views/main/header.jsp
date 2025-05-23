@@ -81,10 +81,25 @@
 										<iconify-icon icon="solar:paw-linear" class="fs-7"></iconify-icon>
 										<p class="mb-0 fs-3">내 반려동물</p>
 									</a>
-									<a href="${pageContext.request.contextPath}/mypage/petsitters" class="d-flex align-items-center gap-2 dropdown-item">
-										<iconify-icon icon="solar:user-id-broken" class="fs-7"></iconify-icon>
-										<p class="mb-0 fs-3">펫시터 프로필</p>
-									</a>
+									<c:choose>
+										<c:when test="${role[0] eq 'ROLE_USER'}">
+											<a href="${pageContext.request.contextPath}/mypage/petsitterapp" class="d-flex align-items-center gap-2 dropdown-item">
+												<iconify-icon icon="solar:user-id-broken" class="fs-7"></iconify-icon>
+												<p class="mb-0 fs-3">펫시터 신청</p>
+											</a>
+										</c:when>
+										<c:otherwise>
+<%--											<a href="${pageContext.request.contextPath}/mypage/petsitterinfo" class="d-flex align-items-center gap-2 dropdown-item">--%>
+<%--												<iconify-icon icon="solar:user-id-broken" class="fs-7"></iconify-icon>--%>
+<%--												<p class="mb-0 fs-3">펫시터 프로필</p>--%>
+<%--											</a>--%>
+											<a href="${pageContext.request.contextPath}/sitter/insert" class="d-flex align-items-center gap-2 dropdown-item">
+												<iconify-icon icon="solar:user-id-broken" class="fs-7"></iconify-icon>
+												<p class="mb-0 fs-3">펫시터 프로필</p>
+											</a>
+										</c:otherwise>
+									</c:choose>
+
 									<c:if test="${role[0] eq 'ROLE_ADMIN'}">
 										<a href="${pageContext.request.contextPath}/admin/users" class="d-flex align-items-center gap-2 dropdown-item">
 											<iconify-icon icon="solar:shield-user-bold" class="fs-7"></iconify-icon>

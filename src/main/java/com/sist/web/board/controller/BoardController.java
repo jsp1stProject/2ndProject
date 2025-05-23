@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import java.util.*;
-import com.sist.web.board.*;
+//import com.sist.web.board.*;
 import com.sist.web.board.service.BoardService;
 import com.sist.web.board.vo.BoardVO;
 @Controller
