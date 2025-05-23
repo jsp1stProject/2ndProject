@@ -14,11 +14,11 @@ import com.sist.web.sitter.vo.*;
 public interface SitterMapper {
 	// 전체 목록
     @Select("SELECT sitter_no, jjimcount, carecount, score, tag, content, sitter_pic, care_loc, pet_first_price, "
-          + "nickname, user_name, history, license, info, num " 
+          + "nickname, user_name, profile, history, license, info, num " 
           + "FROM (SELECT sitter_no, jjimcount, carecount, score, tag, content, sitter_pic, care_loc, pet_first_price, "
-          + "nickname, user_name, history, license, info, rownum AS num " 
+          + "nickname, user_name, profile, history, license, info, rownum AS num " 
           + "FROM (SELECT ps.sitter_no, ps.jjimcount, ps.carecount, ps.score, ps.tag, ps.content, ps.sitter_pic, "
-          + "ps.care_loc, ps.pet_first_price, pu.nickname, pu.user_name, spa.history, spa.license, spa.info "
+          + "ps.care_loc, ps.pet_first_price, pu.nickname, pu.user_name, pu.profile, spa.history, spa.license, spa.info "
           + "FROM p_sitter ps "
           + "JOIN p_users pu ON ps.user_no = pu.user_no "
           + "JOIN p_sitter_app spa ON ps.app_no = spa.app_no "
@@ -37,7 +37,8 @@ public interface SitterMapper {
 
         @Result(property = "user.nickname", column = "nickname"),
         @Result(property = "user.user_name", column = "user_name"),
-
+        @Result(property = "user.profile", column = "profile"),
+        
         @Result(property = "sitterApp.history", column = "history"),
         @Result(property = "sitterApp.license", column = "license"),
         @Result(property = "sitterApp.info", column = "info")
@@ -46,11 +47,11 @@ public interface SitterMapper {
 
     // 필터 포함 목록
     @Select("SELECT sitter_no, jjimcount, carecount, score, tag, content, sitter_pic, care_loc, pet_first_price, "
-          + "nickname, user_name, history, license, info, num " 
+          + "nickname, user_name, profile, history, license, info, num " 
           + "FROM (SELECT sitter_no, jjimcount, carecount, score, tag, content, sitter_pic, care_loc, pet_first_price, "
-          + "nickname, user_name, history, license, info, rownum AS num " 
+          + "nickname, user_name, profile, history, license, info, rownum AS num " 
           + "FROM (SELECT ps.sitter_no, ps.jjimcount, ps.carecount, ps.score, ps.tag, ps.content, ps.sitter_pic, "
-          + "ps.care_loc, ps.pet_first_price, pu.nickname, pu.user_name, spa.history, spa.license, spa.info "
+          + "ps.care_loc, ps.pet_first_price, pu.nickname, pu.user_name, pu.profile, spa.history, spa.license, spa.info "
           + "FROM p_sitter ps "
           + "JOIN p_users pu ON ps.user_no = pu.user_no "
           + "JOIN p_sitter_app spa ON ps.app_no = spa.app_no "
@@ -71,6 +72,7 @@ public interface SitterMapper {
 
         @Result(property = "user.nickname", column = "nickname"),
         @Result(property = "user.user_name", column = "user_name"),
+        @Result(property = "user.profile", column = "profile"),
 
         @Result(property = "sitterApp.history", column = "history"),
         @Result(property = "sitterApp.license", column = "license"),
@@ -106,6 +108,7 @@ public interface SitterMapper {
     	    @Result(property = "user.user_no", column = "u_user_no"),
     	    @Result(property = "user.nickname", column = "u_nickname"),
     	    @Result(property = "user.user_name", column = "u_user_name"),
+    	    
 
     	    @Result(property = "sitterApp.history", column = "a_history"),
     	    @Result(property = "sitterApp.license", column = "a_license"),
@@ -123,8 +126,8 @@ public interface SitterMapper {
 	public int hasSitterPost(int user_no);
 
 	// 새글
-	@Insert("INSERT INTO p_sitter(sitter_no,user_no,carecount,tag,content,sitter_pic,care_loc,pet_first_price) "
-			+ "VALUES(p_sit_no_seq.NEXTVAL,#{user_no},#{carecount},#{tag},#{content},#{sitter_pic},#{care_loc},#{pet_first_price})")
+	@Insert("INSERT INTO p_sitter(sitter_no,user_no,carecount,tag,content,care_loc,pet_first_price) "
+			+ "VALUES(p_sit_no_seq.NEXTVAL,#{user_no},#{carecount},#{tag},#{content},#{care_loc},#{pet_first_price})")
 	public void sitterInsert(SitterVO vo);
 	
 	// 수정
@@ -137,14 +140,14 @@ public interface SitterMapper {
 	public void sitterDelete(int sitter_no);
 	
 	// 찜하기
-	@Select("SELECT ps.sitter_no, pu.nickname, pu.profile " 
+	@Select("SELECT ps.sitter_no, pu.nickname, pu.profile,ps.sitter_pic " 
 	        + "FROM p_sitter ps " 
 	        + "JOIN p_sitter_jjim pj ON ps.sitter_no = pj.sitter_no " 
 	        + "JOIN p_users pu ON ps.user_no = pu.user_no " 
 	        + "WHERE pj.user_no = #{user_no} " 
 	        + "ORDER BY ps.sitter_no DESC")
 	@Results({
-	    @Result(property = "sitter_no", column = "sitter_no"),
+	    @Result(property = "sitter_pic", column = "sitter_pic"),
 	    @Result(property = "nickname", column = "nickname"),
 	    @Result(property = "profile", column = "profile")
 	})
@@ -159,6 +162,9 @@ public interface SitterMapper {
 
 	@Delete("DELETE FROM p_sitter_jjim WHERE user_no = #{user_no} AND sitter_no = #{sitter_no}")
 	public void deleteJjim(@Param("user_no") int user_no, @Param("sitter_no") int sitter_no);
+	
+	@Delete("DELETE FROM p_sitter_jjim WHERE sitter_no = #{sitter_no}")
+	public void deleteJjimAll(@Param("sitter_no") int sitter_no);
 
 	@Update("UPDATE p_sitter SET jjimcount = jjimcount + #{amount} WHERE sitter_no = #{sitter_no}")
 	public void updateJjimCount(@Param("sitter_no") int sitter_no, @Param("amount") int amount);
