@@ -67,7 +67,7 @@
                     	</div>
 
                         <span v-if="group.hasUnread" 
-                            class="position-absolute top-0 start-0 translate-middle rounded-circle bg-white border" 
+                            class="position-absolute top-0 start-0 translate-middle rounded-circle bg-dark border" 
                             style="width: 10px; height: 10px; background-color: darkred; border: 1px solid white;">
                     </span>
                     </a>
@@ -157,7 +157,6 @@
                     <!-- 채팅 내역 검색 -->
                     <div class="dropdown-menu" aria-labelledby="searchdrop">
                         <button type="button" class="dropdown-item" @click="setSearchMode('keyword')">메시지 내용</button>
-                        <button type="button" class="dropdown-item" @click="setSearchMode('date')">날짜</button>
                         <button type="button" class="dropdown-item" @click="setSearchMode('sender')">사용자</button>
                     </div>
                 </div>
@@ -261,8 +260,8 @@
                 <div class="form-group">
                     <label>태그 선택</label>
                     <div class="d-flex flex-wrap gap-2" id="tag-buttons">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" v-for="tag in allTags"
-                                :key="tag" :class="{ active: selectedTags.includes(tag) }"
+                        <button type="button" class="btn btn-sm" v-for="tag in allTags"
+                                :key="tag" :class="['tag-button', selectedTags.includes(tag) ? 'btn-primary' : 'btn-outline-secondary']"
                                 @click="toggleTag(tag)">
                         {{ tag }}
                         </button>

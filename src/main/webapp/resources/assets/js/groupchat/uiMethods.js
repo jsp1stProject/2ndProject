@@ -53,7 +53,7 @@ export const uiMethods = {
   async openGroupSettingsModal() {
     const data = await this.fetchGroupDetail();
     this.selectedTags = data.tags || [];
-
+    console.log('tags', this.selectedTags);
     this.groupDetail.group_no = data.group_no;
     this.groupDetail.group_name = data.group_name;
     this.groupDetail.description = data.description;
@@ -86,8 +86,12 @@ export const uiMethods = {
   async saveGroupSettings() {
     await this.updateGroupDetail();
     alert('수정되었습니다.');
-    //this.groupEditMode = false;
+
+    const currentGroupno = this.group_no;
+
     await this.loadGroups();
+
+    await this.joinGroup(currentGroupno);
 
     const updated = await this.fetchGroupDetail();
 

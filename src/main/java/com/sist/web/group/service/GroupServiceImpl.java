@@ -65,6 +65,11 @@ public class GroupServiceImpl implements GroupService{
 	public Map<String, Object> getGroupListAndStates(int user_no){
 		
 		List<GroupDTO> group_list = gDao.selectGroupAllList();
+		for(GroupDTO group : group_list)
+		{
+			int group_no = group.getGroup_no();
+			group.setTags(gDao.selectGroupTagsByGroupNo(group_no));
+		}
 		List<Map<String, Object>> states_list = gDao.selectGroupMemberStates(user_no);
 		List<GroupDTO> joinedgroup_list = gDao.selectGroup(String.valueOf(user_no));
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -74,11 +79,13 @@ public class GroupServiceImpl implements GroupService{
 		map.put("joinedgroup_list", joinedgroup_list);
 		return map;
 	}
+	@Transactional
 	@Override
 	public GroupDTO getGroupDetailByGroupNo(int group_no) {
 		GroupDTO dto = new GroupDTO();
 		try {
 			dto = gDao.selectGroupDetail(group_no);
+			dto.setTags(gDao.selectGroupTagsByGroupNo(group_no));
 		} catch (Exception ex) {
 			throw new CommonException(CommonErrorCode.INTERNAL_SERVER_ERROR);
 		}
