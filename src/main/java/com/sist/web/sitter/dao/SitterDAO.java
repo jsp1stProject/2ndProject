@@ -46,6 +46,10 @@ public class SitterDAO {
 	        return true;
 	    }
 	}
+	public void deleteJjimAll(int sitter_no)
+	{
+		mapper.deleteJjimAll(sitter_no);
+	}
 	
 	// 상세보기
 	public SitterVO sitterDetailData(int sitter_no)
@@ -71,35 +75,5 @@ public class SitterDAO {
 	public int hasSitterPost(int user_no)
 	{
 		return mapper.hasSitterPost(user_no);
-	}
-	
-	// 리뷰
-	public List<SitterReviewVO> reviewListData(int sitter_no)
-	{
-		return mapper.reviewListData(sitter_no);
-	}
-	public int getReviewWriter(int review_no)
-	{
-		return mapper.getReviewWriter(review_no);
-	}
-	public void reviewInsert(SitterReviewVO vo)
-	{
-		mapper.reviewInsert(vo);
-	}
-	public void replyInsert(SitterReviewVO vo)
-	{
-		mapper.replyInsert(vo);
-	}
-	public void reviewUpdate(SitterReviewVO vo)
-	{
-		mapper.reviewUpdate(vo);
-	}
-	public void reviewDelete(int review_no)
-	{
-		mapper.reviewDelete(review_no);
-	}
-	public void deleteSitterReviewWithPost(int sitter_no)
-	{
-		mapper.deleteSitterReviewWithPost(sitter_no);
 	}
 }

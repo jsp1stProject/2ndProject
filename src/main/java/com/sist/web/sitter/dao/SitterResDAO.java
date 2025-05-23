@@ -46,4 +46,8 @@ public class SitterResDAO {
     {
     	return mapper.getSitterUserNoBySitterNo(sitter_no);
     }
+    public void deleteReserveBySitterNo(int sitter_no)
+    {
+    	mapper.deleteReserveBySitterNo(sitter_no);
+    }
 }

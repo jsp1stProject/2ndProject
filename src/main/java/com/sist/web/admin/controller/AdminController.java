@@ -1,7 +1,6 @@
 package com.sist.web.admin.controller;
 
 import com.sist.web.admin.service.AdminService;
-import com.sist.web.mypage.vo.SitterDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;

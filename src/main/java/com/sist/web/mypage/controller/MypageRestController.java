@@ -4,7 +4,8 @@ import com.sist.web.common.response.ApiResponse;
 import com.sist.web.mypage.service.MypageService;
 import com.sist.web.mypage.service.MypageTransactionalService;
 import com.sist.web.mypage.vo.PetDTO;
-import com.sist.web.mypage.vo.SitterDTO;
+import com.sist.web.mypage.vo.SitterAppDTO;
+import com.sist.web.mypage.vo.SitterInfoDTO;
 import com.sist.web.security.JwtTokenProvider;
 import com.sist.web.user.mapper.UserMapper;
 import com.sist.web.user.vo.UserDetailDTO;
@@ -78,18 +79,31 @@ public class MypageRestController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/petsitters")
+    @PostMapping("/petsitterapp")
     public ResponseEntity<Void> applyPetsitter(
-            @ModelAttribute SitterDTO dto,
+            @ModelAttribute SitterAppDTO dto,
             @CookieValue(value="accessToken", required = false) String token){
         mypageService.applyOrUpdatePetsitter(token, dto);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/petsitters")
-    public ResponseEntity<ApiResponse<SitterDTO>> GetPetsitter(
+    @GetMapping("/petsitterapp")
+    public ResponseEntity<ApiResponse<SitterAppDTO>> GetPetsitter(
             @CookieValue(value="accessToken", required = false) String token){
         return ResponseEntity.ok(ApiResponse.success(mypageService.getPetsitter(token)));
     }
 
+    @PostMapping("/petsitterinfo")
+    public ResponseEntity<Void> updatePetsitterInfo(
+            @ModelAttribute SitterAppDTO dto,
+            @CookieValue(value="accessToken", required = false) String token){
+        mypageService.applyOrUpdatePetsitter(token, dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/petsitterinfo")
+    public ResponseEntity<ApiResponse<SitterInfoDTO>> GetPetsitterInfo(
+            @CookieValue(value="accessToken", required = false) String token){
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getPetsitterInfo(token)));
+    }
 }

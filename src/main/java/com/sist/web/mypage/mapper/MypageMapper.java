@@ -2,7 +2,8 @@ package com.sist.web.mypage.mapper;
 
 import com.sist.web.mypage.vo.PetDTO;
 import com.sist.web.mypage.vo.PetVO;
-import com.sist.web.mypage.vo.SitterDTO;
+import com.sist.web.mypage.vo.SitterAppDTO;
+import com.sist.web.mypage.vo.SitterInfoDTO;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
@@ -32,12 +33,16 @@ public interface MypageMapper {
     public void DeleteMyPet(String petno);
 
     @Insert("INSERT INTO P_SITTER_APP(app_no, pet_no, user_no, history, license, info) " +
-            "VALUES (APP_NO_SEQ.nextval,#{pet_no, jdbcType=DOUBLE},#{user_no},#{history},#{license},#{info})")
-    public void applyPetsitter(SitterDTO dto);
+            "VALUES (APP_NO_SEQ.nextval,#{pet_no, jdbcType=DOUBLE},#{user_no},#{history},#{license, jdbcType=VARCHAR},#{info})")
+    public void applyPetsitter(SitterAppDTO dto);
 
     @Select("select APP_NO,USER_NO,HISTORY,LICENSE,INFO FROM P_SITTER_APP where USER_NO=#{user_no}")
-    public SitterDTO getAppSitter(@Param("user_no")String Userno);
+    public SitterAppDTO getAppSitter(@Param("user_no")String Userno);
 
     @Update("UPDATE P_SITTER_APP set HISTORY=#{history}, LICENSE=#{license}, INFO=#{info}, updated_at=SYSDATE where USER_NO=#{user_no}")
-    public void updateAppSitter(SitterDTO dto);
+    public void updateAppSitter(SitterAppDTO dto);
+
+    @Select("select SITTER_NO,USER_NO,JJIMCOUNT,SCORE,CARECOUNT,TAG,CONTENT,SITTER_PIC,CARE_LOC,PET_FIRST_PRICE,HISTORY,LICENSE,ACTIVE from P_SITTER " +
+            "where user_no=#{user_no}")
+    public SitterInfoDTO getSitterInfo(@Param("user_no")String Userno);
 }

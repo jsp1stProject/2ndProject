@@ -35,11 +35,11 @@
         <input type="number" v-model="form.pet_first_price" class="form-control" required>
       </div>
 
-      <div class="mb-3">
+     <!--  <div class="mb-3">
         <label class="form-label">사진 업로드</label>
         <input type="file" @change="handleFileUpload" class="form-control" accept="image/*" required>
       </div>
-
+ -->
       <div v-if="previewUrl" class="mb-3">
         <label class="form-label">미리보기</label><br>
         <img :src="previewUrl" class="img-thumbnail" style="max-width: 300px;">
@@ -61,7 +61,7 @@
             content: '',
             carecount: '',
             care_loc: '',
-            pet_first_price: ''
+            pet_first_price: '',
           },
           imageFile: null,
           previewUrl: null
@@ -76,9 +76,7 @@
           }
         },
         async handleInsert() {
-  if (!this.imageFile) {
-    alert("이미지를 선택해주세요")
-    return
+  
   }
 
   try {

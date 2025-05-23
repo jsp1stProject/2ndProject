@@ -30,4 +30,12 @@ public class SitterResPetServiceImpl implements SitterResPetService{
 		return pDao.getPetsByUserNo(user_no);
 	}
 
+	@Override
+	public void deleteReservePetBySitterNo(int sitter_no) {
+		// TODO Auto-generated method stub
+		pDao.deleteReservePetBySitterNo(sitter_no);
+	}
+
+	
+
 }

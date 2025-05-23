@@ -36,6 +36,7 @@ public class MypageController {
     }
 
     @GetMapping("/pets/{petno}")
+    @PreAuthorize("hasRole('USER')")
     public String GetMyPetDetail(Model model){
         model.addAttribute("main_jsp", "../mypage/pets_detail.jsp");
         return "main/main";
@@ -48,9 +49,17 @@ public class MypageController {
         return "main/main";
     }
 
-    @GetMapping("/petsitters")
-    public String petsitters(Model model){
+    @GetMapping("/petsitterapp")
+    @PreAuthorize("hasRole('USER')")
+    public String petsitter_apply(Model model){
         model.addAttribute("main_jsp", "../mypage/petsitters_apply.jsp");
+        return "main/main";
+    }
+
+    @GetMapping("/petsitterinfo")
+    @PreAuthorize("hasRole('SITTER')")
+    public String petsitter_info(Model model){
+        model.addAttribute("main_jsp", "../mypage/petsitters_info.jsp");
         return "main/main";
     }
 

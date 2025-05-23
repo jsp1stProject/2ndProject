@@ -61,20 +61,7 @@ public interface ScheduleMapper {
 			+ "WHERE m.user_no = #{user_no} OR p.user_no = #{user_no}")
 	public int scheduleUserTotalCount(long user_no);
 	
-	@Select("SELECT * "
-			+ "FROM (SELECT a.*, ROWNUM AS num "
-			+ "FROM (SELECT p.sche_no, p.sche_title, "
-			+ "TO_CHAR(p.sche_start, 'YYYY-MM-DD HH24:MI') AS sche_start_str, "
-			+ "TO_CHAR(p.sche_end, 'YYYY-MM-DD HH24:MI') AS sche_end_str, "
-			+ "p.is_important, p.type "
-			+ "FROM p_schedule p "
-			+ "LEFT JOIN p_schedule_member m ON p.sche_no = m.sche_no "
-			+ "WHERE (m.user_no = #{user_no} OR p.user_no = #{user_no}) "
-			+ "AND p.sche_title LIKE '%' || #{search} || '%' "
-			+ "GROUP BY p.sche_no, p.sche_title, p.sche_start, p.sche_end, p.is_important, p.type "
-			+ "ORDER BY p.sche_start DESC) a "
-			+ "WHERE ROWNUM <= #{end} ) "
-			+ "WHERE num > #{start}")
+
 	public List<ScheduleVO> schedulePagingUserSearchlList(Map map);
 	
 	@Select("SELECT CEIL(COUNT(DISTINCT p.sche_no)/15.0) "

@@ -76,4 +76,10 @@ public class SitterResServiceImpl implements SitterResService{
 		return rDao.getSitterUserNoBySitterNo(sitter_no);
 	}
 
+	@Override
+	public void deleteReserveBySitterNo(int sitter_no) {
+		// TODO Auto-generated method stub
+		rDao.deleteReserveBySitterNo(sitter_no);
+	}
+
 }

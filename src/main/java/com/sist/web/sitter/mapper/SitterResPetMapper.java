@@ -2,6 +2,7 @@ package com.sist.web.sitter.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -41,4 +42,8 @@ public interface SitterResPetMapper {
     // 펫 목록
     @Select("SELECT * FROM p_pets WHERE user_no = #{user_no}")
     public List<PetsVO> getPetsByUserNo(@Param("user_no") int user_no);
+    
+    @Delete("DELETE FROM p_sitter_res_pet WHERE res_no IN (SELECT res_no FROM p_sitter_res WHERE sitter_no = #{sitter_no})")
+    public void deleteReservePetBySitterNo(@Param("sitter_no") int sitter_no);
+
 } 

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sist.web.aws.AwsS3Service;
+import com.sist.web.common.response.ApiResponse;
 import com.sist.web.feed.service.*;
 import com.sist.web.feed.vo.*;
 
@@ -84,6 +85,22 @@ public class GroupFeedRestController {
 			return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<>(vo,HttpStatus.OK);
+	}
+	
+	// 피드 수정하기
+	@PutMapping("/api/feeds/{feed_no}")
+	public ResponseEntity<Void> feed_update(@PathVariable("feed_no") int feed_no, @RequestBody FeedVO vo)
+	{
+		vo.setFeed_no(feed_no);
+		service.feedUpdate(vo);		
+		return ResponseEntity.ok().build();
+	}
+	
+	//피드 삭제하기
+	@DeleteMapping("/api/feeds/{feed_no}")
+	public ResponseEntity<Void> deleteFeed(@PathVariable int feed_no) {
+	    service.feedDelete(feed_no); // 서비스에서 실제 삭제 처리
+	    return ResponseEntity.ok().build();
 	}
 	
 	// 댓글 리스트
@@ -183,14 +200,15 @@ public class GroupFeedRestController {
 	}
 	
 	@PostMapping("api/feed/{feed_no}/like")
-	public ResponseEntity<String> selectLike(@PathVariable("feed_no") int feed_no, HttpServletRequest request)
+	public ResponseEntity<Map<String, Object>> selectLike(@PathVariable("feed_no") int feed_no, HttpServletRequest request)
 	{
-		String result ="";
 		long user_no = (long)request.getAttribute("userno");
 		System.out.println("#############################################");
 		System.out.println(user_no);
 		System.out.println(feed_no);
-	    service.selectLike(user_no, feed_no);
-	    return new ResponseEntity<String>(result, HttpStatus.OK);
+		Map<String, Object> result = new HashMap<>();
+		boolean liked = service.selectLike(user_no, feed_no);
+		result.put("liked", liked);
+		return ResponseEntity.ok(result);
 	}
 }

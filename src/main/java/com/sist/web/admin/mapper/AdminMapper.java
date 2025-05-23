@@ -4,9 +4,7 @@ import com.sist.web.admin.dto.AdminSitterAppDetailDTO;
 import com.sist.web.admin.dto.AdminSitterListDTO;
 import com.sist.web.admin.dto.AdminUserGroupDTO;
 import com.sist.web.mypage.vo.PetDTO;
-import com.sist.web.mypage.vo.SitterDTO;
 import com.sist.web.admin.dto.AdminUserDetailDTO;
-import com.sist.web.user.vo.UserDetailDTO;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
