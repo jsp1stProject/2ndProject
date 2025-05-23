@@ -86,8 +86,12 @@ export const uiMethods = {
   async saveGroupSettings() {
     await this.updateGroupDetail();
     alert('수정되었습니다.');
-    //this.groupEditMode = false;
+
+    const currentGroupno = this.group_no;
+
     await this.loadGroups();
+
+    await this.joinGroup(currentGroupno);
 
     const updated = await this.fetchGroupDetail();
 
