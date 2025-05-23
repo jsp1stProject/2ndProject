@@ -12,23 +12,33 @@
 		<div class="navbar justify-content-center">
 			<ul class="navbar-nav align-items-center flex-row d-none d-md-flex">
 				<li class="nav-item">
-					<a class="nav-link fs-4" href="#">
+					<a class="nav-link fs-4" href="${pageContext.request.contextPath}/group/list">
 						그룹
 					</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link fs-4" href="#">
-						돌봄 신청
+					<a class="nav-link fs-4" href="${pageContext.request.contextPath}/sitter/list">
+						펫시터
 					</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link fs-4" href="#">
+					<a class="nav-link fs-4" href="${pageContext.request.contextPath}/schedule/home">
 						일정
 					</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link fs-4" href="#">
+					<a class="nav-link fs-4" href="${pageContext.request.contextPath}/board/list">
 						게시판
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link fs-4" href="${pageContext.request.contextPath}/facility/list">
+						시설 목록
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link fs-4" href="${pageContext.request.contextPath}/food/calorieCalculator">
+						사료
 					</a>
 				</li>
 			</ul>
@@ -119,16 +129,26 @@
 	</nav>
 	<ul class="navbar-nav collapse d-md-none text-center" id="navCollapse">
 		<li class="nav-item">
-			<a class="nav-link" href="#">그룹</a>
+			<a class="nav-link" href="${pageContext.request.contextPath}/group/list">그룹</a>
 		</li>
 		<li class="nav-item">
-			<a class="nav-link" href="#">돌봄 신청</a>
+			<a class="nav-link" href="${pageContext.request.contextPath}/sitter/list">펫시터</a>
 		</li>
 		<li class="nav-item">
-			<a class="nav-link" href="#">일정</a>
+			<a class="nav-link" href="${pageContext.request.contextPath}/schedule/home">일정</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" href="${pageContext.request.contextPath}/board/list">게시판</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" href="${pageContext.request.contextPath}/facility/list">
+				시설 목록
+			</a>
 		</li>
 		<li class="nav-item mb-2">
-			<a class="nav-link" href="#">게시판</a>
+			<a class="nav-link" href="${pageContext.request.contextPath}/food/calorieCalculator">
+				사료
+			</a>
 		</li>
 	</ul>
 </header>
